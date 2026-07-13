@@ -22,7 +22,7 @@ device_area_overrides:
   "Fire TV Stick": schlafzimmer
   "Kinderzimmer Decke 1": kinderzimmer
   "Kinderzimmer Decke 2": kinderzimmer
-  "Temperatur Spielzimmer": kinderzimmer
+  "Temperatur Spielzimmer": spielzimmer
   "Temperatursensor Kinderzimmer": kinderzimmer
   "Wandschalter Kinderzimmer": kinderzimmer
   "Hue white Spielzimmer Decke": spielzimmer
@@ -40,7 +40,7 @@ device_name_overrides:
   "Heizstrahler": "Heizstrahler Lounge"
   "Nuki Nuki": "Nuki-Türschloss"
   "Nuki Öffner": "Nuki-Türöffner"
-  "Temperatur Spielzimmer": "Temperatur Kinderzimmer"
+  "Temperatur Spielzimmer": "Temperatursensor Spielzimmer"
 
 automation_overrides:
   "Auto-Laden Session Start (Snapshot)":

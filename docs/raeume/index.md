@@ -18,11 +18,11 @@ Die Raumseiten zeigen nur physische beziehungsweise im Alltag erkennbare Geräte
 - [Büro](generated/buero.md) – 19 alltagsrelevante Geräte
 - [Flur](generated/flur.md) – 15 alltagsrelevante Geräte
 - [Gästeklo](generated/gaesteklo.md) – 1 alltagsrelevante Geräte
-- [Kinderzimmer](generated/kinderzimmer.md) – 5 alltagsrelevante Geräte
+- [Kinderzimmer](generated/kinderzimmer.md) – 4 alltagsrelevante Geräte
 - [Küche](generated/kueche.md) – 12 alltagsrelevante Geräte
 - [Schlafzimmer](generated/schlafzimmer.md) – 5 alltagsrelevante Geräte
 - [Speisekammer](generated/speisekammer.md) – 4 alltagsrelevante Geräte
-- [Spielzimmer](generated/spielzimmer.md) – 3 alltagsrelevante Geräte
+- [Spielzimmer](generated/spielzimmer.md) – 4 alltagsrelevante Geräte
 - [Wohnzimmer](generated/wohnzimmer.md) – 15 alltagsrelevante Geräte
 
 ## Außenbereich

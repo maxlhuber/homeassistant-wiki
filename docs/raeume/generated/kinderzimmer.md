@@ -4,7 +4,7 @@
 
 **Standort:** Erdgeschoss
 
-**Alltagsrelevante Geräte:** 5
+**Alltagsrelevante Geräte:** 4
 
 ## Geräte an diesem Standort
 
@@ -12,7 +12,6 @@
 |---|---|---|---|---|
 | Kinderzimmer Decke 1 | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
 | Kinderzimmer Decke 2 | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
-| Temperatur Kinderzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
 | Temperatursensor Kinderzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
 | Wandschalter Kinderzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 

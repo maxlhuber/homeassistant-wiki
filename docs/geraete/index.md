@@ -63,7 +63,6 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Hue white Gästebad | Licht | [Gästeklo · Erdgeschoss](../raeume/generated/gaesteklo.md) | in Home Assistant bestätigt |
 | Kinderzimmer Decke 1 | Licht | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Kinderzimmer Decke 2 | Licht | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
-| Temperatur Kinderzimmer | Temperatur-/Feuchtesensor | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Temperatursensor Kinderzimmer | Temperatur-/Feuchtesensor | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Wandschalter Kinderzimmer | Wandschalter / Taster | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Küche Decke 1 | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
@@ -90,6 +89,7 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Türkontakt Speisekammer | Tür-/Fensterkontakt | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
 | Wandschalter Speisekammer | Wandschalter / Taster | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
 | Hue white Spielzimmer Decke | Licht | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| Temperatursensor Spielzimmer | Temperatur-/Feuchtesensor | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
 | Wandschalter Spielzimmer | Wandschalter / Taster | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
 | WLED Hoehle | Licht | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
 | Steckdose Trockner | Smarte Steckdose | [Waschküche · Keller](../raeume/generated/waschkueche.md) | in Home Assistant bestätigt |
