@@ -27,6 +27,7 @@ Hier werden inhaltlich wichtige Änderungen am Wiki festgehalten. Kleine Rechtsc
 - Nicht mehr vorhandene beziehungsweise deaktivierte Geräte aus der Szene „Filmabend“ entfernt
 - Nicht benötigte zusätzliche Recorder-Bereinigungen ausgeschaltet; der bereits ausgeschaltete Wallbox-Override-Reset bleibt wegen einer fehlenden Entity aus
 - Automationen und Szenen neu geladen; Home-Assistant-Konfigurationsprüfung erfolgreich, keine offenen Reparaturhinweise
+- Lichtautomationen für Kinderzimmer und Spielzimmer mit dem aktuellen Live-Stand abgeglichen: Schalter- und Lichtnamen passen jetzt funktional zusammen; die vertauschten Gerätebereiche bleiben bis zur Prüfung vor Ort gekennzeichnet
 
 ## 12. Juli 2026
 

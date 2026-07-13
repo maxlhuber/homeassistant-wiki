@@ -21,7 +21,7 @@
 
 ## Das passiert hier automatisch
 
-- [Lichtschalter Spielzimmer](../../automationen/generated/lichtschalter-spielzimmer.md)
+- [Lichtschalter Spielzimmer](../../automationen/generated/lichtschalter-kinderzimmer.md)
 
 ## Bedienung und Störung
 

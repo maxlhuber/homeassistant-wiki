@@ -51,6 +51,6 @@ Dieses Wiki erklärt unser Smart Home in normaler Sprache. Es zeigt, **was autom
 4. Bei Unsicherheit den Zeitpunkt und die Beobachtung notieren und Max informieren.
 
 !!! warning "Eine Raumzuordnung ist noch unklar"
-    Die Namen **Kinderzimmer** und **Spielzimmer** sind in Home Assistant offenbar vertauscht: Geräte und Schalter tragen jeweils den Namen des anderen Raums. Das Wiki zeigt diesen Widerspruch offen, bis die Räume vor Ort bestätigt wurden.
+    Die beiden Lichtautomationen schalten laut aktueller Konfiguration jeweils den passend benannten Raum. Unklar ist nur die in Home Assistant gespeicherte Zuordnung der Geräte: **Kinderzimmer** und **Spielzimmer** müssen dafür einmal vor Ort abgeglichen werden.
 
 <p class="page-status">Mit Home Assistant abgeglichen: 13. Juli 2026</p>

@@ -1,22 +1,22 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Lichtschalter Kinderzimmer
+# Lichtschalter Spielzimmer
 
 !!! success "Status: aktiv"
     Diese Automation ist in Home Assistant eingeschaltet.
 
 !!! warning "Wichtig"
-    Raum- und Gerätenamen widersprechen sich: Der „Kinderzimmer“-Schalter steuert laut Home Assistant derzeit das Spielzimmer. Die Zuordnung muss vor Ort bestätigt werden.
+    Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden.
 
-**Ort:** Kinderzimmer · Erdgeschoss
+**Ort:** Spielzimmer · Erdgeschoss
 
 ## Das bemerkst du im Alltag
 
-Schaltet aktuell das Licht im Spielzimmer bei linkem Tastendruck des Wandschalters. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
+Ein Druck auf die linke Taste am Wandschalter Spielzimmer schaltet das Licht im Spielzimmer ein oder aus. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
 
 ## Sie startet, wenn …
 
-1. Eine Taste am Wandschalter Spielzimmer wird gedrückt
+1. Die linke Taste am Wandschalter Spielzimmer wird gedrückt.
 
 ## Sie läuft nur weiter, wenn …
 
@@ -24,7 +24,8 @@ Keine weitere Voraussetzung ist hinterlegt.
 
 ## Dann passiert …
 
-1. Wenn spielzimmer ist „eingeschaltet“, dann spielzimmer ausschalten; andernfalls spielzimmer einschalten mit 100 % helligkeit
+1. Ist das Licht im Spielzimmer an, wird es ausgeschaltet.
+2. Ist es aus, wird es mit 100 Prozent Helligkeit eingeschaltet.
 
 ## So kannst du reagieren
 

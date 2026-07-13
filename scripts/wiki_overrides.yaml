@@ -222,7 +222,16 @@ automation_overrides:
       - "Max’ iPhone oder Meikes iPhone wird nach einer Abwesenheit 30 Sekunden lang als „zu Hause“ erkannt."
 
   "Lichtschalter Kinderzimmer":
-    safety_note: "Raum- und Gerätenamen widersprechen sich: Der „Kinderzimmer“-Schalter steuert laut Home Assistant derzeit das Spielzimmer. Die Zuordnung muss vor Ort bestätigt werden."
+    title: "Lichtschalter Spielzimmer"
+    description: "Ein Druck auf die linke Taste am Wandschalter Spielzimmer schaltet das Licht im Spielzimmer ein oder aus. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt."
+    safety_note: "Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden."
+    area_ids:
+      - spielzimmer
+    trigger_steps:
+      - "Die linke Taste am Wandschalter Spielzimmer wird gedrückt."
+    action_steps:
+      - "Ist das Licht im Spielzimmer an, wird es ausgeschaltet."
+      - "Ist es aus, wird es mit 100 Prozent Helligkeit eingeschaltet."
 
   "Lichtschalter Ikea Shortcut Haustüre":
     trigger_steps:
@@ -232,7 +241,16 @@ automation_overrides:
       - "Sind diese Lichter bereits aus, schaltet Home Assistant den Kronleuchter im Flur ein: nachts mit 30 Prozent, sonst mit 100 Prozent Helligkeit."
 
   "Lichtschalter Spielzimmer":
-    safety_note: "Raum- und Gerätenamen widersprechen sich: Der „Spielzimmer“-Schalter steuert laut Home Assistant derzeit das Kinderzimmer. Die Zuordnung muss vor Ort bestätigt werden."
+    title: "Lichtschalter Kinderzimmer"
+    description: "Ein Druck auf die linke Taste am Wandschalter Kinderzimmer schaltet das Licht im Kinderzimmer ein oder aus. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt."
+    safety_note: "Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden."
+    area_ids:
+      - kinderzimmer
+    trigger_steps:
+      - "Die linke Taste am Wandschalter Kinderzimmer wird gedrückt."
+    action_steps:
+      - "Ist das Licht im Kinderzimmer an, wird es ausgeschaltet."
+      - "Ist es aus, wird es mit 100 Prozent Helligkeit eingeschaltet."
 
   "Trockner fertig Blueprint":
     title: "Trockner ist fertig"
