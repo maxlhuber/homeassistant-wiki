@@ -44,7 +44,9 @@ PubkeyAuthentication yes
 EOF
 systemctl enable ssh.service
 
-if [ "${WIFI_SSID}" != "__WIFI_SSID__" ]; then
+# Die Prüfung darf den vollständigen Platzhalter nicht wiederholen: Beim
+# Einsetzen der SSID würde sonst auch die Vergleichsseite ersetzt.
+if [[ "${WIFI_SSID}" != __WIFI_* ]]; then
   if [ -x /usr/lib/raspberrypi-sys-mods/imager_custom ]; then
     /usr/lib/raspberrypi-sys-mods/imager_custom set_wlan "${WIFI_SSID}" "${WIFI_PASSWORD}" "${WIFI_COUNTRY}"
   else
