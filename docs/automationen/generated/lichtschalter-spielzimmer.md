@@ -5,9 +5,6 @@
 !!! success "Status: aktiv"
     Diese Automation ist in Home Assistant eingeschaltet.
 
-!!! warning "Wichtig"
-    Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden.
-
 **Ort:** Kinderzimmer · Erdgeschoss
 
 ## Das bemerkst du im Alltag

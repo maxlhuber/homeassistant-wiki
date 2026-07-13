@@ -28,6 +28,7 @@ Hier werden inhaltlich wichtige Änderungen am Wiki festgehalten. Kleine Rechtsc
 - Nicht benötigte zusätzliche Recorder-Bereinigungen ausgeschaltet; der bereits ausgeschaltete Wallbox-Override-Reset bleibt wegen einer fehlenden Entity aus
 - Automationen und Szenen neu geladen; Home-Assistant-Konfigurationsprüfung erfolgreich, keine offenen Reparaturhinweise
 - Lichtautomationen für Kinderzimmer und Spielzimmer mit dem aktuellen Live-Stand abgeglichen: Schalter- und Lichtnamen passen jetzt funktional zusammen; die vertauschten Gerätebereiche bleiben bis zur Prüfung vor Ort gekennzeichnet
+- Geräte in Kinderzimmer und Spielzimmer neu mit Home Assistant abgeglichen; Schalter, Leuchten und Raumzuordnungen sind nun konsistent, daher wurden die bisherigen Vertauschungs-Warnungen entfernt
 
 ## 12. Juli 2026
 

@@ -50,7 +50,4 @@ Dieses Wiki erklärt unser Smart Home in normaler Sprache. Es zeigt, **was autom
 3. Eine App-Meldung ergänzt Rauchmelder, Türschloss und andere Sicherheitseinrichtungen – sie ersetzt sie nicht.
 4. Bei Unsicherheit den Zeitpunkt und die Beobachtung notieren und Max informieren.
 
-!!! warning "Eine Raumzuordnung ist noch unklar"
-    Die beiden Lichtautomationen schalten laut aktueller Konfiguration jeweils den passend benannten Raum. Unklar ist nur die in Home Assistant gespeicherte Zuordnung der Geräte: **Kinderzimmer** und **Spielzimmer** müssen dafür einmal vor Ort abgeglichen werden.
-
 <p class="page-status">Mit Home Assistant abgeglichen: 13. Juli 2026</p>

@@ -163,12 +163,12 @@ def main() -> None:
         return device.get("name_by_user") or device.get("name") or "Unbekanntes Gerät"
 
     def area_id_for_device(device: dict[str, Any]) -> str | None:
-        return device.get("area_id") or device_area_overrides.get(raw_device_name(device))
+        return device_area_overrides.get(raw_device_name(device)) or device.get("area_id")
 
     def area_id_for_entity(entity: dict[str, Any]) -> str | None:
         return (
-            entity.get("area_id")
-            or entity_area_overrides.get(entity.get("entity_id"))
+            entity_area_overrides.get(entity.get("entity_id"))
+            or entity.get("area_id")
             or area_id_for_device(device_by_id.get(entity.get("device_id"), {}))
         )
 
@@ -763,9 +763,6 @@ def main() -> None:
         related = [x for x in auto_meta if x["enabled"] and not x["technical"] and area_id in x["areas"]]
         page = [GENERATED_NOTICE, f"# {area['name']}\n\n"]
         page.append(f"**Standort:** {floor}\n\n**Alltagsrelevante Geräte:** {len(room_devices)}\n\n")
-        if area["name"] in {"Kinderzimmer", "Spielzimmer"}:
-            other = "Spielzimmer" if area["name"] == "Kinderzimmer" else "Kinderzimmer"
-            page.append(f"!!! warning \"Raumnamen bitte noch bestätigen\"\n    Mehrere hier zugeordnete Geräte tragen „{other}“ im Namen. Das Wiki zeigt die aktuelle Home-Assistant-Zuordnung, behauptet aber nicht, dass die Namen richtig sind.\n\n")
         if area["name"] == "Gästeklo":
             page.append("!!! note \"Abweichender Gerätename\"\n    Das sichtbare Licht trägt in Home Assistant „Gästebad“ im Namen. Gemeint ist nach aktueller Raumzuordnung das Gästeklo.\n\n")
 

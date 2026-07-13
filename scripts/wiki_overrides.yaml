@@ -20,6 +20,14 @@ device_area_overrides:
   "Nuki Nuki": flur
   "Nuki Öffner": flur
   "Fire TV Stick": schlafzimmer
+  "Kinderzimmer Decke 1": kinderzimmer
+  "Kinderzimmer Decke 2": kinderzimmer
+  "Temperatur Spielzimmer": kinderzimmer
+  "Temperatursensor Kinderzimmer": kinderzimmer
+  "Wandschalter Kinderzimmer": kinderzimmer
+  "Hue white Spielzimmer Decke": spielzimmer
+  "Wandschalter Spielzimmer": spielzimmer
+  "WLED Hoehle": spielzimmer
 
 entity_area_overrides:
   binary_sensor.prasenzmelder_kuche_presence: kuche
@@ -32,6 +40,7 @@ device_name_overrides:
   "Heizstrahler": "Heizstrahler Lounge"
   "Nuki Nuki": "Nuki-Türschloss"
   "Nuki Öffner": "Nuki-Türöffner"
+  "Temperatur Spielzimmer": "Temperatur Kinderzimmer"
 
 automation_overrides:
   "Auto-Laden Session Start (Snapshot)":
@@ -224,7 +233,6 @@ automation_overrides:
   "Lichtschalter Kinderzimmer":
     title: "Lichtschalter Spielzimmer"
     description: "Ein Druck auf die linke Taste am Wandschalter Spielzimmer schaltet das Licht im Spielzimmer ein oder aus. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt."
-    safety_note: "Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden."
     area_ids:
       - spielzimmer
     trigger_steps:
@@ -243,7 +251,6 @@ automation_overrides:
   "Lichtschalter Spielzimmer":
     title: "Lichtschalter Kinderzimmer"
     description: "Ein Druck auf die linke Taste am Wandschalter Kinderzimmer schaltet das Licht im Kinderzimmer ein oder aus. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt."
-    safety_note: "Die Automation selbst ist schlüssig benannt und steuert das passende Licht. Nur die in Home Assistant gespeicherte Raumzuordnung der Geräte Kinderzimmer und Spielzimmer ist offenbar vertauscht und muss vor Ort bestätigt werden."
     area_ids:
       - kinderzimmer
     trigger_steps:
