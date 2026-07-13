@@ -1,0 +1,89 @@
+site_name: Unser Zuhause
+site_description: Verständliche Dokumentation unseres Home-Assistant-Systems
+site_author: Familie
+site_url: ""
+
+theme:
+  name: material
+  language: de
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Dunkles Design verwenden
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Helles Design verwenden
+
+plugins:
+  - search:
+      lang: de
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Start: index.md
+  - Schnellhilfe:
+      - schnellhilfe/index.md
+      - Home Assistant nicht erreichbar: schnellhilfe/home-assistant-ausfall.md
+      - Internet oder WLAN ausgefallen: schnellhilfe/netzwerk-ausfall.md
+      - Wichtige Kontakte: schnellhilfe/kontakte.md
+  - Alltag:
+      - alltag/index.md
+      - Haus verlassen: alltag/haus-verlassen.md
+      - Nach Hause kommen: alltag/nach-hause-kommen.md
+      - Schlafengehen: alltag/schlafengehen.md
+      - Urlaub: alltag/urlaub.md
+  - Räume:
+      - raeume/index.md
+  - Automationen:
+      - automationen/index.md
+  - Geräte:
+      - geraete/index.md
+  - Technik:
+      - technik/index.md
+      - Systemübersicht: technik/systemuebersicht.md
+      - Software und Add-ons: technik/software.md
+      - Bestandsaufnahme: technik/bestandsaufnahme.md
+      - Offene Prüfpunkte: technik/pruefpunkte.md
+      - Sicherungen: technik/sicherungen.md
+      - Wartung: technik/wartung.md
+  - Vorlagen:
+      - vorlagen/automation.md
+      - vorlagen/geraet.md
+      - vorlagen/raum.md
+  - Änderungsverlauf: aenderungen.md

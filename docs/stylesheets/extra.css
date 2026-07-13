@@ -1,0 +1,30 @@
+:root {
+  --home-card-border: rgba(0, 121, 107, 0.24);
+}
+
+.md-typeset .home-card {
+  border: 1px solid var(--home-card-border);
+  border-radius: 0.8rem;
+  padding: 0.85rem 1rem;
+  margin: 0.7rem 0;
+}
+
+.md-typeset .home-card > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .home-card > :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset h1 {
+  font-weight: 650;
+}
+
+.page-status {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  margin-top: 2rem;
+  padding-top: 0.5rem;
+}

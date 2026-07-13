@@ -1,0 +1,13 @@
+.venv/
+site/
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db
+
+# Lokale Home-Assistant-Exporte können sensible Daten enthalten.
+eingang/
+*.tar
+*.tar.gz
+*.backup
+.sdcard-build/
