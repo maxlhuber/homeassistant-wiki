@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Vorlage: Gerät
 
 > Diese Seite kopieren, sinnvoll benennen und die Hinweise ersetzen.

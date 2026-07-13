@@ -2,34 +2,29 @@
 
 # Schlafzimmer
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 8  
-**Erfasste Entities:** 51
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 5
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Fire TV Stick | Amazon / Amazon Fire TV stick | alexa_devices |
-| Hue white Schlafzimmer Decke | Philips / Hue white ambiance E27 800lm with Bluetooth | mqtt |
-| Schlafzimmer | Amazon / Speaker Group | alexa_devices |
-| Schlafzimmer | Zigbee2MQTT / Group | mqtt |
-| Temperatursensor Schlafzimmer | AOYAN / Temperature & humidity LCD sensor | mqtt |
-| Wandschalter Schlafzimmer | Philips / Hue wall switch module | mqtt |
-| Weißer Dot - SCHLAFZIMMER | Amazon / Echo Dot | alexa_devices |
-| Weißer Dot - SCHLAFZIMMER | Amazon / Echo Dot (Gen2) | alexa_media |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Fire TV Stick | Fernseher / Mediaplayer | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Hue white Schlafzimmer Decke | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Temperatursensor Schlafzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Schlafzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Weißer Dot | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
 
-**sensor:** 20, **switch:** 7, **select:** 5, **binary_sensor:** 3, **notify:** 3, **media_player:** 3, **number:** 3, **light:** 2, **update:** 2, **event:** 2, **text:** 1
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
-
-- [Licht Standardhelligkeit bei Einschalten](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
+- [Automatische Standardhelligkeit](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
 - [Lichtschalter Schlafzimmer](../../automationen/generated/lichtschalter-schlafzimmer.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

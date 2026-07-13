@@ -1,26 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Lichtschalter Schlafzimmer
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Schlafzimmer · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Reagiert auf den linken Tastendruck des Schlafzimmer-Wandschalters. Beim Einschalten wird tagsüber 100 Prozent und nachts zwischen Sonnenuntergang und Sonnenaufgang 30 Prozent Helligkeit gesetzt.
-## Auslöser
-1. Geräteereignis „action“ von Wandschalter Schlafzimmer
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. wenn `light.schlafzimmer` hat den status `on`, dann `light.schlafzimmer` ausschalten; andernfalls wenn logische bedingungsgruppe `or` ist erfüllt, dann `light.schlafzimmer` einschalten mit 30 % helligkeit; andernfalls `light.schlafzimmer` einschalten mit 100 % helligkeit
+1. Eine Taste am Wandschalter Schlafzimmer wird gedrückt
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768302882039` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | `light.schlafzimmer` |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Ist das Schlafzimmerlicht an, wird es ausgeschaltet.
+2. Ist es aus, wird es nachts mit 30 Prozent und tagsüber mit 100 Prozent Helligkeit eingeschaltet.
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Lichtschalter Schlafzimmer |
+    | Home-Assistant-ID | `1768302882039` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Schlafzimmer (`light.schlafzimmer`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

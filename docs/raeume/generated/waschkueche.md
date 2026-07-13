@@ -2,28 +2,25 @@
 
 # Waschküche
 
-**Etage:** Keller  
-**Erfasste Geräte:** 2  
-**Erfasste Entities:** 30
+**Standort:** Keller
 
-## Geräte
+**Alltagsrelevante Geräte:** 2
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Steckdose Trockner | NEO Coolcam / Smart plug (with power monitoring) | mqtt, utility_meter |
-| Steckdose Waschmaschine | NEO Coolcam / Smart plug (with power monitoring) | mqtt, utility_meter |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Steckdose Trockner | Smarte Steckdose | in Home Assistant bestätigt | direkt am Trockner (aus Gerätename abgeleitet) | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Steckdose Waschmaschine | Smarte Steckdose | in Home Assistant bestätigt | direkt an der Waschmaschine (aus Gerätename abgeleitet) | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
 
-**sensor:** 14, **select:** 6, **switch:** 4, **number:** 2, **update:** 2, **button:** 2
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
+- [Trockner ist fertig](../../automationen/generated/trockner-fertig-blueprint.md)
+- [Waschmaschine ist fertig](../../automationen/generated/waschmaschine-fertig-blueprint.md)
 
-- [Trockner fertig Blueprint](../../automationen/generated/trockner-fertig-blueprint.md)
-- [Waschmaschine fertig Blueprint](../../automationen/generated/waschmaschine-fertig-blueprint.md)
+## Bedienung und Störung
 
-## Manuelle Bedienung
+- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
-
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

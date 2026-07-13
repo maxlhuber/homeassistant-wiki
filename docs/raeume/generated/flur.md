@@ -2,46 +2,46 @@
 
 # Flur
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 16  
-**Erfasste Entities:** 94
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 15
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Diele | Zigbee2MQTT / Group | mqtt |
-| Filament Diele 2 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Diele 3 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Diele 4 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Diele 5 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Diele 6 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Flur | Zigbee2MQTT / Group | mqtt |
-| Ikea Shortcut Haustüre | IKEA / TRADFRI shortcut button | mqtt |
-| Kronleuchter Flur | Zigbee2MQTT / Group | mqtt |
-| LED Panel Kinderzimmerflur | MatSee Plus / Smart Socket Switch Module (with power monitoring) | mqtt, switch_as_x |
-| Max' Fire | Amazon / Fire HD 10 | alexa_devices |
-| Max' Fire - Flur | Amazon / TABLET A1ZB65LA390I4K | alexa_media |
-| Präsenzmelder Flur | Tuya / 5.8Ghz/24Ghz Human presence sensor | mqtt |
-| Wandschalter Diele Eingang | Philips / Hue wall switch module | mqtt |
-| Wandschalter Diele Wohnzimmer | Philips / Hue wall switch module | mqtt |
-| Wandschalter Kinderzimmerflur | Philips / Hue wall switch module | mqtt |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Dashboard-Tablet | Bedien-Tablet | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Filament Diele 1 | Licht | aus Name/Funktion abgeleitet | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Diele 2 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Diele 3 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Diele 4 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Diele 5 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Diele 6 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Ikea Shortcut Haustüre | Wandschalter / Taster | in Home Assistant bestätigt | an der Haustür (aus Gerätename abgeleitet) | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| LED Panel Kinderzimmerflur | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Nuki-Türschloss | Türschloss / Türöffner | aus Name/Funktion abgeleitet | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Nuki-Türöffner | Türschloss / Türöffner | aus Name/Funktion abgeleitet | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Präsenzmelder Flur | Präsenzmelder | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Diele Eingang | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Wandschalter Diele Wohnzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Wandschalter Kinderzimmerflur | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 39, **switch:** 14, **select:** 12, **light:** 9, **number:** 9, **update:** 5, **binary_sensor:** 2, **button:** 2, **media_player:** 1, **event:** 1
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
-
-- [Licht Flur aus 22 Uhr](../../automationen/generated/licht-flur-aus-22-uhr.md)
-- [Licht Standardhelligkeit bei Einschalten](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
+- [Automatische Standardhelligkeit](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
+- [Dielenlicht um 22:00 Uhr ausschalten](../../automationen/generated/licht-flur-aus-22-uhr.md)
+- [Flurlicht bei Anwesenheit einschalten](../../automationen/generated/praesenzmelder-flur-licht-an.md)
+- [Haustür öffnen, wenn Max oder Meike ankommen](../../automationen/generated/tuer-oeffnen-wenn-max-zuhause-ankommt.md)
 - [Lichtschalter Diele Eingang](../../automationen/generated/lichtschalter-diele-eingang.md)
 - [Lichtschalter Diele Wohnzimmer](../../automationen/generated/lichtschalter-diele-wohnzimmer.md)
 - [Lichtschalter Ikea Shortcut Haustüre](../../automationen/generated/lichtschalter-ikea-shortcut-haustuere.md)
 - [Lichtschalter Kinderzimmerflur](../../automationen/generated/lichtschalter-kinderzimmerflur.md)
+- [Präsenzmelder Flur Licht aus](../../automationen/generated/praesenzmelder-flur-licht-aus.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

@@ -2,35 +2,31 @@
 
 # Bad
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 8  
-**Erfasste Entities:** 47
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 6
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Bad | Zigbee2MQTT / Group | mqtt |
-| Body+ | Withings / Body+ | withings |
-| Fensterkontakt Bad | Tuya / Door/window sensor | mqtt |
-| Lidl LED Panel Bad | Lidl / Livarno Home LED ceiling light | mqtt |
-| Max' Echo Show | Amazon / Echo Show 8 | alexa_devices |
-| Max' Echo Show | Amazon / Echo Show 8 (Gen1) | alexa_media |
-| Temperatursensor Bad | AOYAN / Temperature & humidity LCD sensor | mqtt |
-| Wandschalter Bad | Philips / Hue wall switch module | mqtt |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Body+ | Waage | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Fensterkontakt Bad | Tür-/Fensterkontakt | in Home Assistant bestätigt | am Fenster (aus Gerätename abgeleitet) | keine Bedienung; Meldungen können ausbleiben |
+| Lidl LED Panel Bad | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Max' Echo Show | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Temperatursensor Bad | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Bad | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 21, **switch:** 7, **select:** 5, **binary_sensor:** 4, **notify:** 2, **media_player:** 2, **light:** 2, **number:** 2, **update:** 1, **event:** 1
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
-
+- [Automatische Standardhelligkeit](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
 - [Benachrichtigung Fensterkontakt Bad](../../automationen/generated/benachrichtigung-fensterkontakt-bad.md)
-- [Licht Standardhelligkeit bei Einschalten](../../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
 - [Lichtschalter Bad](../../automationen/generated/lichtschalter-bad.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

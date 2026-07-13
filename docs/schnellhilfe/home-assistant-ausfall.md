@@ -3,22 +3,26 @@
 ## Woran erkennt man das?
 
 - Die Home-Assistant-App zeigt keine Verbindung.
-- Das Dashboard lädt nicht.
-- Mehrere voneinander unabhängige Automationen reagieren nicht.
-
-## Was weiterhin funktionieren sollte
-
-Noch zu erfassen: Welche Lampen, Heizungen, Rollläden und anderen Geräte lassen sich unabhängig von Home Assistant bedienen?
+- Das Dashboard unter `homeassistant.local:8123` lädt nicht.
+- Mehrere unabhängige Automationen reagieren nicht.
+- Dieses Wiki kann trotzdem funktionieren, weil es auf einem anderen Gerät läuft.
 
 ## Sichere erste Schritte
 
-1. Prüfen, ob andere Internetseiten beziehungsweise Apps funktionieren.
-2. Prüfen, ob der Home-Assistant-Thin-Client eingeschaltet ist.
-3. Nicht mehrfach direkt hintereinander den Strom trennen.
-4. Falls vorhanden, die dokumentierte Neustartmethode verwenden.
-5. Wenn der Fehler bleibt, Zeitpunkt und Beobachtung notieren und die zuständige Kontaktperson informieren.
+1. Prüfen, ob nur ein Smartphone betroffen ist. Home Assistant nach Möglichkeit auch mit einem zweiten Gerät im Heimnetz öffnen.
+2. Prüfen, ob andere Internetseiten beziehungsweise Apps funktionieren.
+3. Bei einzelnen Lampen oder Steckdosen den normalen Schalter beziehungsweise die direkte Bedienung versuchen.
+4. Den Home-Assistant-Thin-Client nicht mit dem Raspberry-Pi-Wiki verwechseln.
+5. Nichts löschen, neu koppeln oder auf Werkseinstellungen zurücksetzen.
+6. Nicht mehrfach direkt hintereinander den Strom trennen. Uhrzeit und Beobachtung notieren und Max informieren.
 
-!!! danger "Noch nicht vollständig"
-    Neustart, Standort des Thin Clients und genaue Anzeigen werden ergänzt, sobald das System erfasst wurde.
+## Was wahrscheinlich weiter funktioniert
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Noch zu erfassen</p>
+- Mechanische Schalter, Schlüssel und direkte Bedienung am Haushaltsgerät
+- Dieses Wiki, sofern Raspberry Pi und WLAN noch laufen
+- Manche Geräte lokal – aber nicht jede Automation und nicht jede App-Anzeige
+
+!!! warning "Keine pauschale Neustartanleitung"
+    Der genaue physische Standort und die freigegebene Neustartmethode des Thin Clients sind noch nicht dokumentiert. Deshalb nicht auf Verdacht einen ähnlich aussehenden Computer oder das NAS ausschalten.
+
+<p class="page-status">Geprüft: 13. Juli 2026</p>

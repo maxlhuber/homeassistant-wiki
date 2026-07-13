@@ -1,26 +1,44 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Präsenzmelder Küche Licht aus
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Küche · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Küchenlicht aus, wenn der Präsenzmelder in der Küche keine Belegung mehr erkennt.
-## Auslöser
-1. Status von Belegung (`binary_sensor.prasenzmelder_kuche_presence`) ändert sich auf `off`
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. Küche (`light.kuche_2`) ausschalten
+1. Belegung wechselt auf „ausgeschaltet“
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768753412175` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | Belegung (`binary_sensor.prasenzmelder_kuche_presence`), Küche (`light.kuche_2`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Küche ausschalten
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Präsenzmelder Küche Licht aus |
+    | Home-Assistant-ID | `1768753412175` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Belegung (`binary_sensor.prasenzmelder_kuche_presence`), Küche (`light.kuche_2`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

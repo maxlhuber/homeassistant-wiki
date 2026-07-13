@@ -2,48 +2,40 @@
 
 # Wohnzimmer
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 22  
-**Erfasste Entities:** 156
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 15
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| 0xa4c13841168a6521 | Automatically generated definition | mqtt |
-| 65OLED706/12 | Philips / 65OLED706/12 | philips_js |
-| Echo Dot - WOHNZIMMER | Amazon / Echo Dot | alexa_devices |
-| Echo Dot - WOHNZIMMER | Amazon / Echo Dot (Gen5) | alexa_media |
-| Esstisch | Zigbee2MQTT / Group | mqtt |
-| Filament Esstisch 1 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Esstisch 2 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Käfig | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K | mqtt |
-| Filament Papagei | Paulmann / RGBW light | mqtt |
-| Heimkino | Sonos / Arc | sonos |
-| Hue color Sonos links | Philips / Hue white and color ambiance E26/E27/E14 | mqtt |
-| Hue color Sonos rechts | Philips / Hue white and color ambiance E26/E27/E14 | mqtt |
-| Hue LED Stripe Fensterbank | Philips / Hue white and color ambiance LightStrip plus | mqtt |
-| Kaffeemaschine | Tuya / Zigbee fingerbot plus | mqtt |
-| Kino | Zigbee2MQTT / Group | mqtt |
-| Max' Echo Dot | Amazon / Echo Dot with Clock | alexa_devices |
-| Sonos | Zigbee2MQTT / Group | mqtt |
-| Steckdose Entertainment | NEO Coolcam / Smart plug (with power monitoring) | mqtt, utility_meter |
-| Temperatursensor Wohnzimmer | AOYAN / Temperature & humidity LCD sensor | mqtt |
-| Wandschalter Wohnzimmer | Philips / Hue wall switch module | mqtt |
-| Wohnzimmer | Zigbee2MQTT / Group | mqtt |
-| Wohnzimmer | Apple / Apple TV 4K | apple_tv |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Apple TV Wohnzimmer | Fernseher / Mediaplayer | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Echo Dot | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Fernseher | Fernseher / Mediaplayer | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Filament Esstisch 1 | Licht | in Home Assistant bestätigt | am Esstisch (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Filament Esstisch 2 | Licht | in Home Assistant bestätigt | am Esstisch (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Filament Käfig | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Filament Papagei | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Heimkino | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Hue color Sonos links | Licht | in Home Assistant bestätigt | links beim Sonos (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Hue color Sonos rechts | Licht | in Home Assistant bestätigt | rechts beim Sonos (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Hue LED Stripe Fensterbank | Licht | in Home Assistant bestätigt | auf/an der Fensterbank (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Kaffeemaschine | Kaffeemaschine | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Steckdose Entertainment | Smarte Steckdose | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Temperatursensor Wohnzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Wohnzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 48, **switch:** 30, **select:** 19, **number:** 16, **light:** 12, **binary_sensor:** 8, **media_player:** 6, **update:** 5, **notify:** 4, **text:** 3, **remote:** 2, **event:** 2
-
-## Zugehörige Automationen
+## Das passiert hier automatisch
 
 - [Lichtschalter Wohnzimmer oben](../../automationen/generated/lichtschalter-wohnzimmer-oben.md)
 - [Lichtschalter Wohnzimmer unten](../../automationen/generated/lichtschalter-wohnzimmer-unten.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

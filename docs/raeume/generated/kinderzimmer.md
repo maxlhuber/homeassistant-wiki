@@ -2,30 +2,30 @@
 
 # Kinderzimmer
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 4  
-**Erfasste Entities:** 22
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 3
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Hue white Spielzimmer Decke | Philips / Hue white ambiance E27 800lm with Bluetooth | mqtt |
-| Kinderzimmer | Zigbee2MQTT / Group | mqtt |
-| Temperatur Spielzimmer | AOYAN / Temperature & humidity LCD sensor | mqtt |
-| Wandschalter Spielzimmer | Philips / Hue wall switch module | mqtt |
+!!! warning "Raumnamen bitte noch bestätigen"
+    Mehrere hier zugeordnete Geräte tragen „Spielzimmer“ im Namen. Das Wiki zeigt die aktuelle Home-Assistant-Zuordnung, behauptet aber nicht, dass die Namen richtig sind.
 
-## Wichtige Funktionen
+## Geräte an diesem Standort
 
-**sensor:** 10, **select:** 4, **number:** 3, **light:** 2, **update:** 2, **text:** 1
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Hue white Spielzimmer Decke | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Temperatur Spielzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Spielzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-## Zugehörige Automationen
+## Das passiert hier automatisch
 
 - [Lichtschalter Kinderzimmer](../../automationen/generated/lichtschalter-kinderzimmer.md)
 - [Lichtschalter Spielzimmer](../../automationen/generated/lichtschalter-spielzimmer.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

@@ -17,10 +17,10 @@ SSH-ZUGANG (nur mit dem Schlüssel auf MAX-PC)
 
 Benutzer:  wikiadmin
 Hostname:  homeassistant-wiki.local
-Schlüssel: C:\Users\maxlh\.ssh\homeassistant-wiki_ed25519
+Schlüssel: $env:USERPROFILE\.ssh\homeassistant-wiki_ed25519
 
 Beispiel:
-ssh -i C:\Users\maxlh\.ssh\homeassistant-wiki_ed25519 wikiadmin@homeassistant-wiki.local
+ssh -i "$env:USERPROFILE\.ssh\homeassistant-wiki_ed25519" wikiadmin@homeassistant-wiki.local
 
 Auf der Startpartition zeigt WIKI-STATUS.txt nach dem ersten Start an,
 ob die Grundkonfiguration bzw. die Wiki-Installation abgeschlossen ist.

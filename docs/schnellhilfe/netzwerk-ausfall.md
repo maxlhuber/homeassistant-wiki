@@ -1,20 +1,26 @@
 # Internet oder WLAN ist ausgefallen
 
-Home Assistant kann im Heimnetz teilweise weiterarbeiten, auch wenn die Internetverbindung ausgefallen ist. Cloud-Dienste, Sprachassistenten und Benachrichtigungen von unterwegs können jedoch betroffen sein.
+Internet und Heimnetz sind nicht dasselbe: Bei einem reinen Internetausfall können Home Assistant und viele lokale Automationen weiterlaufen. Bei einem WLAN- oder Routerausfall sind zusätzlich App, Wiki und einzelne Funkgeräte im Heimnetz betroffen.
 
-## Erste Schritte
+## Woran lässt sich der Umfang erkennen?
 
-1. Prüfen, ob mehrere Geräte betroffen sind.
-2. Router und Netzwerkgeräte anhand ihrer Kontrollleuchten prüfen.
-3. Nicht wahllos mehrere Geräte gleichzeitig neu starten.
-4. Notieren, wann der Ausfall begonnen hat.
+- **Nur Internetseiten gehen nicht:** Wahrscheinlich Internetanschluss oder Anbieter; lokale Schalter und manche Automationen können weiterlaufen.
+- **Home Assistant und Wiki gehen ebenfalls nicht:** Wahrscheinlich Heimnetz/WLAN oder mehrere Geräte ohne Strom.
+- **Nur ein Smartphone ist betroffen:** Zuerst WLAN dieses Smartphones prüfen.
 
-## Noch einzutragen
+## Sichere erste Schritte
 
-- Standort und Modell des Routers
-- Bedeutung wichtiger Kontrollleuchten
-- Freigegebene Neustartreihenfolge
-- Anbieter und Störungskontakt
-- Welche Smart-Home-Funktionen ohne Internet weiterlaufen
+1. Mit einem zweiten Gerät prüfen, ob WLAN und Internet betroffen sind.
+2. Kontrollieren, ob andere Geräte im Haus Strom haben.
+3. Router und Netzwerkgeräte nur anhand ihrer Kontrollleuchten prüfen.
+4. Nicht Router, NAS, Thin Client und Raspberry Pi gleichzeitig neu starten.
+5. Beginn und Umfang des Ausfalls notieren und Max informieren.
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Noch zu erfassen</p>
+## Was währenddessen fehlen kann
+
+Sprachassistenten, Internetdaten, Nachrichten von unterwegs und die Fernbedienung außerhalb des Hauses können ausfallen. Sicherheit und Zugang deshalb direkt vor Ort prüfen und nicht allein auf eine App-Anzeige vertrauen.
+
+!!! info "Noch nicht sicher bekannt"
+    Routermodell, physischer Routerstandort und freigegebene Neustartreihenfolge sind nicht in Home Assistant hinterlegt. Das Wiki erfindet diese Angaben nicht.
+
+<p class="page-status">Geprüft: 13. Juli 2026</p>

@@ -1,26 +1,49 @@
+---
+search:
+  exclude: true
+---
+
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Pflanzenerinnerung Helfer
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** kein fester Raum – betrifft das ganze Haus
+
+## Das bemerkst du im Alltag
+
 Beendet die Pflanzenerinnerung, wenn die Mobile-App-Aktion "gegossen" ausgelöst wird.
-## Auslöser
-1. Ereignis `mobile_app_notification_action` tritt ein
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. Gießkanne (`input_boolean.giesskanne`) ausschalten
+1. Home Assistant erkennt den passenden Bedienbefehl
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1680326169555` |
-| Modus | `single` |
-| Kategorie | Garten & Wasser |
-| Verwendete Entities | Gießkanne (`input_boolean.giesskanne`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Gießkanne ausschalten
+
+## So kannst du reagieren
+
+Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erledigt bestätigen.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Pflanzenerinnerung Helfer |
+    | Home-Assistant-ID | `1680326169555` |
+    | Modus | `single` |
+    | Kategorie | Garten & Wasser |
+    | Verwendete Entities | Gießkanne (`input_boolean.giesskanne`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -2,25 +2,20 @@
 
 # Speisekammer
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 5  
-**Erfasste Entities:** 26
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 4
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Hue white Speisekammer | Philips / Hue white ambiance E27 800lm with Bluetooth | mqtt |
-| Speisekammer | Zigbee2MQTT / Group | mqtt |
-| Temperatursensor Speisekammer | Tuya / Temperature & humidity sensor | mqtt |
-| Türkontakt Speisekammer | eWeLink / Contact sensor | mqtt |
-| Wandschalter Speisekammer | Philips / Hue wall switch module | mqtt |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Hue white Speisekammer | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Temperatursensor Speisekammer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Türkontakt Speisekammer | Tür-/Fensterkontakt | in Home Assistant bestätigt | an der Tür (aus Gerätename abgeleitet) | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Speisekammer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 15, **select:** 3, **light:** 2, **update:** 2, **binary_sensor:** 2, **number:** 1, **text:** 1
-
-## Zugehörige Automationen
+## Das passiert hier automatisch
 
 - [Benachrichtigung Speisekammer Türe](../../automationen/generated/benachrichtigung-speisekammer-tuere.md)
 - [Lichtschalter Speisekammer links](../../automationen/generated/lichtschalter-speisekammer-links.md)
@@ -28,8 +23,10 @@
 - [Türkontakt Speisekammer aus](../../automationen/generated/tuerkontakt-speisekammer-aus.md)
 - [Türkontakt Speisekammer ein](../../automationen/generated/tuerkontakt-speisekammer-ein.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

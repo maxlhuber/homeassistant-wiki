@@ -1,28 +1,48 @@
+---
+search:
+  exclude: true
+---
+
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # System - Recorder täglich auf 30 Tage begrenzen
-!!! info "Derzeit ausgeschaltet"
-    Diese zusätzliche Bereinigung wurde am 13. Juli 2026 ausgeschaltet, weil der Recorder die festgelegte Aufbewahrung bereits selbst verwaltet.
 
-## Kurz erklärt
+!!! info "Status: ausgeschaltet"
+    Ausgeschaltet, weil Home Assistant die Aufbewahrungsdauer bereits selbst verwaltet.
+
+**Ort:** kein fester Raum – betrifft das ganze Haus
+
+## Das bemerkst du im Alltag
+
 Hält die kurzfristige Recorder-History bei 30 Tagen. Long-term statistics bleiben erhalten und werden vom Energy-Dashboard weiter genutzt.
-## Auslöser
-1. Zeitpunkt `03:10:00` ist erreicht
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. festgelegtes Ziel Dienst `recorder.purge` ausführen
+1. Es ist 03:10:00 Uhr
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1778143654356` |
-| Modus | `single` |
-| Kategorie | System |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Am 13. Juli 2026 live ausgeschaltet</p>
+## Dann passiert …
+
+1. Die Home-Assistant-Datenbank warten
+
+## So kannst du reagieren
+
+Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technische Wartung durch Max gedacht.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | System - Recorder täglich auf 30 Tage begrenzen |
+    | Home-Assistant-ID | `1778143654356` |
+    | Modus | `single` |
+    | Kategorie | System |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

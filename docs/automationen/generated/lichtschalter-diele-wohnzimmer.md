@@ -1,26 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Lichtschalter Diele Wohnzimmer
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Flur · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Flurlicht bei linkem Tastendruck des Diele-Wohnzimmer-Wandschalters. Beim Einschalten wird tagsüber 100 Prozent und nachts zwischen Sonnenuntergang und Sonnenaufgang 30 Prozent Helligkeit gesetzt.
-## Auslöser
-1. Geräteereignis „action“ von Wandschalter Diele Wohnzimmer
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. wenn `light.flur` hat den status `on`, dann `light.flur` ausschalten; andernfalls wenn logische bedingungsgruppe `or` ist erfüllt, dann `light.flur` einschalten mit 30 % helligkeit; andernfalls `light.flur` einschalten mit 100 % helligkeit
+1. Eine Taste am Wandschalter Diele Wohnzimmer wird gedrückt
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768303993349` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | `light.flur` |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Ist das Flurlicht an, wird es ausgeschaltet.
+2. Ist es aus, wird es nachts mit 30 Prozent und tagsüber mit 100 Prozent Helligkeit eingeschaltet.
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Lichtschalter Diele Wohnzimmer |
+    | Home-Assistant-ID | `1768303993349` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Flur (`light.flur`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

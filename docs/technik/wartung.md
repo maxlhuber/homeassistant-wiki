@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Wartung
 
 ## Regelmäßige Aufgaben
@@ -14,4 +19,4 @@
 
 Vor größeren Updates zuerst eine aktuelle Sicherung erstellen und die Versionshinweise prüfen. Genaue Abläufe werden nach der Systemaufnahme ergänzt.
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Noch zu erfassen</p>
+<p class="page-status">Zuletzt geprüft: 13. Juli 2026 · Status: Wartungsplan noch nicht festgelegt</p>

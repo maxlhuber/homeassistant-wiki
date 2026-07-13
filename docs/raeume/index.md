@@ -1,34 +1,33 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Räume
+# Räume und Standorte
 
-Home Assistant enthält **3 Etagen** und **14 Räume beziehungsweise Bereiche**.
+Die Raumseiten zeigen nur physische beziehungsweise im Alltag erkennbare Geräte. Interne Dienste, Plugins, Diagnosewerte und virtuelle Lichtgruppen werden ausgeblendet.
+
+!!! info "Was bedeutet Standort?"
+    Räume und Etagen stammen aus Home Assistant. Einzelne Gerätezuordnungen sind als geprüfte oder aus Name/Funktion abgeleitete Ergänzung gekennzeichnet. Eine genauere Position wird nur genannt, wenn sie aus dem Gerätenamen sicher erkennbar ist; sonst steht ausdrücklich „nicht hinterlegt“.
 
 ## Keller
 
-- [Sicherungskasten](generated/sicherungskasten.md) – 4 Geräte
-- [Waschküche](generated/waschkueche.md) – 2 Geräte
+- [Sicherungskasten](generated/sicherungskasten.md) – 2 alltagsrelevante Geräte
+- [Waschküche](generated/waschkueche.md) – 2 alltagsrelevante Geräte
 
 ## Erdgeschoss
 
-!!! note "Bezeichnung in Home Assistant"
-    Die Etage heißt dort derzeit „Ergeschoss“. Im Wiki wird die vermutlich gemeinte Schreibweise „Erdgeschoss“ verwendet.
+- [Bad](generated/bad.md) – 6 alltagsrelevante Geräte
+- [Büro](generated/buero.md) – 19 alltagsrelevante Geräte
+- [Flur](generated/flur.md) – 15 alltagsrelevante Geräte
+- [Gästeklo](generated/gaesteklo.md) – 1 alltagsrelevante Geräte
+- [Kinderzimmer](generated/kinderzimmer.md) – 3 alltagsrelevante Geräte
+- [Küche](generated/kueche.md) – 12 alltagsrelevante Geräte
+- [Schlafzimmer](generated/schlafzimmer.md) – 5 alltagsrelevante Geräte
+- [Speisekammer](generated/speisekammer.md) – 4 alltagsrelevante Geräte
+- [Spielzimmer](generated/spielzimmer.md) – 5 alltagsrelevante Geräte
+- [Wohnzimmer](generated/wohnzimmer.md) – 15 alltagsrelevante Geräte
 
-- [Bad](generated/bad.md) – 8 Geräte
-- [Büro](generated/buero.md) – 26 Geräte
-- [Flur](generated/flur.md) – 16 Geräte
-- [Gästeklo](generated/gaesteklo.md) – 2 Geräte
-- [Kinderzimmer](generated/kinderzimmer.md) – 4 Geräte
-- [Küche](generated/kueche.md) – 15 Geräte
-- [Schlafzimmer](generated/schlafzimmer.md) – 8 Geräte
-- [Speisekammer](generated/speisekammer.md) – 5 Geräte
-- [Spielzimmer](generated/spielzimmer.md) – 6 Geräte
-- [Wohnzimmer](generated/wohnzimmer.md) – 22 Geräte
+## Außenbereich
 
-## Draussen
+- [Garage](generated/garage.md) – 1 alltagsrelevante Geräte
+- [Garten](generated/garten.md) – 11 alltagsrelevante Geräte
 
-- [Garage](generated/garage.md) – 4 Geräte
-- [Garten](generated/garten.md) – 18 Geräte
-
-
-<p class="page-status">Zuletzt aus Home Assistant übernommen: 12. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

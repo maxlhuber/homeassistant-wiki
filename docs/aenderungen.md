@@ -1,9 +1,24 @@
+---
+search:
+  exclude: true
+---
+
 # Änderungsverlauf
 
 Hier werden inhaltlich wichtige Änderungen am Wiki festgehalten. Kleine Rechtschreibkorrekturen müssen nicht einzeln aufgeführt werden.
 
 ## 13. Juli 2026
 
+- Familienansicht vollständig überarbeitet: verständlicher Einstieg, Grundlagen und konkrete Schnellhilfe statt leerer Vorlagen
+- Gerätebestand auf alltagsrelevante physische Geräte reduziert; Diagnosewerte, interne Dienste, virtuelle Gruppen und erkennbare Duplikate ausgeblendet
+- Räume, Geräte und Automationen um verständliche Ortsangaben, Ausfallhinweise und manuelle Reaktionsmöglichkeiten ergänzt
+- Technische Entity-IDs und Wartungsdetails in einklappbare Abschnitte verschoben
+- Dauerhafte Korrekturdatei eingeführt, damit bestätigte Live-Anpassungen bei späteren Backup-Importen erhalten bleiben
+- Widersprüchliche Zuordnung von Kinderzimmer und Spielzimmer sichtbar gekennzeichnet, ohne eine nicht bestätigte Zuordnung zu erfinden
+- Alltagstexte an den tatsächlichen Stand angepasst: kein zentraler Abwesenheits-, Schlaf- oder Urlaubsmodus; tägliche Gartenbewässerung klar benannt
+- Raspberry Pi als aktiven Wiki-Server dokumentiert und Familiennavigation von Vorlagen und internen Prüflisten bereinigt
+- Veröffentlichung auf atomare Releases mit lokalem und entferntem Strict-Build umgestellt; ein fehlerhafter Build lässt den bisherigen Live-Stand bestehen
+- Zugriff von unterwegs als noch nicht eingerichtet gekennzeichnet; keine ungeschützte Portfreigabe vorgesehen
 - Geschützte Vollsicherung vor den Änderungen lokal erstellt (`8086f527`) und fertigen Stand anschließend vollständig auf dem NAS gesichert (`c88e8807`, einschließlich Datenbank)
 - Rauchmelder im Büro benachrichtigt jetzt Max und Meike; ein fehlgeschlagener Versand blockiert den jeweils anderen nicht
 - Spülmaschinen-Fertigmeldung an Max und Meike erweitert und beide Versandwege voneinander entkoppelt

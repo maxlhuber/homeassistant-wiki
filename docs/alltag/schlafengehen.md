@@ -1,15 +1,18 @@
 # Schlafengehen
 
-## Normaler Ablauf
-
-Noch zu erfassen.
-
 ## Was automatisch passiert
 
-Noch zu erfassen: Licht, Türen, Fenster, Heizung, Medien, Rollläden und Alarmfunktionen.
+- Das Dielenlicht wird jeden Abend um **22:00 Uhr** ausgeschaltet.
+- Wenn ein Licht ohne ausdrücklich gewählte Helligkeit eingeschaltet wird, setzt Home Assistant normalerweise 100 %. Die Hauptlichter in **Flur, Schlafzimmer und Bad** werden nachts stattdessen auf **1 %** gesetzt.
 
-## Manuelle Alternative
+## Was nicht automatisch erledigt wird
 
-Noch zu erfassen.
+Es wurde keine zentrale Schlafenszeit-Automation gefunden. Türen, Fenster, übrige Lichter, Mediengeräte und Haushaltsgeräte müssen deshalb wie gewohnt selbst geprüft werden.
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Noch zu erfassen</p>
+## Wenn das Licht zu hell oder zu dunkel ist
+
+Die gewünschte Helligkeit am Wandschalter oder in Home Assistant direkt wählen. Eine ausdrücklich gewählte Helligkeit soll von der Standardhelligkeits-Automation nicht verändert werden.
+
+[Details zur Standardhelligkeit](../automationen/generated/licht-standardhelligkeit-bei-einschalten.md)
+
+<p class="page-status">Mit Home Assistant abgeglichen: 13. Juli 2026</p>

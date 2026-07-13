@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Vorlage: Raum
 
 > Diese Seite kopieren, sinnvoll benennen und die Hinweise ersetzen.

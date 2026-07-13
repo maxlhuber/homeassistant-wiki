@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Offene Prüfpunkte
 
 Diese Punkte sind bei der automatischen Bestandsaufnahme aufgefallen. Sie sind nicht automatisch Fehler, sollten aber bewusst bestätigt oder angepasst werden.

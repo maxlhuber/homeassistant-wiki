@@ -2,33 +2,23 @@
 
 # Sicherungskasten
 
-**Etage:** Keller  
-**Erfasste Geräte:** 4  
-**Erfasste Entities:** 215
+**Standort:** Keller
 
-## Geräte
+**Alltagsrelevante Geräte:** 2
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Am Anger 3 | Tibber / Wohnung | tibber_prices |
-| Strommesser Solar | Tuya / Clamp meter | mqtt, utility_meter |
-| Tibber Pulse Am Anger 3 | Tibber / Tibber Pulse | tibber, utility_meter |
-| Tibber Pulse+Bridge [local push] | Tibber / Tibber Pulse+Bridge WebSocket ✅ | tibber_local |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Strommesser Solar | Stromzähler / Energiemesser | in Home Assistant bestätigt | am Stromzähler/Verteiler (aus Funktion abgeleitet) | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Tibber-Stromzähler | Stromzähler / Energiemesser | in Home Assistant bestätigt | am Stromzähler/Verteiler (aus Funktion abgeleitet) | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 192, **number:** 12, **binary_sensor:** 9, **switch:** 2
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
+Für diesen Raum ist keine aktive, alltagsrelevante Automation eindeutig zugeordnet.
 
-- [System - Recorder Diagnosewerte täglich bereinigen](../../automationen/generated/system-recorder-diagnosewerte-taeglich-bereinigen.md)
-- [Tibber API Timer](../../automationen/generated/tibber-api-timer.md)
-- [Tibber Reload](../../automationen/generated/tibber-reload.md)
-- [Wallbox Benachrichtigung](../../automationen/generated/wallbox-benachrichtigung.md)
-- [Wallbox Benachrichtigung 2](../../automationen/generated/wallbox-benachrichtigung-2.md)
+## Bedienung und Störung
 
-## Manuelle Bedienung
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
-
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,26 +1,44 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Präsenzmelder Küche Licht an
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Küche · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Küchenlicht mit voller Helligkeit ein, wenn der Präsenzmelder in der Küche Belegung erkennt.
-## Auslöser
-1. Status von Belegung (`binary_sensor.prasenzmelder_kuche_presence`) ändert sich auf `on`
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. Küche (`light.kuche_2`) einschalten mit 100 % Helligkeit
+1. Belegung wechselt auf „eingeschaltet“
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768753491689` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | Belegung (`binary_sensor.prasenzmelder_kuche_presence`), Küche (`light.kuche_2`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Küche einschalten mit 100 % Helligkeit
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Präsenzmelder Küche Licht an |
+    | Home-Assistant-ID | `1768753491689` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Belegung (`binary_sensor.prasenzmelder_kuche_presence`), Küche (`light.kuche_2`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,26 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Lichtschalter Ikea Shortcut Haustüre
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Flur · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Nutzt den IKEA-Shortcut an der Haustüre als Alles-aus-Schalter für alle Lichter außer Büro oder als Einschalter für den Kronleuchter im Flur mit Standardhelligkeit.
-## Auslöser
-1. Geräteereignis „action“ von Ikea Shortcut Haustüre
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. wenn alle lichter außer büro (`light.alle_lichter_ausser_buro`) hat den status `['on']`, dann alle lichter außer büro (`light.alle_lichter_ausser_buro`) ausschalten; andernfalls wenn logische bedingungsgruppe `or` ist erfüllt, dann `light.kronleuchter_flur` einschalten mit 30 % helligkeit; andernfalls `light.kronleuchter_flur` einschalten mit 100 % helligkeit
+1. Eine Taste am IKEA-Shortcut an der Haustür wird gedrückt.
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768303055798` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | Alle Lichter außer Büro (`light.alle_lichter_ausser_buro`), `light.kronleuchter_flur` |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Wenn noch eines der zusammengefassten Lichter außer Büro an ist, schaltet Home Assistant diese Lichter aus.
+2. Sind diese Lichter bereits aus, schaltet Home Assistant den Kronleuchter im Flur ein: nachts mit 30 Prozent, sonst mit 100 Prozent Helligkeit.
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Lichtschalter Ikea Shortcut Haustüre |
+    | Home-Assistant-ID | `1768303055798` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Alle Lichter außer Büro (`light.alle_lichter_ausser_buro`), Kronleuchter flur (`light.kronleuchter_flur`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,26 +1,44 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Licht Flur aus 22 Uhr
-## Kurz erklärt
-Schaltet die Diele täglich um 22:00 Uhr aus.
-## Auslöser
-1. Zeitpunkt `22:00:00` ist erreicht
+# Dielenlicht um 22:00 Uhr ausschalten
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
 
-## Ablauf
-1. `light.diele` ausschalten
+**Ort:** Flur · Erdgeschoss
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Das bemerkst du im Alltag
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1735752603155` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | `light.diele` |
+Schaltet die Lichtgruppe „Diele“ jeden Abend um 22:00 Uhr aus.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Sie startet, wenn …
+
+1. Es ist 22:00:00 Uhr
+
+## Sie läuft nur weiter, wenn …
+
+Keine weitere Voraussetzung ist hinterlegt.
+
+## Dann passiert …
+
+1. Diele ausschalten
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Licht Flur aus 22 Uhr |
+    | Home-Assistant-ID | `1735752603155` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Diele (`light.diele`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

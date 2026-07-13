@@ -1,8 +1,9 @@
 """Generate sanitized Wiki pages from an extracted Home Assistant backup.
 
 The source directory must contain the selected YAML files and registry files from
-Home Assistant. The script deliberately does not read config entries, secrets,
-credentials, history databases, cloud data, or device identifiers.
+Home Assistant. Registries are read to resolve relationships, but identifiers,
+connections and unique IDs are never published. The script deliberately does not
+read config entries, secrets, credentials, history databases or cloud data.
 """
 
 from __future__ import annotations
@@ -24,6 +25,17 @@ GENERATED_NOTICE = (
     "Nicht direkt bearbeiten. -->\n\n"
 )
 ENTITY_RE = re.compile(r"\b[a-z_]+\.[a-z0-9_]+\b")
+
+STATE_LABELS = {
+    "on": "eingeschaltet",
+    "off": "ausgeschaltet",
+    "home": "zu Hause",
+    "not_home": "nicht zu Hause",
+    "open": "offen",
+    "closed": "geschlossen",
+    "unavailable": "nicht erreichbar",
+    "unknown": "unbekannt",
+}
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -84,15 +96,42 @@ def category(alias: str) -> str:
     return next((group for group, words in rules if any(word in name for word in words)), "Sonstiges")
 
 
+def state_label(value: Any) -> str:
+    raw = str(value)
+    return STATE_LABELS.get(raw, raw.replace("_", " "))
+
+
+def sentence_case(value: Any) -> str:
+    text = str(value).strip()
+    return text[:1].upper() + text[1:] if text else text
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
     parser.add_argument("docs", type=Path)
+    parser.add_argument(
+        "--overrides",
+        type=Path,
+        default=Path(__file__).with_name("wiki_overrides.yaml"),
+        help="Dauerhafte, geprüfte Ergänzungen zur Backup-Auswertung.",
+    )
     args = parser.parse_args()
     source = args.source.resolve()
     docs = args.docs.resolve()
     if not source.is_dir() or not docs.is_dir():
         raise SystemExit("Quell- oder Dokumentationsordner fehlt.")
+
+    overrides = read_yaml(args.overrides.resolve(), {})
+    automation_overrides = overrides.get("automation_overrides", {})
+    device_area_overrides = overrides.get("device_area_overrides", {})
+    entity_area_overrides = overrides.get("entity_area_overrides", {})
+    device_name_overrides = overrides.get("device_name_overrides", {})
+    scene_overrides = overrides.get("scene_overrides", {})
+    force_include_devices = set(overrides.get("force_include_devices", []))
+    metadata = overrides.get("metadata", {})
+    source_date = str(metadata.get("inventory_source_date") or "nicht dokumentiert")
+    checked_on = str(metadata.get("live_checked_date") or source_date)
 
     storage = source / ".storage"
     floors = read_json(storage / "core.floor_registry").get("floors", [])
@@ -113,36 +152,229 @@ def main() -> None:
         if entity.get("device_id"):
             device_entities[entity["device_id"]].append(entity)
 
+    everyday_entities = [
+        entity for entity in entities
+        if not entity.get("disabled_by")
+        and entity.get("entity_category") not in ("diagnostic", "config")
+    ]
+    everyday_entity_registry_ids = {entity["id"] for entity in everyday_entities}
+
+    def raw_device_name(device: dict[str, Any]) -> str:
+        return device.get("name_by_user") or device.get("name") or "Unbekanntes Gerät"
+
     def area_id_for_device(device: dict[str, Any]) -> str | None:
-        return device.get("area_id")
+        return device.get("area_id") or device_area_overrides.get(raw_device_name(device))
 
     def area_id_for_entity(entity: dict[str, Any]) -> str | None:
-        return entity.get("area_id") or area_id_for_device(device_by_id.get(entity.get("device_id"), {}))
+        return (
+            entity.get("area_id")
+            or entity_area_overrides.get(entity.get("entity_id"))
+            or area_id_for_device(device_by_id.get(entity.get("device_id"), {}))
+        )
+
+    def shown_floor_name(value: str | None) -> str:
+        if value == "Ergeschoss":
+            return "Erdgeschoss"
+        if value == "Draussen":
+            return "Außenbereich"
+        return value or "Keine Etage zugeordnet"
+
+    def area_location(area_id: str) -> str:
+        area = area_by_id.get(area_id, {})
+        floor = floor_by_id.get(area.get("floor_id") or "", {})
+        return f"{area.get('name', area_id)} · {shown_floor_name(floor.get('name'))}"
+
+    def friendly_device_name(device: dict[str, Any]) -> str:
+        raw = raw_device_name(device).strip()
+        raw = device_name_overrides.get(raw, raw)
+        area = area_by_id.get(area_id_for_device(device) or "", {}).get("name")
+        if area and raw.casefold().endswith(f" - {area}".casefold()):
+            raw = raw[: -(len(area) + 3)].strip()
+        combined = f"{raw} {device.get('manufacturer') or ''} {device.get('model') or ''}".casefold()
+        if raw == "Büro" and "apple tv" in combined:
+            return "Apple TV Büro"
+        if raw == "Wohnzimmer" and "apple tv" in combined:
+            return "Apple TV Wohnzimmer"
+        if raw == "Büro" and ("sonos" in str(device.get("manufacturer") or "").casefold() or "era 100" in combined):
+            return "Sonos Büro"
+        if "tibber" in combined and ("pulse" in combined or "bridge" in combined):
+            if "local" in combined:
+                return "Tibber-Stromzähler (technische Verbindung)"
+            return "Tibber-Stromzähler"
+        if "tibber" in combined and re.search(r"\s\d+[a-z]?\s*$", raw, re.I):
+            return "Tibber-Stromtarif"
+        if "wallbox" in combined or "go-echarger" in combined:
+            return "Wallbox (go-e)"
+        if raw == "Max' Fire":
+            return "Dashboard-Tablet"
+        return raw
 
     def device_name(device_id: str | None) -> str:
-        device = device_by_id.get(device_id or "", {})
-        return device.get("name_by_user") or device.get("name") or "unbekanntes Gerät"
+        return friendly_device_name(device_by_id.get(device_id or "", {}))
 
-    def entity_name(entity_id: str) -> str:
+    def entity_label(entity_id: str, technical: bool = False) -> str:
         entity = entity_by_id.get(entity_id, {})
         label = entity.get("name") or entity.get("original_name")
-        return f"{label} (`{entity_id}`)" if label else f"`{entity_id}`"
+        if not label:
+            label = entity_id.split(".", 1)[-1].replace("_", " ").capitalize()
+        return f"{label} (`{entity_id}`)" if technical else str(label)
 
-    def names_for(value: Any) -> str:
-        values = listify(value)
+    def names_for(value: Any, technical: bool = False) -> str:
         result = []
-        for item in values:
+        for item in listify(value):
             if isinstance(item, str) and item in entity_by_id:
-                result.append(entity_name(item))
+                result.append(entity_label(item, technical))
             elif isinstance(item, str) and item in entity_by_registry_id:
-                result.append(entity_name(entity_by_registry_id[item]["entity_id"]))
+                result.append(entity_label(entity_by_registry_id[item]["entity_id"], technical))
             elif isinstance(item, str) and item in device_by_id:
                 result.append(device_name(item))
             elif isinstance(item, str) and item in area_by_id:
                 result.append(area_by_id[item]["name"])
+            elif isinstance(item, str):
+                result.append(item.replace("_", " "))
             else:
-                result.append(f"`{item}`" if isinstance(item, str) else str(item))
-        return ", ".join(result) or "nicht näher angegeben"
+                result.append(str(item))
+        return ", ".join(result) or "das betroffene Gerät"
+
+    def device_platforms(device: dict[str, Any]) -> set[str]:
+        return {
+            str(entity.get("platform")) for entity in device_entities.get(device.get("id"), [])
+            if entity.get("platform")
+        }
+
+    def is_virtual_device(device: dict[str, Any]) -> bool:
+        name = raw_device_name(device).strip()
+        friendly = friendly_device_name(device)
+        model = str(device.get("model") or "").casefold()
+        maker = str(device.get("manufacturer") or "").casefold()
+        platforms = device_platforms(device)
+        if device.get("entry_type") == "service":
+            return True
+        if re.fullmatch(r"0x[0-9a-f]+", name.casefold()):
+            return True
+        if "@" in name or re.search(r"(?:[0-9a-f]{2}:){5}[0-9a-f]{2}", name, re.I):
+            return True
+        if model in {"group", "plugin", "integration", "theme", "home assistant app", "homebridge"}:
+            return True
+        if "speaker group" in model or "grocery shopping list" in model:
+            return True
+        if name.casefold().startswith("shelly") and " output " in name.casefold():
+            return True
+        if friendly in {"Tibber-Stromtarif", "Tibber-Stromzähler (technische Verbindung)"}:
+            return True
+        if name in {"Nuki Web API", "Withings", "Robotic Vacuum Cleaner"}:
+            return True
+        if maker == "amazon" and model == "sonos":
+            return True
+        if name == "Max' Echo Dot" and device.get("area_id") == "wohnzimmer" and model == "echo dot with clock":
+            return True
+        if device.get("via_device_id") and any(word in name.casefold() for word in ("output", "ams", "spool")):
+            return True
+        if name in {"Zigbee2MQTT Bridge", "HASS Bridge:21064", "NAS", "This Device", "Überall"}:
+            return True
+        if maker in {"home assistant", "hacs.xyz"} and platforms & {"hassio", "hacs", "homekit"}:
+            return True
+        if platforms and platforms <= {
+            "hassio", "hacs", "sun", "met", "openweathermap", "systemmonitor",
+            "ping", "backup", "bring", "openai_conversation",
+            "google_generative_ai_conversation", "web_id", "smtp", "telegram_bot",
+        }:
+            return True
+        return False
+
+    def has_everyday_entity(device: dict[str, Any]) -> bool:
+        return any(
+            entity.get("id") in everyday_entity_registry_ids
+            for entity in device_entities.get(device.get("id"), [])
+        )
+
+    def is_mobile_device(device: dict[str, Any]) -> bool:
+        text = " ".join(str(x or "") for x in (
+            friendly_device_name(device), device.get("manufacturer"), device.get("model")
+        )).casefold()
+        if device_platforms(device) & {"mobile_app", "icloud", "pycupra"}:
+            return True
+        return any(word in text for word in (
+            "iphone", "ipad", "macbook", "watch", "born", "cupra", "bus", "quietcomfort", "headphone"
+        ))
+
+    def device_kind(device: dict[str, Any]) -> str:
+        if friendly_device_name(device).casefold() == "pc":
+            return "Computer"
+        text = " ".join(
+            str(x or "") for x in (
+                friendly_device_name(device), device.get("manufacturer"), device.get("model")
+            )
+        ).casefold()
+        rules = [
+            ("Bedien-Tablet", ("dashboard-tablet", "dashboard tablet")),
+            ("Klimaanlagen-Schalter", ("klimaanlage schalter",)),
+            ("Heizgerät", ("heizstrahler",)),
+            ("Kaffeemaschine", ("kaffeemaschine",)),
+            ("Rauchmelder", ("rauch", "smoke")),
+            ("Tür-/Fensterkontakt", ("fensterkontakt", "türkontakt", "contact sensor", "door/window")),
+            ("Türschloss / Türöffner", ("nuki-türschloss", "nuki-türöffner")),
+            ("Präsenzmelder", ("präsenz", "presence sensor", "human presence")),
+            ("Temperatur-/Feuchtesensor", ("temperatur", "temperature", "humidity")),
+            ("Stromzähler / Energiemesser", ("strommesser", "stromzähler", "power meter")),
+            ("Wandschalter / Taster", ("wandschalter", "shortcut", "smart knob", "drehknopf", "switch mini")),
+            ("Smarte Steckdose", ("steckdose", "smart plug")),
+            ("Wasserventil", ("wasserventil", "water valve")),
+            ("Wallbox", ("wallbox", "go-echarger")),
+            ("Mähroboter", ("mähroboter", "mower")),
+            ("Saug-/Wischgerät", ("sauron", "vacuum", "dyad", "roborock")),
+            ("Fernseher / Mediaplayer", ("fernseher", "television", "apple tv", "fire tv", "65oled")),
+            ("Licht", ("licht", "lichstäbchen", "light", "hue", "filament", "lampe", "laterne", "panel", "spot", "decke", "wled")),
+            ("Lautsprecher / Sprachassistent", ("echo", "dot", "sonos", "alexa")),
+            ("Waage", ("body+", "waage")),
+            ("Luftreiniger", ("luftreiniger", "air purifier")),
+            ("3D-Drucker", ("x1c", "3d drucker")),
+        ]
+        return next((label for label, words in rules if any(word in text for word in words)), "Smart-Home-Gerät")
+
+    def position_hint(device: dict[str, Any]) -> str:
+        text = friendly_device_name(device).casefold()
+        hints = [
+            (("fensterkontakt",), "am Fenster (aus Gerätename abgeleitet)"),
+            (("türkontakt",), "an der Tür (aus Gerätename abgeleitet)"),
+            (("fensterbank",), "auf/an der Fensterbank (aus Gerätename abgeleitet)"),
+            (("esstisch",), "am Esstisch (aus Gerätename abgeleitet)"),
+            (("haustür", "haustuere"), "an der Haustür (aus Gerätename abgeleitet)"),
+            (("waschmaschine",), "direkt an der Waschmaschine (aus Gerätename abgeleitet)"),
+            (("trockner",), "direkt am Trockner (aus Gerätename abgeleitet)"),
+            (("kühlschrank",), "direkt am Kühlschrank (aus Gerätename abgeleitet)"),
+            (("spülmaschine",), "direkt an der Spülmaschine (aus Gerätename abgeleitet)"),
+            (("decke", "deckenlicht", "panel"), "an der Decke (aus Gerätename abgeleitet)"),
+            (("sonos links",), "links beim Sonos (aus Gerätename abgeleitet)"),
+            (("sonos rechts",), "rechts beim Sonos (aus Gerätename abgeleitet)"),
+            (("strommesser", "tibber-stromzähler"), "am Stromzähler/Verteiler (aus Funktion abgeleitet)"),
+        ]
+        return next((hint for words, hint in hints if any(word in text for word in words)), "genaue Position nicht hinterlegt")
+
+    def outage_hint(device: dict[str, Any]) -> str:
+        kind = device_kind(device)
+        if kind == "Licht":
+            return "normalen Schalter verwenden, falls vorhanden"
+        if kind == "Smarte Steckdose":
+            return "Taste an der Steckdose prüfen; Gerät nicht zurücksetzen"
+        if kind in {"Fernseher / Mediaplayer", "Lautsprecher / Sprachassistent", "Luftreiniger", "3D-Drucker", "Saug-/Wischgerät", "Mähroboter"}:
+            return "direkt am Gerät bzw. mit Fernbedienung/App bedienen"
+        if kind in {"Rauchmelder", "Tür-/Fensterkontakt", "Präsenzmelder", "Temperatur-/Feuchtesensor"}:
+            return "keine Bedienung; Meldungen können ausbleiben"
+        if kind == "Wallbox":
+            return "Anzeige an Wallbox/Fahrzeug prüfen"
+        if kind == "Wasserventil":
+            return "Ventil vor Ort prüfen und sicher schließen"
+        return "direkte Bedienung am Gerät prüfen; nicht zurücksetzen"
+
+    def dedupe_devices(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        result: dict[str, dict[str, Any]] = {}
+        for device in sorted(items, key=lambda x: friendly_device_name(x).casefold()):
+            if is_virtual_device(device):
+                continue
+            key = friendly_device_name(device).casefold().strip()
+            result.setdefault(key, device)
+        return list(result.values())
 
     def trigger_summary(item: dict[str, Any]) -> str:
         kind = item.get("trigger") or item.get("platform") or "unbekannt"
@@ -153,32 +385,35 @@ def main() -> None:
         if kind == "state":
             change = []
             if item.get("from") is not None:
-                change.append(f"von `{item['from']}`")
+                change.append(f"von „{state_label(item['from'])}“")
             if item.get("to") is not None:
-                change.append(f"auf `{item['to']}`")
-            hold = f" für {duration(item['for'])}" if item.get("for") else ""
-            return f"Status von {target} ändert sich {' '.join(change)}{hold}".strip()
+                change.append(f"auf „{state_label(item['to'])}“")
+            hold = f" und bleibt dort {duration(item['for'])}" if item.get("for") else ""
+            return f"{target} wechselt {' '.join(change)}{hold}".strip()
         if kind == "numeric_state":
             limits = []
             if item.get("above") is not None:
                 limits.append(f"über {item['above']}")
             if item.get("below") is not None:
                 limits.append(f"unter {item['below']}")
-            return f"Messwert von {target} liegt {' und '.join(limits)}"
+            return f"der Messwert von {target} liegt {' und '.join(limits)}"
         if kind == "time":
-            return f"Zeitpunkt {names_for(item.get('at'))} ist erreicht"
+            return f"es ist {names_for(item.get('at'))} Uhr"
         if kind == "time_pattern":
-            return "regelmäßiges Zeitmuster ist erreicht"
+            return "das festgelegte Zeitintervall ist erreicht"
         if kind == "sun":
-            return f"{item.get('event', 'Sonnenstand')} ist erreicht"
+            return "Sonnenaufgang oder Sonnenuntergang ist erreicht"
         if kind == "device":
-            return f"Geräteereignis „{item.get('type', 'Ereignis')}“ von {target}"
+            event_type = str(item.get("type", "Ereignis")).replace("_", " ")
+            if event_type.casefold() == "action":
+                return f"eine Taste am {target} wird gedrückt"
+            return f"{target} meldet „{event_type}“"
         if kind == "event":
-            return f"Ereignis `{item.get('event_type', 'unbekannt')}` tritt ein"
+            return "Home Assistant erkennt den passenden Bedienbefehl"
         if kind == "mqtt":
-            return f"MQTT-Nachricht am Thema `{item.get('topic', 'nicht angegeben')}`"
+            return f"{target} wird betätigt oder meldet eine Änderung"
         if kind == "template":
-            return "eine festgelegte Vorlagenbedingung wird wahr"
+            return "die festgelegte interne Prüfung trifft zu"
         semantic = {
             "occupancy.detected": "Anwesenheit wird erkannt",
             "occupancy.cleared": "keine Anwesenheit wird mehr erkannt",
@@ -187,13 +422,13 @@ def main() -> None:
         }
         if kind in semantic:
             return f"{semantic[kind]} bei {target}"
-        return f"Auslöser `{kind}` bei {target}"
+        return f"{target} meldet das passende Ereignis"
 
     def condition_summary(item: dict[str, Any]) -> str:
         kind = item.get("condition", "unbekannt")
         target = names_for(item.get("entity_id") or item.get("device_id"))
         if kind == "state":
-            return f"{target} hat den Status `{item.get('state', 'festgelegt')}`"
+            return f"{target} ist „{state_label(item.get('state', 'festgelegt'))}“"
         if kind == "numeric_state":
             limits = []
             if item.get("above") is not None:
@@ -204,12 +439,12 @@ def main() -> None:
         if kind == "time":
             return "der festgelegte Zeitraum ist aktiv"
         if kind == "sun":
-            return "der festgelegte Sonnenstand ist erreicht"
+            return "der passende Sonnenstand ist erreicht"
         if kind == "template":
-            return "eine interne Vorlagenprüfung ist erfüllt"
+            return "Home Assistant prüft zusätzliche interne Voraussetzungen"
         if kind in ("and", "or", "not"):
-            return f"logische Bedingungsgruppe `{kind}` ist erfüllt"
-        return f"Bedingung `{kind}` ist erfüllt"
+            return "die zusammengefassten Voraussetzungen treffen zu"
+        return "die in Home Assistant hinterlegte Voraussetzung trifft zu"
 
     def target_summary(item: dict[str, Any]) -> str:
         target = item.get("target") or {}
@@ -221,15 +456,25 @@ def main() -> None:
             parts.append(names_for(item["entity_id"]))
         if item.get("device_id"):
             parts.append(names_for(item["device_id"]))
-        return ", ".join(parts) or "festgelegtes Ziel"
+        return ", ".join(dict.fromkeys(parts)) or "das betroffene Gerät"
 
     def action_summary(item: dict[str, Any]) -> str:
         service = item.get("action") or item.get("service")
         if service:
-            if str(service).startswith("notify.mobile_app_"):
-                recipient = str(service).removeprefix("notify.mobile_app_").replace("_", " ")
+            service = str(service)
+            if service.startswith("notify.mobile_app_"):
+                recipient = service.removeprefix("notify.mobile_app_").replace("_", " ")
                 recipient = {"max iphone": "Max' iPhone", "meikes iphone": "Meikes iPhone"}.get(recipient, recipient)
                 return f"Push-Nachricht an {recipient} senden"
+            exact = {
+                "lock.open": "den Nuki-Öffner öffnen",
+                "recorder.purge": "die Home-Assistant-Datenbank warten",
+                "homeassistant.update_entity": "die zugehörigen Daten aktualisieren",
+                "input_number.set_value": "einen internen Startwert speichern",
+                "button.press": "die hinterlegte Gerätefunktion auslösen",
+            }
+            if service in exact:
+                return exact[service]
             readable = {
                 "turn_on": "einschalten",
                 "turn_off": "ausschalten",
@@ -238,8 +483,9 @@ def main() -> None:
                 "close_cover": "schließen",
                 "open": "öffnen",
                 "notify": "benachrichtigen",
+                "set_value": "auf den berechneten Wert setzen",
             }
-            verb = readable.get(str(service).split(".")[-1], f"Dienst `{service}` ausführen")
+            verb = readable.get(service.split(".")[-1], "die hinterlegte Funktion ausführen")
             addition = ""
             data = item.get("data") or {}
             if data.get("brightness_pct") is not None:
@@ -248,51 +494,85 @@ def main() -> None:
         if "delay" in item:
             return f"{duration(item['delay'])} warten"
         if "choose" in item:
-            return f"zwischen {len(item.get('choose') or [])} Ablaufvarianten wählen"
+            return "je nach aktuellem Zustand die passende Ablaufvariante wählen"
         if "if" in item:
             checks = [condition_summary(x) for x in listify(item.get("if")) if isinstance(x, dict)]
             then_steps = [action_summary(x) for x in listify(item.get("then")) if isinstance(x, dict) and x.get("enabled", True)]
-            else_all = [x for x in listify(item.get("else")) if isinstance(x, dict)]
-            else_steps = [action_summary(x) for x in else_all if x.get("enabled", True)]
-            text = f"wenn {checks[0].lower() if checks else 'die interne Bedingung erfüllt ist'}, dann {then_steps[0].lower() if then_steps else 'keinen aktiven Schritt ausführen'}"
+            else_steps = [action_summary(x) for x in listify(item.get("else")) if isinstance(x, dict) and x.get("enabled", True)]
+            text = f"wenn {checks[0].lower() if checks else 'die Voraussetzung zutrifft'}, dann {then_steps[0].lower() if then_steps else 'keinen weiteren Schritt ausführen'}"
             if else_steps:
                 text += f"; andernfalls {else_steps[0].lower()}"
-            elif else_all:
-                text += "; der andernfalls vorgesehene Schritt ist derzeit deaktiviert"
             return text
         if "repeat" in item:
-            return "eine festgelegte Schrittfolge wiederholen"
+            return "die vorgesehenen Schritte für alle betroffenen Geräte ausführen"
         if "wait_template" in item or "wait_for_trigger" in item:
-            return "auf eine festgelegte Bedingung warten"
+            return "auf die nächste festgelegte Änderung warten"
         if "device_id" in item:
-            return f"Geräteaktion „{item.get('type', 'festgelegt')}“ bei {device_name(item.get('device_id'))}"
+            return f"die hinterlegte Gerätefunktion bei {device_name(item.get('device_id'))} ausführen"
         return "einen internen Verarbeitungsschritt ausführen"
 
-    def referenced_ids(value: Any) -> tuple[set[str], set[str]]:
+    def referenced_ids(value: Any) -> tuple[set[str], set[str], set[str]]:
         entity_ids: set[str] = set()
         device_ids: set[str] = set()
+        area_ids: set[str] = set()
+
         def walk(node: Any) -> None:
             if isinstance(node, dict):
                 for key, val in node.items():
                     if key == "device_id":
                         device_ids.update(str(x) for x in listify(val))
-                    if key == "entity_id":
+                    elif key == "entity_id":
                         entity_ids.update(str(x) for x in listify(val))
+                    elif key == "area_id":
+                        area_ids.update(str(x) for x in listify(val))
                     walk(val)
             elif isinstance(node, list):
                 for child in node:
                     walk(child)
             elif isinstance(node, str):
                 entity_ids.update(ENTITY_RE.findall(node))
+
         walk(value)
         translated = {
             entity_by_registry_id[x]["entity_id"] if x in entity_by_registry_id else x
             for x in entity_ids
         }
-        return translated.intersection(entity_by_id), device_ids.intersection(device_by_id)
+        return (
+            translated.intersection(entity_by_id),
+            device_ids.intersection(device_by_id),
+            area_ids.intersection(area_by_id),
+        )
+
+    def automation_manual(alias: str, group: str, override: dict[str, Any]) -> str:
+        if override.get("manual"):
+            return str(override["manual"])
+        alias_lower = alias.casefold()
+        if "licht" in alias_lower:
+            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren."
+        if "batterie" in alias_lower:
+            return "Das genannte Gerät aufsuchen und Batterie beziehungsweise Ladezustand direkt prüfen."
+        if "müll" in alias_lower:
+            return "Den Abfuhrtermin unabhängig von der Meldung prüfen."
+        if "pflanzenerinnerung" in alias_lower:
+            return "Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erledigt bestätigen."
+        if group == "Licht & Präsenz":
+            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren."
+        if group == "Sicherheit & Zugang":
+            return "Zuerst die reale Situation vor Ort prüfen. Türen und Fenster von Hand sichern; eine App-Meldung ersetzt keine unmittelbare Sicherheitsmaßnahme."
+        if group == "Garten & Wasser":
+            return "Die betroffene Funktion in Home Assistant direkt bedienen. Bei Wasser immer vor Ort prüfen, ob das Ventil anschließend wirklich geschlossen ist."
+        if group == "Haushalt":
+            return "Das Haushaltsgerät selbst funktioniert weiter. Status und Programmende direkt am Gerät prüfen."
+        if group == "Energie & Auto":
+            return "Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox kontrollieren."
+        if group == "System":
+            return "Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technische Wartung durch Max gedacht."
+        return "Die betroffene Funktion direkt am Gerät oder in Home Assistant prüfen. Nichts löschen oder auf Werkseinstellungen zurücksetzen."
 
     auto_dir = docs / "automationen" / "generated"
     room_dir = docs / "raeume" / "generated"
+    for section in ("automationen", "raeume", "geraete"):
+        (docs / section).mkdir(parents=True, exist_ok=True)
     for directory in (auto_dir, room_dir):
         if directory.exists():
             shutil.rmtree(directory)
@@ -302,166 +582,294 @@ def main() -> None:
     auto_meta: list[dict[str, Any]] = []
     for automation in automations:
         alias = automation.get("alias") or "Automation ohne Namen"
+        override = automation_overrides.get(alias, {}) or {}
+        title = override.get("title") or alias
         base_slug = slugify(alias)
         slug_counts[base_slug] += 1
         slug = base_slug if slug_counts[base_slug] == 1 else f"{base_slug}-{slug_counts[base_slug]}"
+        group = category(alias)
+        enabled = override.get("enabled", True)
+        technical = bool(override.get("technical", group == "System"))
         triggers = listify(automation.get("triggers") or automation.get("trigger"))
         conditions = listify(automation.get("conditions") or automation.get("condition"))
-        actions = listify(automation.get("actions") or automation.get("action"))
-        entity_ids, device_ids = referenced_ids(automation)
+        actions = [x for x in listify(automation.get("actions") or automation.get("action")) if not isinstance(x, dict) or x.get("enabled", True)]
+        entity_ids, device_ids, direct_area_ids = referenced_ids(automation)
+        area_ids = set(direct_area_ids)
+        area_ids.update(
+            area_id for entity_id in entity_ids
+            if (area_id := area_id_for_entity(entity_by_id.get(entity_id, {})))
+        )
+        area_ids.update(
+            area_id for device_id in device_ids
+            if (area_id := area_id_for_device(device_by_id.get(device_id, {})))
+        )
+        if "area_ids" in override:
+            area_ids = {
+                str(area_id) for area_id in override.get("area_ids", [])
+                if str(area_id) in area_by_id
+            }
+        locations = [area_location(x) for x in sorted(area_ids, key=lambda x: area_location(x).casefold())]
+        location_text = ", ".join(locations) if locations else "kein fester Raum – betrifft das ganze Haus"
         blueprint = automation.get("use_blueprint")
         trigger_lines = [trigger_summary(x) for x in triggers if isinstance(x, dict)]
         condition_lines = [condition_summary(x) for x in conditions if isinstance(x, dict)]
         action_lines = [action_summary(x) for x in actions if isinstance(x, dict)]
         if blueprint:
-            trigger_lines = ["Die Auslöser werden durch einen Blueprint festgelegt."]
-            action_lines = ["Der Ablauf wird durch einen Blueprint festgelegt."]
+            trigger_lines = ["Home Assistant erkennt anhand des Stromverbrauchs oder Gerätezustands, dass der Ablauf beendet ist"]
+            action_lines = ["die im Namen und in der Kurzbeschreibung genannte Meldung oder Aktion ausführen"]
+        if "trigger_steps" in override:
+            trigger_lines = [str(x) for x in override.get("trigger_steps", [])]
+        if "condition_steps" in override:
+            condition_lines = [str(x) for x in override.get("condition_steps", [])]
+        if "action_steps" in override:
+            action_lines = [str(x) for x in override.get("action_steps", [])]
+        action_lines.extend(str(x) for x in override.get("result_append", []))
 
-        page = [GENERATED_NOTICE, f"# {alias}\n"]
-        page.append("## Kurz erklärt\n")
-        if automation.get("description"):
-            page.append(f"{automation['description']}\n")
-        elif trigger_lines and action_lines:
-            page.append(f"Wenn {trigger_lines[0].lower()}, wird anschließend {action_lines[0].lower()}.\n")
+        description = override.get("description") or automation.get("description")
+        if not description and trigger_lines and action_lines:
+            description = f"Wenn {trigger_lines[0].lower()}, wird anschließend {action_lines[0].lower()}."
+        if not description:
+            description = "Diese Funktion führt den in Home Assistant hinterlegten Ablauf aus."
+
+        page = []
+        if technical or not enabled:
+            page.append("---\nsearch:\n  exclude: true\n---\n\n")
+        page.extend([GENERATED_NOTICE, f"# {title}\n\n"])
+        if not enabled:
+            reason = override.get("status_reason") or "Diese Automation ist derzeit ausgeschaltet."
+            page.append(f"!!! info \"Status: ausgeschaltet\"\n    {reason}\n\n")
         else:
-            page.append("Diese Automation führt einen festgelegten Smart-Home-Ablauf aus.\n")
-        page.append("## Auslöser\n")
-        page.extend(f"{i}. {text}\n" for i, text in enumerate(trigger_lines or ["Noch nicht automatisch lesbar"], 1))
-        page.append("\n## Bedingungen\n")
+            page.append("!!! success \"Status: aktiv\"\n    Diese Automation ist in Home Assistant eingeschaltet.\n\n")
+        if override.get("safety_note"):
+            page.append(f"!!! warning \"Wichtig\"\n    {override['safety_note']}\n\n")
+        page.append(f"**Ort:** {location_text}\n\n")
+        page.append("## Das bemerkst du im Alltag\n\n")
+        page.append(f"{description}\n\n")
+        page.append("## Sie startet, wenn …\n\n")
+        page.extend(f"{i}. {sentence_case(text)}\n" for i, text in enumerate(trigger_lines or ["Home Assistant den hinterlegten Auslöser erkennt"], 1))
+        page.append("\n## Sie läuft nur weiter, wenn …\n\n")
         if condition_lines:
-            page.extend(f"- {text}\n" for text in condition_lines)
+            page.extend(f"- {sentence_case(text)}\n" for text in condition_lines)
         else:
-            page.append("Keine zusätzlichen Bedingungen in der Automation hinterlegt.\n")
-        page.append("\n## Ablauf\n")
-        page.extend(f"{i}. {text}\n" for i, text in enumerate(action_lines or ["Noch nicht automatisch lesbar"], 1))
-        page.append("\n## Manuelle Bedienung\n")
-        page.append("Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?\n")
-        if blueprint:
-            page.append("\n## Blueprint\n")
-            page.append(f"Technische Vorlage: `{blueprint.get('path', 'nicht angegeben')}`\n")
-        page.append("\n## Technische Angaben\n")
-        page.append("| Feld | Wert |\n|---|---|\n")
-        page.append(f"| Home-Assistant-ID | `{esc(automation.get('id'))}` |\n")
-        page.append(f"| Modus | `{esc(automation.get('mode', 'single'))}` |\n")
-        page.append(f"| Kategorie | {category(alias)} |\n")
+            page.append("Keine weitere Voraussetzung ist hinterlegt.\n")
+        page.append("\n## Dann passiert …\n\n")
+        page.extend(f"{i}. {sentence_case(text)}\n" for i, text in enumerate(action_lines or ["Home Assistant führt die hinterlegte Aktion aus"], 1))
+        page.append("\n## So kannst du reagieren\n\n")
+        page.append(automation_manual(alias, group, override) + "\n\n")
+        page.append("<div data-search-exclude markdown>\n\n")
+        page.append("??? info \"Technik für Max\"\n\n")
+        page.append("    | Feld | Wert |\n    |---|---|\n")
+        page.append(f"    | Ursprünglicher Name | {esc(alias)} |\n")
+        page.append(f"    | Home-Assistant-ID | `{esc(automation.get('id'))}` |\n")
+        page.append(f"    | Modus | `{esc(automation.get('mode', 'single'))}` |\n")
+        page.append(f"    | Kategorie | {group} |\n")
         if entity_ids:
-            page.append(f"| Verwendete Entities | {', '.join(entity_name(x) for x in sorted(entity_ids)[:30])} |\n")
-        page.append("\n<p class=\"page-status\">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>\n")
+            technical_entities = ", ".join(entity_label(x, True) for x in sorted(entity_ids)[:30])
+            page.append(f"    | Verwendete Entities | {technical_entities} |\n")
+        if blueprint:
+            page.append(f"    | Blueprint | `{blueprint.get('path', 'nicht angegeben')}` |\n")
+        page.append("\n</div>\n\n")
+        page.append(f"<p class=\"page-status\">Definition aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
         (auto_dir / f"{slug}.md").write_text("".join(page), encoding="utf-8")
-        auto_meta.append({"alias": alias, "slug": slug, "category": category(alias), "entities": entity_ids, "devices": device_ids})
+        auto_meta.append({
+            "alias": alias,
+            "title": title,
+            "slug": slug,
+            "category": group,
+            "entities": entity_ids,
+            "devices": device_ids,
+            "areas": area_ids,
+            "locations": location_text,
+            "description": str(description).strip(),
+            "enabled": enabled,
+            "technical": technical,
+            "status_reason": override.get("status_reason", ""),
+        })
 
     categories: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for item in auto_meta:
-        categories[item["category"]].append(item)
-    auto_index = [GENERATED_NOTICE, "# Automationen\n\n"]
-    auto_index.append(f"Aktuell sind **{len(automations)} Automationen** dokumentiert. Die Seiten wurden aus der Sicherung vom 12. Juli 2026 erzeugt.\n\n")
-    auto_index.append("!!! info \"Automatisch erfasst\"\n    Auslöser, Bedingungen und Aktionen stammen aus Home Assistant. Die alltagstaugliche Erklärung und die manuelle Alternative werden anschließend gemeinsam geprüft.\n\n")
-    order = ["Licht & Präsenz", "Sicherheit & Zugang", "Garten & Wasser", "Energie & Auto", "Haushalt", "System", "Sonstiges"]
+        if item["enabled"] and not item["technical"]:
+            categories[item["category"]].append(item)
+    auto_index = [GENERATED_NOTICE, "# Was passiert automatisch?\n\n"]
+    auto_index.append("Hier stehen nur Funktionen, die im Alltag sichtbar oder wichtig sind. Dazu gehören automatische Abläufe **und die in Home Assistant hinterlegten Tastenbelegungen**. Interne Wartungsabläufe und ausgeschaltete Tests sind weiter unten getrennt aufgeführt.\n\n")
+    auto_index.append("!!! tip \"So liest du die Seiten\"\n    Jede Seite beginnt mit Status, Ort und einer Alltagserklärung. Technische Namen sind eingeklappt und werden nur für die Wartung benötigt.\n\n")
+    order = ["Sicherheit & Zugang", "Licht & Präsenz", "Haushalt", "Garten & Wasser", "Energie & Auto", "Sonstiges"]
     for group in order:
         if group not in categories:
             continue
         auto_index.append(f"## {group}\n\n")
-        for item in sorted(categories[group], key=lambda x: x["alias"].casefold()):
-            auto_index.append(f"- [{item['alias']}](generated/{item['slug']}.md)\n")
+        auto_index.append("| Funktion | Ort | Worum geht es? |\n|---|---|---|\n")
+        for item in sorted(categories[group], key=lambda x: x["title"].casefold()):
+            short = re.sub(r"\s+", " ", item["description"])
+            if len(short) > 150:
+                short = short[:147].rstrip() + "…"
+            auto_index.append(f"| [{esc(item['title'])}](generated/{item['slug']}.md) | {esc(item['locations'])} | {esc(short)} |\n")
         auto_index.append("\n")
-    auto_index.append("## Szenen\n\n")
-    if scenes:
-        auto_index.append("| Szene | Enthaltene Zustände |\n|---|---:|\n")
-        for scene in scenes:
-            auto_index.append(f"| {esc(scene.get('name'))} | {len(scene.get('entities') or {})} |\n")
-    else:
-        auto_index.append("Keine Szenen vorhanden.\n")
-    auto_index.append("\n<p class=\"page-status\">Zuletzt aus Home Assistant übernommen: 12. Juli 2026</p>\n")
+
+    inactive = [x for x in auto_meta if not x["enabled"]]
+    technical_items = [x for x in auto_meta if x["technical"] and x["enabled"]]
+    if inactive:
+        auto_index.append("??? info \"Ausgeschaltete Automationen\"\n\n")
+        for item in sorted(inactive, key=lambda x: x["title"].casefold()):
+            reason = item["status_reason"] or "derzeit ausgeschaltet"
+            auto_index.append(f"    - [{item['title']}](generated/{item['slug']}.md) – {reason}\n")
+        auto_index.append("\n")
+    if technical_items:
+        auto_index.append("??? info \"Technische Wartungsabläufe (nicht für den Alltag)\"\n\n")
+        for item in sorted(technical_items, key=lambda x: x["title"].casefold()):
+            auto_index.append(f"    - [{item['title']}](generated/{item['slug']}.md)\n")
+        auto_index.append("\n")
+
+    hidden_scenes = set(scene_overrides.get("hidden", []))
+    shown_scenes = [scene for scene in scenes if scene.get("name") not in hidden_scenes]
+    if shown_scenes:
+        auto_index.append("## Szenen\n\n")
+        auto_index.append("Eine Szene stellt mehrere Geräte gemeinsam auf gespeicherte Werte.\n\n")
+        for scene in shown_scenes:
+            name = scene.get("name") or "Szene ohne Namen"
+            count = scene_overrides.get("entity_counts", {}).get(name, len(scene.get("entities") or {}))
+            description = scene_overrides.get("descriptions", {}).get(name, f"Verändert {count} gespeicherte Zustände.")
+            auto_index.append(f"- **{name}:** {description}\n")
+        auto_index.append("\n")
+    auto_index.append(f"<p class=\"page-status\">Definitionen aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "automationen" / "index.md").write_text("".join(auto_index), encoding="utf-8")
 
-    area_devices: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
+    daily_automation_device_ids = {
+        device_id
+        for item in auto_meta if item["enabled"] and not item["technical"]
+        for device_id in item["devices"]
+    }
+    area_all_devices: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
     for device in devices:
-        area_devices[area_id_for_device(device)].append(device)
+        if not is_mobile_device(device) and (
+            has_everyday_entity(device)
+            or device.get("id") in daily_automation_device_ids
+            or raw_device_name(device) in force_include_devices
+        ):
+            area_all_devices[area_id_for_device(device)].append(device)
+    area_devices = {
+        area_id: dedupe_devices(items)
+        for area_id, items in area_all_devices.items()
+    }
     area_entities: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
-    for entity in entities:
+    for entity in everyday_entities:
         area_entities[area_id_for_entity(entity)].append(entity)
 
     room_slug: dict[str, str] = {area["id"]: slugify(area["name"]) for area in areas}
     for area in areas:
         area_id = area["id"]
-        floor = floor_by_id.get(area.get("floor_id") or "", {}).get("name") or "Keine Etage zugeordnet"
-        if floor == "Ergeschoss":
-            floor = "Erdgeschoss"
-        room_devices = sorted(area_devices[area_id], key=lambda x: device_name(x.get("id")).casefold())
-        room_entities = area_entities[area_id]
-        related = []
-        room_entity_ids = {x["entity_id"] for x in room_entities}
-        room_device_ids = {x["id"] for x in room_devices}
-        for item in auto_meta:
-            if item["entities"] & room_entity_ids or item["devices"] & room_device_ids:
-                related.append(item)
-        domains = Counter(x["entity_id"].split(".", 1)[0] for x in room_entities)
+        floor = shown_floor_name(floor_by_id.get(area.get("floor_id") or "", {}).get("name"))
+        room_devices = area_devices.get(area_id, [])
+        related = [x for x in auto_meta if x["enabled"] and not x["technical"] and area_id in x["areas"]]
         page = [GENERATED_NOTICE, f"# {area['name']}\n\n"]
-        page.append(f"**Etage:** {floor}  \n**Erfasste Geräte:** {len(room_devices)}  \n**Erfasste Entities:** {len(room_entities)}\n\n")
-        page.append("## Geräte\n\n")
+        page.append(f"**Standort:** {floor}\n\n**Alltagsrelevante Geräte:** {len(room_devices)}\n\n")
+        if area["name"] in {"Kinderzimmer", "Spielzimmer"}:
+            other = "Spielzimmer" if area["name"] == "Kinderzimmer" else "Kinderzimmer"
+            page.append(f"!!! warning \"Raumnamen bitte noch bestätigen\"\n    Mehrere hier zugeordnete Geräte tragen „{other}“ im Namen. Das Wiki zeigt die aktuelle Home-Assistant-Zuordnung, behauptet aber nicht, dass die Namen richtig sind.\n\n")
+        if area["name"] == "Gästeklo":
+            page.append("!!! note \"Abweichender Gerätename\"\n    Das sichtbare Licht trägt in Home Assistant „Gästebad“ im Namen. Gemeint ist nach aktueller Raumzuordnung das Gästeklo.\n\n")
+
+        page.append("## Geräte an diesem Standort\n\n")
         if room_devices:
-            page.append("| Gerät | Hersteller / Modell | Anbindung |\n|---|---|---|\n")
+            page.append("| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |\n|---|---|---|---|---|\n")
             for device in room_devices:
-                platforms = sorted({e.get("platform") for e in device_entities[device["id"]] if e.get("platform")})
-                maker = " / ".join(x for x in (device.get("manufacturer"), device.get("model")) if x) or "–"
-                page.append(f"| {esc(device_name(device['id']))} | {esc(maker)} | {esc(', '.join(platforms))} |\n")
+                assignment = "in Home Assistant bestätigt" if device.get("area_id") else "aus Name/Funktion abgeleitet"
+                page.append(
+                    f"| {esc(friendly_device_name(device))} | {device_kind(device)} | {assignment} | "
+                    f"{position_hint(device)} | {outage_hint(device)} |\n"
+                )
         else:
-            page.append("Keine Geräte direkt diesem Raum zugeordnet.\n")
-        page.append("\n## Wichtige Funktionen\n\n")
-        if domains:
-            page.append(", ".join(f"**{domain}:** {count}" for domain, count in domains.most_common(12)) + "\n")
-        else:
-            page.append("Noch keine Funktionen erfasst.\n")
-        page.append("\n## Zugehörige Automationen\n\n")
+            page.append("Für diesen Raum ist derzeit kein eigenständiges physisches Gerät eingetragen.\n")
+
+        page.append("\n## Das passiert hier automatisch\n\n")
         if related:
-            for item in sorted(related, key=lambda x: x["alias"].casefold()):
-                page.append(f"- [{item['alias']}](../../automationen/generated/{item['slug']}.md)\n")
+            for item in sorted(related, key=lambda x: x["title"].casefold()):
+                page.append(f"- [{item['title']}](../../automationen/generated/{item['slug']}.md)\n")
         else:
-            page.append("Keine Automation konnte diesem Raum automatisch zugeordnet werden.\n")
-        page.append("\n## Manuelle Bedienung\n\nNoch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.\n")
-        page.append("\n<p class=\"page-status\">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>\n")
+            page.append("Für diesen Raum ist keine aktive, alltagsrelevante Automation eindeutig zugeordnet.\n")
+
+        page.append("\n## Bedienung und Störung\n\n")
+        kinds = {device_kind(device) for device in room_devices}
+        if "Licht" in kinds or "Wandschalter / Taster" in kinds:
+            page.append("- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.\n")
+        if kinds & {"Rauchmelder", "Tür-/Fensterkontakt", "Präsenzmelder", "Temperatur-/Feuchtesensor"}:
+            page.append("- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.\n")
+        if "Smarte Steckdose" in kinds:
+            page.append("- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.\n")
+        page.append("- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.\n")
+        page.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
         (room_dir / f"{room_slug[area_id]}.md").write_text("".join(page), encoding="utf-8")
 
     floor_areas: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
     for area in areas:
         floor_areas[area.get("floor_id")].append(area)
-    room_index = [GENERATED_NOTICE, "# Räume\n\n"]
-    room_index.append(f"Home Assistant enthält **{len(floors)} Etagen** und **{len(areas)} Räume beziehungsweise Bereiche**.\n\n")
+    room_index = [GENERATED_NOTICE, "# Räume und Standorte\n\n"]
+    room_index.append("Die Raumseiten zeigen nur physische beziehungsweise im Alltag erkennbare Geräte. Interne Dienste, Plugins, Diagnosewerte und virtuelle Lichtgruppen werden ausgeblendet.\n\n")
+    room_index.append("!!! info \"Was bedeutet Standort?\"\n    Räume und Etagen stammen aus Home Assistant. Einzelne Gerätezuordnungen sind als geprüfte oder aus Name/Funktion abgeleitete Ergänzung gekennzeichnet. Eine genauere Position wird nur genannt, wenn sie aus dem Gerätenamen sicher erkennbar ist; sonst steht ausdrücklich „nicht hinterlegt“.\n\n")
     for floor in sorted(floors, key=lambda x: (x.get("level") is None, x.get("level") or 0)):
-        shown_name = "Erdgeschoss" if floor.get("name") == "Ergeschoss" else floor.get("name")
+        shown_name = shown_floor_name(floor.get("name"))
         room_index.append(f"## {shown_name}\n\n")
-        if floor.get("name") == "Ergeschoss":
-            room_index.append("!!! note \"Bezeichnung in Home Assistant\"\n    Die Etage heißt dort derzeit „Ergeschoss“. Im Wiki wird die vermutlich gemeinte Schreibweise „Erdgeschoss“ verwendet.\n\n")
         for area in sorted(floor_areas[floor["floor_id"]], key=lambda x: x["name"].casefold()):
-            room_index.append(f"- [{area['name']}](generated/{room_slug[area['id']]}.md) – {len(area_devices[area['id']])} Geräte\n")
+            count = len(area_devices.get(area["id"], []))
+            room_index.append(f"- [{area['name']}](generated/{room_slug[area['id']]}.md) – {count} alltagsrelevante Geräte\n")
         room_index.append("\n")
-    if floor_areas[None]:
-        room_index.append("## Ohne Etage\n\n")
-        for area in sorted(floor_areas[None], key=lambda x: x["name"].casefold()):
-            room_index.append(f"- [{area['name']}](generated/{room_slug[area['id']]}.md) – {len(area_devices[area['id']])} Geräte\n")
-    room_index.append("\n<p class=\"page-status\">Zuletzt aus Home Assistant übernommen: 12. Juli 2026</p>\n")
+    room_index.append(f"<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "raeume" / "index.md").write_text("".join(room_index), encoding="utf-8")
 
-    manufacturers = Counter((d.get("manufacturer") or "Unbekannt") for d in devices)
-    unassigned = area_devices[None]
-    device_index = [GENERATED_NOTICE, "# Geräte\n\n"]
-    device_index.append(f"In Home Assistant sind **{len(devices)} Geräte** und **{len(entities)} Entities** registriert. Davon sind **{len(unassigned)} Geräte keinem Raum zugeordnet**.\n\n")
-    device_index.append("## Häufigste Hersteller\n\n| Hersteller | Geräte |\n|---|---:|\n")
-    for maker, count in manufacturers.most_common(20):
-        device_index.append(f"| {esc(maker)} | {count} |\n")
-    device_index.append("\n## Nicht zugeordnete Geräte\n\n")
-    device_index.append("Diese Liste sollte geprüft werden. Virtuelle Dienste benötigen nicht zwingend einen Raum; physische Geräte sollten nach Möglichkeit zugeordnet werden.\n\n")
-    device_index.append("| Gerät | Hersteller / Modell |\n|---|---|\n")
-    for device in sorted(unassigned, key=lambda x: device_name(x["id"]).casefold()):
-        maker = " / ".join(x for x in (device.get("manufacturer"), device.get("model")) if x) or "–"
-        device_index.append(f"| {esc(device_name(device['id']))} | {esc(maker)} |\n")
-    device_index.append("\n<p class=\"page-status\">Zuletzt aus Home Assistant übernommen: 12. Juli 2026</p>\n")
+    device_index = [GENERATED_NOTICE, "# Geräte und ihre Standorte\n\n"]
+    shown_count = sum(len(area_devices.get(area["id"], [])) for area in areas)
+    device_index.append(f"Hier stehen **{shown_count} alltagsrelevante Geräte**. Home Assistant kennt zusätzlich technische Dienste, Plugins, virtuelle Gruppen und Diagnoseeinträge; diese erscheinen bewusst nicht in der Familienansicht.\n\n")
+    device_index.append("## Nach Raum\n\n")
+    device_index.append("| Gerät | Art | Standort | Standortstatus |\n|---|---|---|---|\n")
+    for area in sorted(areas, key=lambda x: area_location(x["id"]).casefold()):
+        for device in area_devices.get(area["id"], []):
+            status = "in Home Assistant bestätigt" if device.get("area_id") else "aus Name/Funktion abgeleitet"
+            device_index.append(
+                f"| {esc(friendly_device_name(device))} | {device_kind(device)} | "
+                f"[{area_location(area['id'])}](../raeume/generated/{room_slug[area['id']]}.md) | {status} |\n"
+            )
+
+    physical_platforms = {
+        "alexa_devices", "alexa_media", "zigbee2mqtt", "nuki_ng", "matter", "sonos",
+        "mobile_app", "icloud", "pycupra", "tibber", "apple_tv", "philips_js",
+        "roborock", "wled", "shelly", "mqtt", "withings", "spotify",
+    }
+    unassigned_candidates = [
+        device for device in devices
+        if not area_id_for_device(device)
+        and not is_virtual_device(device)
+        and has_everyday_entity(device)
+        and device_platforms(device) & physical_platforms
+    ]
+    unassigned_candidates = dedupe_devices(unassigned_candidates)
+    stationary_candidates = []
+    for device in unassigned_candidates:
+        if is_mobile_device(device):
+            continue
+        stationary_candidates.append(device)
+    unassigned_candidates = stationary_candidates
+    if unassigned_candidates:
+        device_index.append("\n??? question \"Geräte ohne bestätigten festen Raum\"\n\n")
+        device_index.append("    Diese Geräte wirken stationär, haben aber noch keinen verlässlichen festen Raum. Es wird bewusst kein Standort erfunden.\n\n")
+        device_index.append("    | Gerät | Art | Standort |\n    |---|---|---|\n")
+        for device in unassigned_candidates:
+            device_index.append(f"    | {esc(friendly_device_name(device))} | {device_kind(device)} | noch offen |\n")
+
+    device_index.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "geraete" / "index.md").write_text("".join(device_index), encoding="utf-8")
 
     summary = {
-        "floors": len(floors), "areas": len(areas), "labels": len(labels),
-        "devices": len(devices), "entities": len(entities),
-        "automations": len(automations), "scenes": len(scenes),
+        "floors": len(floors),
+        "areas": len(areas),
+        "labels": len(labels),
+        "registry_devices": len(devices),
+        "shown_devices": shown_count,
+        "registry_entities": len(entities),
+        "everyday_entities": len(everyday_entities),
+        "automations": len(automations),
+        "scenes": len(shown_scenes),
+        "source_date": source_date,
+        "checked_on": checked_on,
     }
     print(json.dumps(summary, ensure_ascii=False))
 

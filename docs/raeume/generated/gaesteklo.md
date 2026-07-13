@@ -2,27 +2,26 @@
 
 # Gästeklo
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 2  
-**Erfasste Entities:** 9
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 1
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Gästebad | Zigbee2MQTT / Group | mqtt |
-| Hue white Gästebad | Philips / Hue white ambiance E27 800lm with Bluetooth | mqtt |
+!!! note "Abweichender Gerätename"
+    Das sichtbare Licht trägt in Home Assistant „Gästebad“ im Namen. Gemeint ist nach aktueller Raumzuordnung das Gästeklo.
 
-## Wichtige Funktionen
+## Geräte an diesem Standort
 
-**light:** 2, **select:** 2, **sensor:** 2, **update:** 1, **number:** 1, **text:** 1
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Hue white Gästebad | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
 
-## Zugehörige Automationen
+## Das passiert hier automatisch
 
-Keine Automation konnte diesem Raum automatisch zugeordnet werden.
+Für diesen Raum ist keine aktive, alltagsrelevante Automation eindeutig zugeordnet.
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

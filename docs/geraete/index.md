@@ -1,165 +1,122 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Geräte
+# Geräte und ihre Standorte
 
-In Home Assistant sind **266 Geräte** und **2701 Entities** registriert. Davon sind **126 Geräte keinem Raum zugeordnet**.
+Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich technische Dienste, Plugins, virtuelle Gruppen und Diagnoseeinträge; diese erscheinen bewusst nicht in der Familienansicht.
 
-## Häufigste Hersteller
+## Nach Raum
 
-| Hersteller | Geräte |
-|---|---:|
-| Amazon | 30 |
-| Zigbee2MQTT | 24 |
-| Philips | 23 |
-| Tuya | 13 |
-| Apple | 10 |
-| Home Assistant | 9 |
-| EcoDim | 9 |
-| Bring! Labs AG | 8 |
-| Innr | 8 |
-| NEO Coolcam | 6 |
-| AOYAN | 6 |
-| Nuki | 5 |
-| Home Assistant Community Apps | 4 |
-| Official apps | 4 |
-| Shelly | 4 |
-| thomasloven | 4 |
-| OpenAI | 4 |
-| Roborock | 4 |
-| Google | 4 |
-| Cupra | 4 |
+| Gerät | Art | Standort | Standortstatus |
+|---|---|---|---|
+| Body+ | Waage | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Fensterkontakt Bad | Tür-/Fensterkontakt | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Lidl LED Panel Bad | Licht | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Max' Echo Show | Lautsprecher / Sprachassistent | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Temperatursensor Bad | Temperatur-/Feuchtesensor | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Wandschalter Bad | Wandschalter / Taster | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Apple TV Büro | Fernseher / Mediaplayer | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Büro Decke 1 | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Büro Decke 2 | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Büro Decke 3 | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Bürofernseher | Fernseher / Mediaplayer | [Büro · Erdgeschoss](../raeume/generated/buero.md) | aus Name/Funktion abgeleitet |
+| Drehknopf | Wandschalter / Taster | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Grauer Dot | Lautsprecher / Sprachassistent | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Hue white Stehlampe Büro | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Klimaanlage Schalter | Klimaanlagen-Schalter | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Luftreiniger Ikea | Luftreiniger | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| PC | Computer | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Präsenzmelder Büro | Präsenzmelder | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Rauchmelder Büro | Rauchmelder | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Sonos Büro | Lautsprecher / Sprachassistent | [Büro · Erdgeschoss](../raeume/generated/buero.md) | aus Name/Funktion abgeleitet |
+| Steckdose Büro | Smarte Steckdose | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Temperatur Büro | Temperatur-/Feuchtesensor | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Temperatursensor 3D Drucker | Temperatur-/Feuchtesensor | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Wandschalter Büro | Wandschalter / Taster | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| WLED Laterne | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
+| Dashboard-Tablet | Bedien-Tablet | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Filament Diele 1 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | aus Name/Funktion abgeleitet |
+| Filament Diele 2 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Filament Diele 3 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Filament Diele 4 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Filament Diele 5 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Filament Diele 6 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Ikea Shortcut Haustüre | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| LED Panel Kinderzimmerflur | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Nuki-Türschloss | Türschloss / Türöffner | [Flur · Erdgeschoss](../raeume/generated/flur.md) | aus Name/Funktion abgeleitet |
+| Nuki-Türöffner | Türschloss / Türöffner | [Flur · Erdgeschoss](../raeume/generated/flur.md) | aus Name/Funktion abgeleitet |
+| Präsenzmelder Flur | Präsenzmelder | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Wandschalter Diele Eingang | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Wandschalter Diele Wohnzimmer | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Wandschalter Kinderzimmerflur | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Wallbox (go-e) | Wallbox | [Garage · Außenbereich](../raeume/generated/garage.md) | in Home Assistant bestätigt |
+| Heizstrahler Lounge | Heizgerät | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Heizstrahler Tisch | Heizgerät | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Hue color Terasse Stehlaterne | Licht | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Hue white Terrasse Laterne | Licht | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Lichterkette Garten | Smarte Steckdose | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Mähroboter | Mähroboter | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Osram Gardenspots | Licht | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Osram Lichstäbchen Beet | Licht | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Temperatursensor Garten | Temperatur-/Feuchtesensor | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Wandschalter Garten | Wandschalter / Taster | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Wasserventil Garten | Wasserventil | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
+| Hue white Gästebad | Licht | [Gästeklo · Erdgeschoss](../raeume/generated/gaesteklo.md) | in Home Assistant bestätigt |
+| Hue white Spielzimmer Decke | Licht | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
+| Temperatur Spielzimmer | Temperatur-/Feuchtesensor | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
+| Wandschalter Spielzimmer | Wandschalter / Taster | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
+| Küche Decke 1 | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Küche Decke 2 | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Küche Decke 3 | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Max' Echo Dot | Lautsprecher / Sprachassistent | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Präsenzmelder Küche | Präsenzmelder | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | aus Name/Funktion abgeleitet |
+| Sauron | Saug-/Wischgerät | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Spots Küchenschränke | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Spots Oberschrank | Licht | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Steckdose Kühlschrank | Smarte Steckdose | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Steckdose Saugroboter | Smarte Steckdose | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Steckdose Spülmaschine | Smarte Steckdose | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Wandschalter Küche | Wandschalter / Taster | [Küche · Erdgeschoss](../raeume/generated/kueche.md) | in Home Assistant bestätigt |
+| Fire TV Stick | Fernseher / Mediaplayer | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
+| Hue white Schlafzimmer Decke | Licht | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
+| Temperatursensor Schlafzimmer | Temperatur-/Feuchtesensor | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
+| Wandschalter Schlafzimmer | Wandschalter / Taster | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
+| Weißer Dot | Lautsprecher / Sprachassistent | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
+| Strommesser Solar | Stromzähler / Energiemesser | [Sicherungskasten · Keller](../raeume/generated/sicherungskasten.md) | in Home Assistant bestätigt |
+| Tibber-Stromzähler | Stromzähler / Energiemesser | [Sicherungskasten · Keller](../raeume/generated/sicherungskasten.md) | in Home Assistant bestätigt |
+| Hue white Speisekammer | Licht | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
+| Temperatursensor Speisekammer | Temperatur-/Feuchtesensor | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
+| Türkontakt Speisekammer | Tür-/Fensterkontakt | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
+| Wandschalter Speisekammer | Wandschalter / Taster | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
+| Kinderzimmer Decke 1 | Licht | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| Kinderzimmer Decke 2 | Licht | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| Temperatursensor Kinderzimmer | Temperatur-/Feuchtesensor | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| Wandschalter Kinderzimmer | Wandschalter / Taster | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| WLED Hoehle | Licht | [Spielzimmer · Erdgeschoss](../raeume/generated/spielzimmer.md) | in Home Assistant bestätigt |
+| Steckdose Trockner | Smarte Steckdose | [Waschküche · Keller](../raeume/generated/waschkueche.md) | in Home Assistant bestätigt |
+| Steckdose Waschmaschine | Smarte Steckdose | [Waschküche · Keller](../raeume/generated/waschkueche.md) | in Home Assistant bestätigt |
+| Apple TV Wohnzimmer | Fernseher / Mediaplayer | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Echo Dot | Lautsprecher / Sprachassistent | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Fernseher | Fernseher / Mediaplayer | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Filament Esstisch 1 | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Filament Esstisch 2 | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Filament Käfig | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Filament Papagei | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Heimkino | Lautsprecher / Sprachassistent | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Hue color Sonos links | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Hue color Sonos rechts | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Hue LED Stripe Fensterbank | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Kaffeemaschine | Kaffeemaschine | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Steckdose Entertainment | Smarte Steckdose | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Temperatursensor Wohnzimmer | Temperatur-/Feuchtesensor | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Wandschalter Wohnzimmer | Wandschalter / Taster | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 
-## Nicht zugeordnete Geräte
+??? question "Geräte ohne bestätigten festen Raum"
 
-Diese Liste sollte geprüft werden. Virtuelle Dienste benötigen nicht zwingend einen Raum; physische Geräte sollten nach Möglichkeit zugeordnet werden.
+    Diese Geräte wirken stationär, haben aber noch keinen verlässlichen festen Raum. Es wird bewusst kein Standort erfunden.
 
-| Gerät | Hersteller / Modell |
-|---|---|
-| Advanced SSH & Web Terminal | Home Assistant Community Apps / Home Assistant App |
-| Alexa Media Player | alandtse, keatontaylor / integration |
-| Alles ausser Büro | Zigbee2MQTT / Group |
-| apexcharts-card | RomRider / plugin |
-| AppDaemon | Home Assistant Community Apps / Home Assistant App |
-| Apple Watch von Max | Apple / Apple Watch Ultra 2 |
-| auto-entities | thomasloven / plugin |
-| Backup | Home Assistant / Home Assistant Backup |
-| Bambu Lab | greghesp, AdrianGarside / integration |
-| Baumarkt | Bring! Labs AG / Bring! Grocery Shopping List |
-| Born | Cupra / Born |
-| Born | Cupra / Born |
-| Born | Cupra / Born |
-| Born | Cupra / Born |
-| Bubble Card | Clooos / plugin |
-| button-card | custom-cards / plugin |
-| Büro | Sonos / Era 100 |
-| Büro | Amazon / Sonos |
-| Bürofernseher | Vestel Electronics Corp. / Smart TV |
-| Bürofernseher  | Amazon / THIRD_PARTY_AVS_VIDEO_FIRST A3A0T4TJPMPEAE |
-| card-mod | thomasloven / plugin |
-| Claude Terminal Pro | Claude Terminal Pro for Home Assistant / Home Assistant App |
-| Clock Weather Card | pkissling / plugin |
-| Config Template Card | iantrich / plugin |
-| CUPRA | cupra / born default |
-| Custom-ui | Mariusthvdb / plugin |
-| Dashboard Tablet | Amazon / KFMAWI |
-| Dreame Mower | bhuebschen / integration |
-| Dreame Vacuum | tasshack / integration |
-| Echo Kids | Amazon / Echo Dot |
-| Echo Kids | Amazon / Echo Dot (Gen5) |
-| Einkaufsladen | Bring! Labs AG / Bring! Grocery Shopping List |
-| Filament Diele 1 | EcoDim / Zigbee LED filament light dimmable E27, edison ST64, flame 2200K |
-| File editor | Official apps / Home Assistant App |
-| Fire TV Stick | Amazon / Fire TV Stick 4K (Gen3) |
-| Forecast | Met.no / Forecast |
-| go-e APIv2 Connect | marq24, s3ppo / integration |
-| go-eCharger | cathiele / integration |
-| go-eCharger integration for Home Assistant using the MQTT API | syssi / integration |
-| Google AI Conversation | Google / gemini-3.1-flash-lite |
-| Google AI STT | Google / gemini-3.1-flash-lite |
-| Google AI Task | Google / gemini-3.1-flash-lite |
-| Google AI TTS | Google / gemini-3.1-flash-tts-preview |
-| Google DNS Ping | Ping |
-| grid-view | zsarnett / plugin |
-| HA-MCP Custom Component | homeassistant-ai / integration |
-| HACS | hacs.xyz |
-| HAGHS | d-n91 / integration |
-| hci0 (64:5D:86:E7:C2:9F) | Intel Corporate / 0aaa (8087:0aaa) |
-| Hocus Pocus | Amazon / Bose QuietComfort 35 II |
-| Home Assistant Core | Home Assistant / Home Assistant Core |
-| Home Assistant Host | Home Assistant / Home Assistant Host |
-| Home Assistant MCP Server | Home Assistant MCP Server / Home Assistant App |
-| Home Assistant Operating System | Home Assistant / Home Assistant Operating System |
-| Home Assistant Supervisor | Home Assistant / Home Assistant Supervisor |
-| Homeassistant | – |
-| hui-element | thomasloven / plugin |
-| Hütte Perfekte Dinner | Bring! Labs AG / Bring! Grocery Shopping List |
-| iOS Themes - Dark Mode and Light Mode | basnijholt / theme |
-| iPad Pro | Apple / iPad8,7 |
-| iPad Pro | Apple / iPad Pro |
-| Küchenflur | Zigbee2MQTT / Group |
-| layout-card | thomasloven / plugin |
-| MacBook Air von Maximilian | Apple / MacBookAir10,1 |
-| MacBook Air von Maximilian | Apple / MacBook Air (M1, 2020) |
-| Mallorca 26 | Bring! Labs AG / Bring! Grocery Shopping List |
-| MariaDB | Official apps / Home Assistant App |
-| Matter Server | Official apps / Home Assistant App |
-| Max iPhone | Apple / iPhone18,1 |
-| Max iPhone | Apple / iPhone 17 Pro |
-| maxlhuber@icloud.com | Amazon |
-| Meikes iPhone | Apple / iPhone16,1 |
-| mini-graph-card | kalkih / plugin |
-| Mosquitto broker | Official apps / Home Assistant App |
-| Mushroom | piitaya / plugin |
-| Node-RED | Home Assistant Community Apps / Home Assistant App |
-| Nuki Bridge | Nuki / Hardware Bridge |
-| Nuki Lock | kvj / integration |
-| Nuki Nuki | Nuki / Nuki Smart Lock |
-| Nuki Web API | Nuki |
-| Nuki Web API | Nuki |
-| Nuki Öffner | Nuki / Nuki Opener |
-| OpenAI AI Task | OpenAI / gpt-4o-mini |
-| OpenAI Conversation | OpenAI / gpt-4o-mini |
-| OpenAI STT | OpenAI / gpt-4o-mini-transcribe |
-| OpenAI TTS | OpenAI / gpt-4o-mini-tts |
-| OpenWeatherMap | OpenWeather |
-| Party | Bring! Labs AG / Bring! Grocery Shopping List |
-| Plotly Graph Card | dbuezas / plugin |
-| Portainer | HA Add-ons by alexbelgium / Home Assistant App |
-| Präsenzmelder Küche | Tuya / 5.8Ghz/24Ghz Human presence sensor |
-| PyCupra | WulfgarW / integration |
-| Roborock | humbertogontijo / integration |
-| Robotic Vacuum Cleaner | Roborock / Robotic Vacuum Cleaner |
-| RTX_Tracker | Telegram / Polling |
-| Run Coach | Private Health Mirror / Home Assistant App |
-| Schlafzimmer | Amazon / Speaker Group |
-| Schwarzer Dot | Amazon / Echo Dot |
-| Schwarzer Dot | Amazon / Echo Dot (Gen2) |
-| search-card | postlund / plugin |
-| Simon42 Dashboard Strategy | TheRealSimon42 / plugin |
-| Sonos Wohnzimmer | Amazon / Sonos |
-| Spotify Max | Spotify AB / Spotify premium |
-| Steckdose Auto child lock:21065 | Home Assistant / Lock |
-| Steckdose Trockner child lock:21068 | Home Assistant / Lock |
-| Studio Code Server | Home Assistant Community Apps / Home Assistant App |
-| Sun | – |
-| System Monitor | System Monitor |
-| Teamspeak server | HA Add-ons by alexbelgium / Home Assistant App |
-| This Device | Amazon / Alexa Mobile Voice iOS |
-| This Device | Amazon / Alexa Mobile Voice iOS |
-| Tibber Price Information & Ratings | jpawlowski / integration |
-| Tibber Pulse Local | marq24 / integration |
-| Ultra Card | WJDDesigns / plugin |
-| Urlaub | Bring! Labs AG / Bring! Grocery Shopping List |
-| Vertical Stack In Card | ofekashery / plugin |
-| Volkswagen Connect | robinostlund / integration |
-| Waldram | Bring! Labs AG / Bring! Grocery Shopping List |
-| wallbox | GoE / Gemini Flex |
-| Waste Collection Schedule | mampfes / integration |
-| Withings | Withings |
-| Xiaomi Vacuum Map Card | PiotrMachowski / plugin |
-| Zigbee2MQTT | Home Assistant App: Zigbee2MQTT / Home Assistant App |
-| Zuhause | Bring! Labs AG / Bring! Grocery Shopping List |
-| Überall | Amazon / Speaker Group |
-| Überall | Amazon / Speaker Group |
+    | Gerät | Art | Standort |
+    |---|---|---|
+    | Echo Kids | Lautsprecher / Sprachassistent | noch offen |
+    | Schwarzer Dot | Lautsprecher / Sprachassistent | noch offen |
 
-<p class="page-status">Zuletzt aus Home Assistant übernommen: 12. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

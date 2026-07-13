@@ -1,25 +1,43 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Präsenzmelder Flur Licht aus
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Flur · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Licht im Flur aus, sobald keine Anwesenheit mehr erkannt wird.
-## Auslöser
-1. keine Anwesenheit wird mehr erkannt bei Flur
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
+1. Keine Anwesenheit wird mehr erkannt bei Flur
+
+## Sie läuft nur weiter, wenn …
+
+Keine weitere Voraussetzung ist hinterlegt.
+
+## Dann passiert …
+
 1. Flur ausschalten
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## So kannst du reagieren
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1778497304518` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Präsenzmelder Flur Licht aus |
+    | Home-Assistant-ID | `1778497304518` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

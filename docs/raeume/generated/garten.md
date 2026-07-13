@@ -2,40 +2,29 @@
 
 # Garten
 
-**Etage:** Draussen  
-**Erfasste Geräte:** 18  
-**Erfasste Entities:** 130
+**Standort:** Außenbereich
 
-## Geräte
+**Alltagsrelevante Geräte:** 11
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Alle Lichter | Zigbee2MQTT / Group | mqtt |
-| Garten | Zigbee2MQTT / Group | mqtt |
-| Garten Schalter Osram | OSRAM / Smart+ switch mini | mqtt |
-| Heizstrahler | Shelly / Shelly 2PM Gen3 | shelly |
-| Heizstrahler Tisch | SONOFF / Zigbee two way smart switch | mqtt |
-| Hue color Terasse Stehlaterne | Philips / Hue white and color ambiance E26/E27/E14 | mqtt |
-| Hue white Terrasse Laterne | Philips / Hue white ambiance E27 800lm with Bluetooth | mqtt |
-| Lichterkette Garten | Tuya / Smart plug (with power monitoring by polling) | mqtt |
-| Lounge | Zigbee2MQTT / Group | mqtt |
-| Mähroboter | Dreametech™ / mova.mower.g2405c | dreame_mower |
-| Osram Gardenspots | OSRAM /  Gardenspot LED mini RGB | mqtt |
-| Osram Lichstäbchen Beet | LEDVANCE / SMART+ gardenpole multicolour | mqtt |
-| shelly2pmg3-8cbfea95f8a4 Output 0 | Shelly / Shelly 2PM Gen3 | shelly |
-| shelly2pmg3-8cbfea95f8a4 Output 1 | Shelly / Shelly 2PM Gen3 | shelly |
-| Temperatursensor Garten | Tuya / Temperature & humidity sensor | mqtt |
-| Terasse | Zigbee2MQTT / Group | mqtt |
-| Wandschalter Garten | Philips / Hue wall switch module | mqtt |
-| Wasserventil Garten | SONOFF / Zigbee smart water valve | mqtt |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Heizstrahler Lounge | Heizgerät | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Heizstrahler Tisch | Heizgerät | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Hue color Terasse Stehlaterne | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Hue white Terrasse Laterne | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Lichterkette Garten | Smarte Steckdose | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Mähroboter | Mähroboter | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Osram Gardenspots | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Osram Lichstäbchen Beet | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Temperatursensor Garten | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Wandschalter Garten | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Wasserventil Garten | Wasserventil | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Ventil vor Ort prüfen und sicher schließen |
 
-**sensor:** 65, **binary_sensor:** 13, **update:** 10, **switch:** 10, **select:** 10, **light:** 8, **button:** 4, **number:** 3, **camera:** 2, **scene:** 2, **text:** 2, **lawn_mower:** 1
+## Das passiert hier automatisch
 
-## Zugehörige Automationen
-
-- [Bewässerung Urlaub](../../automationen/generated/bewaesserung-urlaub.md)
+- [Gartenbewässerung täglich um 09:00 Uhr](../../automationen/generated/bewaesserung-urlaub.md)
 - [Lichtschalter Garten oben](../../automationen/generated/lichtschalter-garten-oben.md)
 - [Lichtschalter Garten unten](../../automationen/generated/lichtschalter-garten-unten.md)
 - [Wasser Garten für 1h an](../../automationen/generated/wasser-garten-fuer-1h-an.md)
@@ -43,8 +32,11 @@
 - [Wasser Garten für 30min an](../../automationen/generated/wasser-garten-fuer-30min-an.md)
 - [Wasserventil nach 2h aus](../../automationen/generated/wasserventil-nach-2h-aus.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,28 +1,46 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Wasser Garten für 1h an
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Garten · Außenbereich
+
+## Das bemerkst du im Alltag
+
 Schaltet das Garten-Wasserventil per Helfer-Taste für 1 Stunde ein, sofern es aktuell ausgeschaltet ist.
-## Auslöser
-1. Status von Wasser 1h (`input_button.wasser_1h`) ändert sich
 
-## Bedingungen
-- `switch.wasserventil_garten` hat den Status `off`
+## Sie startet, wenn …
 
-## Ablauf
-1. `switch.wasserventil_garten` einschalten
+1. Wasser 1h wechselt
+
+## Sie läuft nur weiter, wenn …
+
+- Wasserventil garten ist „ausgeschaltet“
+
+## Dann passiert …
+
+1. Wasserventil garten einschalten
 2. 1 Std. warten
-3. `switch.wasserventil_garten` ausschalten
+3. Wasserventil garten ausschalten
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## So kannst du reagieren
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1750963126863` |
-| Modus | `single` |
-| Kategorie | Garten & Wasser |
-| Verwendete Entities | Wasser 1h (`input_button.wasser_1h`), `switch.wasserventil_garten` |
+Die betroffene Funktion in Home Assistant direkt bedienen. Bei Wasser immer vor Ort prüfen, ob das Ventil anschließend wirklich geschlossen ist.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Wasser Garten für 1h an |
+    | Home-Assistant-ID | `1750963126863` |
+    | Modus | `single` |
+    | Kategorie | Garten & Wasser |
+    | Verwendete Entities | Wasser 1h (`input_button.wasser_1h`), Wasserventil garten (`switch.wasserventil_garten`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

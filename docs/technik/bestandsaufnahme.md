@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Bestandsaufnahme
 
 Diese Seite beschreibt, welche Informationen für den Aufbau des Wikis benötigt werden und wie dabei sensible Daten geschützt werden.

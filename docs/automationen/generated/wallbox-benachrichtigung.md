@@ -1,26 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Wallbox Benachrichtigung
-## Kurz erklärt
+# Ladebeginn an Max melden
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Garage · Außenbereich
+
+## Das bemerkst du im Alltag
+
 Informiert Max, wenn die Wallbox aktiv lädt, das Auto angeschlossen ist und noch nicht voll geladen wurde.
-## Auslöser
-1. Status von Force state (`select.go_echarger_252938_frc`) ändert sich auf `Charge`
 
-## Bedingungen
-- logische Bedingungsgruppe `and` ist erfüllt
+## Sie startet, wenn …
 
-## Ablauf
-1. Push-Nachricht an Max' iPhone senden. Der aktuelle Strompreis wird korrekt in `ct/kWh` angegeben.
+1. Die Wallbox wechselt in den Lademodus.
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1763020246492` |
-| Modus | `single` |
-| Kategorie | Energie & Auto |
-| Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Force state (`select.go_echarger_252938_frc`), Aktueller Strompreis (`sensor.am_anger_3_aktueller_strompreis`), Ladezustand (`sensor.born_ladezustand_4`) |
+- Das Auto ist angeschlossen, lädt gerade und ist noch nicht voll.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Preiseinheit am 13. Juli 2026 live korrigiert</p>
+## Dann passiert …
+
+1. Max erhält eine Push-Nachricht zum Ladebeginn mit dem aktuellen Strompreis in ct/kWh.
+2. Die Nachricht nennt den aktuellen Strompreis in ct/kWh.
+
+## So kannst du reagieren
+
+Den tatsächlichen Ladezustand im Fahrzeug oder an der Wallbox prüfen. Eine fehlende Nachricht stoppt oder startet keinen Ladevorgang.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Wallbox Benachrichtigung |
+    | Home-Assistant-ID | `1763020246492` |
+    | Modus | `single` |
+    | Kategorie | Energie & Auto |
+    | Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Force state (`select.go_echarger_252938_frc`), Aktueller Strompreis (`sensor.am_anger_3_aktueller_strompreis`), Ladezustand (`sensor.born_ladezustand_4`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

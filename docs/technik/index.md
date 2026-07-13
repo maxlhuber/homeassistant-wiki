@@ -1,15 +1,21 @@
-# Technik
+---
+search:
+  exclude: true
+---
 
-Dieser Bereich ist für Wartung und Fehlersuche gedacht. Die normalen Alltagsanleitungen funktionieren ohne dieses technische Hintergrundwissen.
+# Wartung für Max
+
+Dieser Bereich enthält technische Angaben zur Pflege und Wiederherstellung. Für die normale Bedienung wird er nicht benötigt.
 
 - [Systemübersicht](systemuebersicht.md)
-- [Software und Add-ons](software.md)
-- [Bestandsaufnahme](bestandsaufnahme.md)
-- [Offene Prüfpunkte](pruefpunkte.md)
+- [Software und Apps](software.md)
 - [Sicherungen](sicherungen.md)
 - [Wartung](wartung.md)
+- [Bestandsaufnahme](bestandsaufnahme.md)
+- [Offene Prüfpunkte](pruefpunkte.md)
+- [Änderungsverlauf](../aenderungen.md)
 
 !!! warning "Keine Geheimnisse"
-    Passwörter, Wiederherstellungsschlüssel, Zugriffstokens und Alarmcodes gehören in einen geeigneten Passwortmanager, nicht in dieses Wiki.
+    Passwörter, WLAN-Schlüssel, Wiederherstellungsschlüssel, Zugriffstokens und Alarmcodes gehören in einen geeigneten Passwortmanager, nicht in dieses Wiki oder das Git-Repository.
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Grundgerüst</p>
+<p class="page-status">Geprüft: 13. Juli 2026</p>

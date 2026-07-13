@@ -2,42 +2,40 @@
 
 # Küche
 
-**Etage:** Erdgeschoss  
-**Erfasste Geräte:** 15  
-**Erfasste Entities:** 161
+**Standort:** Erdgeschoss
 
-## Geräte
+**Alltagsrelevante Geräte:** 12
 
-| Gerät | Hersteller / Modell | Anbindung |
-|---|---|---|
-| Dyad Pro | Roborock / roborock.wetdryvac.a56 | roborock |
-| Küche | Zigbee2MQTT / Group | mqtt |
-| Küche Decke | Zigbee2MQTT / Group | mqtt |
-| Küche Decke 1 | Innr / GU10 spot 420 lm, dimmable, white spectrum | mqtt |
-| Küche Decke 2 | Innr / GU10 spot 420 lm, dimmable, white spectrum | mqtt |
-| Küche Decke 3 | Innr / GU10 spot 420 lm, dimmable, white spectrum | mqtt |
-| Max' Echo Dot - Küche | Amazon / Echo Dot Clock (Gen4) | alexa_media |
-| Sauron | Roborock / roborock.vacuum.a144 | roborock |
-| Sauron Dock | Roborock / roborock.vacuum.a144 Dock | roborock |
-| Spots Küchenschränke | Shelly / Shelly Plus 1 | shelly, switch_as_x |
-| Spots Oberschrank | IKEA / TRADFRI LED driver, 10 w | mqtt |
-| Steckdose Kühlschrank | NEO Coolcam / Smart plug (with power monitoring) | mqtt, utility_meter |
-| Steckdose Saugroboter | Haozee / Smart plug (with power monitoring) | mqtt |
-| Steckdose Spülmaschine | NEO Coolcam / Smart plug (with power monitoring) | mqtt, utility_meter |
-| Wandschalter Küche | Philips / Hue wall switch module | mqtt |
+## Geräte an diesem Standort
 
-## Wichtige Funktionen
+| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
+|---|---|---|---|---|
+| Küche Decke 1 | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Küche Decke 2 | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Küche Decke 3 | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
+| Max' Echo Dot | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Präsenzmelder Küche | Präsenzmelder | aus Name/Funktion abgeleitet | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
+| Sauron | Saug-/Wischgerät | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
+| Spots Küchenschränke | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Spots Oberschrank | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
+| Steckdose Kühlschrank | Smarte Steckdose | in Home Assistant bestätigt | direkt am Kühlschrank (aus Gerätename abgeleitet) | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Steckdose Saugroboter | Smarte Steckdose | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Steckdose Spülmaschine | Smarte Steckdose | in Home Assistant bestätigt | direkt an der Spülmaschine (aus Gerätename abgeleitet) | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Wandschalter Küche | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
-**sensor:** 63, **button:** 22, **select:** 22, **switch:** 13, **binary_sensor:** 12, **update:** 10, **light:** 7, **number:** 4, **time:** 4, **image:** 2, **media_player:** 1, **vacuum:** 1
-
-## Zugehörige Automationen
+## Das passiert hier automatisch
 
 - [Lichtschalter Küche oben](../../automationen/generated/lichtschalter-kueche-oben.md)
 - [Lichtschalter Küche unten](../../automationen/generated/lichtschalter-kueche-unten.md)
-- [Spülmaschine fertig Blueprint](../../automationen/generated/spuelmaschine-fertig-blueprint.md)
+- [Präsenzmelder Küche Licht an](../../automationen/generated/praesenzmelder-kueche-licht-an.md)
+- [Präsenzmelder Küche Licht aus](../../automationen/generated/praesenzmelder-kueche-licht-aus.md)
+- [Spülmaschine ist fertig](../../automationen/generated/spuelmaschine-fertig-blueprint.md)
 
-## Manuelle Bedienung
+## Bedienung und Störung
 
-Noch zu ergänzen: wichtigste Schalter, Bedienelemente und Verhalten bei einem Ausfall.
+- Licht zuerst am vorhandenen Wandschalter oder direkt in Home Assistant bedienen.
+- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
+- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
+- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Angaben noch zu ergänzen</p>
+<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

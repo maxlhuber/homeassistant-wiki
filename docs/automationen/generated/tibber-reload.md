@@ -1,26 +1,49 @@
+---
+search:
+  exclude: true
+---
+
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Tibber Reload
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Sicherungskasten · Keller
+
+## Das bemerkst du im Alltag
+
 Lädt den Tibber-Config-Eintrag neu, wenn der Spannungssensor länger als 1 Minute unavailable ist.
-## Auslöser
-1. Status von Spannung L1 (`sensor.voltage_phase1_am_anger_3`) ändert sich auf `unavailable` für 1 Min.
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. festgelegtes Ziel Dienst `homeassistant.reload_config_entry` ausführen
+1. Spannung L1 wechselt auf „nicht erreichbar“ und bleibt dort 1 Min.
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1750446203882` |
-| Modus | `single` |
-| Kategorie | Energie & Auto |
-| Verwendete Entities | Spannung L1 (`sensor.voltage_phase1_am_anger_3`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Das betroffene Gerät die hinterlegte Funktion ausführen
+
+## So kannst du reagieren
+
+Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox kontrollieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Tibber Reload |
+    | Home-Assistant-ID | `1750446203882` |
+    | Modus | `single` |
+    | Kategorie | Energie & Auto |
+    | Verwendete Entities | Spannung L1 (`sensor.voltage_phase1_am_anger_3`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

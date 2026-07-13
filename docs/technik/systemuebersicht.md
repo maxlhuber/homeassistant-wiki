@@ -1,28 +1,29 @@
+---
+search:
+  exclude: true
+---
+
 # Systemübersicht
 
-## Bekannte Komponenten
+Diese Seite ist für Wartung. Die Familienansicht erklärt dieselben Systeme vereinfacht unter [So funktioniert unser Smart Home](../grundlagen.md).
 
-| Komponente | Aufgabe | Standort | Status |
+## Komponenten
+
+| Komponente | Aufgabe | Netzwerk / Standort | Status am 13. Juli 2026 |
 |---|---|---|---|
-| Thin Client | Home Assistant OS | Noch einzutragen | In Betrieb |
-| WD My Cloud EX2 Ultra | NAS und zukünftige Wiki-Sicherung | Noch einzutragen | In Betrieb |
-| Raspberry Pi | Zukünftiger Wiki-Server | Noch festzulegen | Geplant |
+| Thin Client | Home Assistant OS; eigentliche Smart-Home-Zentrale | Physischer Standort noch nicht dokumentiert | In Betrieb; Home Assistant 2026.7.1 |
+| Raspberry Pi 4B | Stellt dieses MkDocs-Wiki über Nginx bereit | WLAN; zuletzt `192.168.1.189` | In Betrieb und per SSH erreichbar |
+| WD My Cloud EX2 Ultra | Home-Assistant-Sicherungen und Datenspeicher | `nas.local`; physischer Standort noch nicht dokumentiert | In Betrieb |
 
-## Softwarestand
+Die IP-Adresse des Raspberry Pi kann sich ohne feste DHCP-Zuordnung ändern. Der physische Standort von Thin Client, NAS, Router und Raspberry Pi muss bei einem Rundgang ergänzt werden.
 
-| Bestandteil | Version am 12. Juli 2026 |
-|---|---|
-| Home Assistant Core | 2026.7.1 |
-| Home Assistant Supervisor | 2026.06.2 |
+## Datenfluss
 
-Die Versionsangaben stammen aus der automatischen Sicherung vom 12. Juli 2026, 03:45 Uhr.
+1. Home Assistant verwaltet Geräte und Automationen auf dem Thin Client.
+2. Sicherungen werden auf dem NAS abgelegt.
+3. Ein lokaler Export erzeugt die Wiki-Seiten.
+4. Das fertige Wiki wird auf den Raspberry Pi übertragen.
 
-## Noch zu erfassen
+Der Raspberry Pi greift im normalen Seitenaufruf nicht steuernd auf Home Assistant zu.
 
-- Netzwerkaufbau
-- Funkstandards und Koordinatoren
-- Integrationen
-- externe Dienste
-- Stromversorgung und gegebenenfalls USV
-
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Teilweise erfasst</p>
+<p class="page-status">Laufende Systeme geprüft: 13. Juli 2026</p>

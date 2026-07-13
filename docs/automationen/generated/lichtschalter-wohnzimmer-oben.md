@@ -1,26 +1,44 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Lichtschalter Wohnzimmer oben
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Wohnzimmer · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Licht am Esstisch bei linkem Tastendruck des Wohnzimmer-Wandschalters. Beim Einschalten werden 100 Prozent Helligkeit und die definierte Farbtemperatur gesetzt.
-## Auslöser
-1. Geräteereignis „action“ von Wandschalter Wohnzimmer
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. wenn `light.esstisch` hat den status `on`, dann `light.esstisch` ausschalten; andernfalls `light.esstisch` einschalten mit 100 % helligkeit
+1. Eine Taste am Wandschalter Wohnzimmer wird gedrückt
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768303690130` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | `light.esstisch` |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Wenn esstisch ist „eingeschaltet“, dann esstisch ausschalten; andernfalls esstisch einschalten mit 100 % helligkeit
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Lichtschalter Wohnzimmer oben |
+    | Home-Assistant-ID | `1768303690130` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Esstisch (`light.esstisch`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,27 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Müllabfuhr Benachrichtigung Zentral
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** kein fester Raum – betrifft das ganze Haus
+
+## Das bemerkst du im Alltag
+
 Sammelt alle Müllarten, die am nächsten Tag abgeholt werden, und verschickt um 18:00 eine Erinnerung zum Rausstellen der Tonnen.
-## Auslöser
-1. Zeitpunkt `18:00:00` ist erreicht
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. einen internen Verarbeitungsschritt ausführen
-2. wenn eine interne vorlagenprüfung ist erfüllt, dann push-nachricht an meikes iphone senden
+1. Es ist 18:00:00 Uhr
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1776706598749` |
-| Modus | `single` |
-| Kategorie | Haushalt |
-| Verwendete Entities | AbfallBio (`sensor.abfallbio`), AbfallPapier (`sensor.abfallpapier`), AbfallRecycling (`sensor.abfallrecycling`), AbfallRestmuell (`sensor.abfallrestmuell`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Home Assistant sammelt alle Müllarten, die am nächsten Tag abgeholt werden.
+2. Wenn mindestens eine Abholung ansteht, erhalten Max und Meike um 18:00 Uhr eine gemeinsame Erinnerung.
+
+## So kannst du reagieren
+
+Bei einer fehlenden oder unklaren Meldung den Abfuhrtermin im Kalender beziehungsweise beim Entsorger prüfen.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Müllabfuhr Benachrichtigung Zentral |
+    | Home-Assistant-ID | `1776706598749` |
+    | Modus | `single` |
+    | Kategorie | Haushalt |
+    | Verwendete Entities | AbfallBio (`sensor.abfallbio`), AbfallPapier (`sensor.abfallpapier`), AbfallRecycling (`sensor.abfallrecycling`), AbfallRestmuell (`sensor.abfallrestmuell`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

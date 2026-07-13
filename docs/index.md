@@ -1,8 +1,8 @@
 # Unser Zuhause
 
-Willkommen in der Anleitung für unser Smart Home. Hier steht, was automatisch passiert, wie Geräte von Hand bedient werden und was bei einer Störung zu tun ist.
+Dieses Wiki erklärt unser Smart Home in normaler Sprache. Es zeigt, **was automatisch passiert**, **wo ein Gerät steht** und **was bei einer Störung zu tun ist**. Das Wiki selbst steuert nichts – dafür läuft Home Assistant auf dem Thin Client.
 
-!!! warning "In einem echten Notfall"
+!!! danger "In einem echten Notfall"
     Bei Feuer, Rauch, Gasgeruch, einem medizinischen Notfall oder Einbruch nicht zuerst Home Assistant untersuchen. Menschen in Sicherheit bringen und den passenden Notruf wählen.
 
 ## Schnell ans Ziel
@@ -13,37 +13,44 @@ Willkommen in der Anleitung für unser Smart Home. Hier steht, was automatisch p
 
     ---
 
-    Die [Schnellhilfe](schnellhilfe/index.md) erklärt die wichtigsten ersten Schritte.
+    Die [Schnellhilfe](schnellhilfe/index.md) führt ohne Fachbegriffe durch die ersten Prüfungen.
 
--   :material-home-account:{ .lg .middle } **Typische Abläufe**
-
-    ---
-
-    Unter [Alltag](alltag/index.md) stehen Anleitungen für Verlassen, Ankommen, Schlafen und Urlaub.
-
--   :material-robot:{ .lg .middle } **Was passiert automatisch?**
+-   :material-information-outline:{ .lg .middle } **Wie funktioniert das alles?**
 
     ---
 
-    Die [Automationen](automationen/index.md) werden in normaler Sprache erklärt.
+    [So funktioniert unser Smart Home](grundlagen.md) erklärt Home Assistant, Automationen und die drei beteiligten Computer.
 
--   :material-devices:{ .lg .middle } **Geräte nachschlagen**
+-   :material-floor-plan:{ .lg .middle } **Was steht wo?**
 
     ---
 
-    Unter [Geräte](geraete/index.md) stehen Bedienung, Standort und Besonderheiten.
+    Unter [Räume](raeume/index.md) und [Geräte](geraete/index.md) stehen Aufgabe, Standort und eine mögliche manuelle Alternative.
+
+-   :material-robot:{ .lg .middle } **Was passiert von selbst?**
+
+    ---
+
+    Unter [Automationen](automationen/index.md) steht für jede Funktion: Auslöser, Wirkung, Ort und Reaktion bei einem Fehler.
 
 </div>
 
-## Die wichtigsten Regeln
+## Die drei wichtigsten Systeme
 
-1. Alles Wichtige lässt sich auch ohne Automation von Hand bedienen.
-2. Wenn eine Automation unerwartet reagiert, zuerst die zugehörige Seite nachlesen.
-3. Keine unbekannten Geräte aus Home Assistant löschen – lieber zunächst deaktivieren und notieren.
-4. Passwörter und geheime Zugangsdaten stehen nicht in diesem Wiki.
+| System | Aufgabe | Wenn es ausfällt |
+|---|---|---|
+| Home-Assistant-Thin-Client | Steuert Geräte und Automationen | Automationen und App-Bedienung können ausfallen |
+| Raspberry Pi | Zeigt nur dieses Wiki | Das Smart Home läuft weiter; nur die Anleitung ist nicht erreichbar |
+| WD-NAS | Bewahrt Sicherungen auf | Der laufende Betrieb geht zunächst weiter; neue Sicherungen können fehlen |
 
-## Aktueller Stand
+## Wichtige Regeln
 
-Das Wiki befindet sich im Aufbau. Seiten mit dem Hinweis **„Noch zu erfassen“** enthalten derzeit nur eine Vorlage.
+1. Bei einem einzelnen Problem zuerst den normalen Schalter oder die direkte Gerätebedienung versuchen.
+2. Kein unbekanntes Gerät löschen, neu koppeln oder auf Werkseinstellungen zurücksetzen.
+3. Eine App-Meldung ergänzt Rauchmelder, Türschloss und andere Sicherheitseinrichtungen – sie ersetzt sie nicht.
+4. Bei Unsicherheit den Zeitpunkt und die Beobachtung notieren und Max informieren.
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Grundgerüst</p>
+!!! warning "Eine Raumzuordnung ist noch unklar"
+    Die Namen **Kinderzimmer** und **Spielzimmer** sind in Home Assistant offenbar vertauscht: Geräte und Schalter tragen jeweils den Namen des anderen Raums. Das Wiki zeigt diesen Widerspruch offen, bis die Räume vor Ort bestätigt wurden.
+
+<p class="page-status">Mit Home Assistant abgeglichen: 13. Juli 2026</p>

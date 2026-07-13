@@ -38,6 +38,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - def_list
+  - meta
   - md_in_html
   - tables
   - toc:
@@ -57,33 +58,24 @@ extra_css:
 
 nav:
   - Start: index.md
-  - Schnellhilfe:
-      - schnellhilfe/index.md
-      - Home Assistant nicht erreichbar: schnellhilfe/home-assistant-ausfall.md
-      - Internet oder WLAN ausgefallen: schnellhilfe/netzwerk-ausfall.md
-      - Wichtige Kontakte: schnellhilfe/kontakte.md
+  - So funktioniert es: grundlagen.md
   - Alltag:
       - alltag/index.md
       - Haus verlassen: alltag/haus-verlassen.md
       - Nach Hause kommen: alltag/nach-hause-kommen.md
       - Schlafengehen: alltag/schlafengehen.md
       - Urlaub: alltag/urlaub.md
-  - Räume:
-      - raeume/index.md
-  - Automationen:
-      - automationen/index.md
-  - Geräte:
-      - geraete/index.md
-  - Technik:
+  - Räume und Geräte:
+      - Räume: raeume/index.md
+      - Alle Geräte: geraete/index.md
+  - Was passiert automatisch?: automationen/index.md
+  - Schnellhilfe:
+      - schnellhilfe/index.md
+      - Home Assistant nicht erreichbar: schnellhilfe/home-assistant-ausfall.md
+      - Internet oder WLAN ausgefallen: schnellhilfe/netzwerk-ausfall.md
+      - Hilfe anfordern: schnellhilfe/kontakte.md
+  - Wartung für Max:
       - technik/index.md
       - Systemübersicht: technik/systemuebersicht.md
-      - Software und Add-ons: technik/software.md
-      - Bestandsaufnahme: technik/bestandsaufnahme.md
-      - Offene Prüfpunkte: technik/pruefpunkte.md
       - Sicherungen: technik/sicherungen.md
       - Wartung: technik/wartung.md
-  - Vorlagen:
-      - vorlagen/automation.md
-      - vorlagen/geraet.md
-      - vorlagen/raum.md
-  - Änderungsverlauf: aenderungen.md

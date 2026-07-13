@@ -1,25 +1,43 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Präsenzmelder Flur Licht an
-## Kurz erklärt
-Schaltet bei erkannter Anwesenheit das Licht im Flur zwischen 8 und 18 Uhr auf 100 % ein. Außerhalb dieses Zeitfensters erfolgt derzeit keine Aktion.
-## Auslöser
+# Flurlicht bei Anwesenheit einschalten
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Flur · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
+Schaltet das Flurlicht bei erkannter Anwesenheit zwischen 08:00 und 18:00 Uhr mit 100 % Helligkeit ein. Außerhalb dieses Zeitfensters erfolgt derzeit keine Aktion.
+
+## Sie startet, wenn …
+
 1. Anwesenheit wird erkannt bei Flur
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie läuft nur weiter, wenn …
 
-## Ablauf
-1. wenn der festgelegte zeitraum ist aktiv, dann flur einschalten mit 100 % helligkeit; der andernfalls vorgesehene Schritt ist derzeit deaktiviert
+Keine weitere Voraussetzung ist hinterlegt.
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Dann passiert …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1778497197700` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
+1. Wenn der festgelegte zeitraum ist aktiv, dann flur einschalten mit 100 % helligkeit
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Beschreibung am 13. Juli 2026 live korrigiert</p>
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Präsenzmelder Flur Licht an |
+    | Home-Assistant-ID | `1778497197700` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

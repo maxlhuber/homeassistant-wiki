@@ -1,29 +1,45 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Waschmaschine fertig Blueprint
-## Kurz erklärt
+# Waschmaschine ist fertig
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Waschküche · Keller
+
+## Das bemerkst du im Alltag
+
 Benachrichtigt Max und Meike, wenn die Waschmaschine laut Leistungsaufnahme fertig ist.
-## Auslöser
-1. Die Auslöser werden durch einen Blueprint festgelegt.
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. Der Ablauf wird durch einen Blueprint festgelegt.
+1. Home Assistant erkennt anhand des Stromverbrauchs oder Gerätezustands, dass der Ablauf beendet ist
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Blueprint
-Technische Vorlage: `sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml`
+Keine weitere Voraussetzung ist hinterlegt.
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1767206458674` |
-| Modus | `single` |
-| Kategorie | Haushalt |
-| Verwendete Entities | Leistung (`sensor.steckdose_waschmaschine_power`) |
+## Dann passiert …
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+1. Die im Namen und in der Kurzbeschreibung genannte Meldung oder Aktion ausführen
+
+## So kannst du reagieren
+
+Die Waschmaschine funktioniert unabhängig von dieser Meldung. Bleibt die Nachricht aus, Programmende direkt am Gerät prüfen.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Waschmaschine fertig Blueprint |
+    | Home-Assistant-ID | `1767206458674` |
+    | Modus | `single` |
+    | Kategorie | Haushalt |
+    | Verwendete Entities | Leistung (`sensor.steckdose_waschmaschine_power`) |
+    | Blueprint | `sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml` |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

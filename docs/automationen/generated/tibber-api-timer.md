@@ -1,27 +1,50 @@
+---
+search:
+  exclude: true
+---
+
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Tibber API Timer
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Sicherungskasten · Keller
+
+## Das bemerkst du im Alltag
+
 Aktualisiert den aktuellen Strompreis beim Home-Assistant-Start und anschließend alle 15 Minuten.
-## Auslöser
-1. regelmäßiges Zeitmuster ist erreicht
-2. Auslöser `homeassistant` bei nicht näher angegeben
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. festgelegtes Ziel Dienst `homeassistant.update_entity` ausführen
+1. Das festgelegte Zeitintervall ist erreicht
+2. Das betroffene Gerät meldet das passende Ereignis
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1742480921483` |
-| Modus | `single` |
-| Kategorie | Energie & Auto |
-| Verwendete Entities | Strompreis aktuell (`sensor.electricity_price_am_anger_3`) |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Die zugehörigen Daten aktualisieren
+
+## So kannst du reagieren
+
+Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox kontrollieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Tibber API Timer |
+    | Home-Assistant-ID | `1742480921483` |
+    | Modus | `single` |
+    | Kategorie | Energie & Auto |
+    | Verwendete Entities | Strompreis aktuell (`sensor.electricity_price_am_anger_3`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

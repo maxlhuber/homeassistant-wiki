@@ -2,18 +2,23 @@
 
 ## Vor der Abreise
 
-- [ ] Urlaubsmodus aktivieren – falls vorhanden
-- [ ] Türen und Fenster prüfen
-- [ ] Kritische Geräte und Sensoren prüfen
-- [ ] Benachrichtigungen testen
-- [ ] Zuständige Kontaktperson informieren
+- [ ] Türen und Fenster selbst prüfen
+- [ ] Kritische Haushaltsgeräte und Wasserstellen prüfen
+- [ ] Gewünschte Handy-Benachrichtigungen testen
+- [ ] Klären, wer bei einer Rauch-, Fenster- oder Gerätewarnung reagieren kann
+- [ ] Gartenbewässerung bewusst prüfen
 
-## Was im Urlaubsmodus passiert
+## Kein zentraler Urlaubsmodus
 
-Noch zu erfassen.
+Im aktuellen System wurde kein Schalter gefunden, der das ganze Haus zuverlässig in einen Urlaubsmodus versetzt. Daher keinen solchen Gesamtzustand voraussetzen.
 
-## Rückkehr
+!!! warning "Die Gartenbewässerung läuft täglich"
+    Die in Home Assistant noch „Bewässerung Urlaub“ genannte Automation ist aktiv und öffnet das Gartenventil **jeden Tag um 09:00 Uhr für zwei Minuten**. Sie prüft keinen Urlaubsmodus. Wenn das nicht gewünscht ist, muss die Automation in Home Assistant ausgeschaltet werden. Nach einer manuellen Betätigung immer prüfen, ob das Ventil wieder geschlossen ist.
 
-Noch zu erfassen: Urlaubsmodus beenden und Normalbetrieb prüfen.
+[Details zur Gartenbewässerung](../automationen/generated/bewaesserung-urlaub.md)
 
-<p class="page-status">Zuletzt geprüft: 12. Juli 2026 · Status: Noch zu erfassen</p>
+## Nach der Rückkehr
+
+Prüfen, ob Warnmeldungen vorliegen, ob das Gartenventil geschlossen ist und ob zuvor bewusst ausgeschaltete Automationen wieder benötigt werden. Nichts vorsorglich neu koppeln oder zurücksetzen.
+
+<p class="page-status">Mit Home Assistant abgeglichen: 13. Juli 2026</p>

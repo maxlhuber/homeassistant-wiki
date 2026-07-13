@@ -1,30 +1,47 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Spülmaschine fertig Blueprint
-## Kurz erklärt
-Benachrichtigt Max und Meike, wenn die Spülmaschine laut Leistungsaufnahme fertig ist.
-## Auslöser
-1. Die Auslöser werden durch einen Blueprint festgelegt.
+# Spülmaschine ist fertig
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
 
-## Ablauf
-1. Der Ablauf wird durch einen Blueprint festgelegt.
-2. Nach Programmende erhalten Max und Meike jeweils eine Push-Nachricht. Fällt ein Versandweg aus, wird der andere trotzdem ausgeführt.
+**Ort:** Küche · Erdgeschoss
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Das bemerkst du im Alltag
 
-## Blueprint
-Technische Vorlage: `sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml`
+Benachrichtigt Max und Meike, wenn die Spülmaschine laut gemessener Leistungsaufnahme fertig ist.
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1767206525153` |
-| Modus | `single` |
-| Kategorie | Haushalt |
-| Verwendete Entities | Leistung (`sensor.steckdose_spulmaschine_power`) |
+## Sie startet, wenn …
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Empfänger am 13. Juli 2026 live aktualisiert</p>
+1. Home Assistant erkennt anhand des Stromverbrauchs oder Gerätezustands, dass der Ablauf beendet ist
+
+## Sie läuft nur weiter, wenn …
+
+Keine weitere Voraussetzung ist hinterlegt.
+
+## Dann passiert …
+
+1. Die im Namen und in der Kurzbeschreibung genannte Meldung oder Aktion ausführen
+2. Max und Meike erhalten jeweils eine Push-Nachricht.
+3. Fällt ein Versandweg aus, wird der andere trotzdem versucht.
+
+## So kannst du reagieren
+
+Die Spülmaschine funktioniert unabhängig von dieser Meldung. Bleibt die Nachricht aus, Programmende direkt am Gerät prüfen.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Spülmaschine fertig Blueprint |
+    | Home-Assistant-ID | `1767206525153` |
+    | Modus | `single` |
+    | Kategorie | Haushalt |
+    | Verwendete Entities | Leistung (`sensor.steckdose_spulmaschine_power`) |
+    | Blueprint | `sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml` |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Sicherungen
 
 ## Zielzustand
@@ -20,7 +25,7 @@ Die automatische Sicherung wird auf dem WD-NAS unter `\\nas.local\backup` gespei
 | Home-Assistant-Datenbank | enthalten |
 | Letzte geprüfte Sicherung | 12. Juli 2026, 03:45 Uhr |
 
-Noch zu erfassen: Aufbewahrungsregeln, zusätzlicher externer Speicherort und praktisch getesteter Wiederherstellungsweg.
+Noch nicht verlässlich dokumentiert sind die Aufbewahrungsregeln, ein zusätzlicher externer Speicherort und ein praktisch getesteter Wiederherstellungsweg. Diese Punkte bleiben deshalb Wartungsaufgaben und werden nicht als vorhandene Absicherung dargestellt.
 
 !!! important "Eine Sicherung ist erst verlässlich, wenn die Wiederherstellung getestet wurde."
 

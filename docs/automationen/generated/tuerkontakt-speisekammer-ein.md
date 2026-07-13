@@ -1,26 +1,44 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
 # Türkontakt Speisekammer ein
-## Kurz erklärt
+
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
+
+**Ort:** Speisekammer · Erdgeschoss
+
+## Das bemerkst du im Alltag
+
 Schaltet das Speisekammerlicht ein, wenn die Tür geöffnet wird. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
-## Auslöser
-1. Status von Tür (`binary_sensor.turkontakt_speisekammer_contact`) ändert sich auf `on`
 
-## Bedingungen
-Keine zusätzlichen Bedingungen in der Automation hinterlegt.
+## Sie startet, wenn …
 
-## Ablauf
-1. `light.speisekammer` einschalten mit 100 % Helligkeit
+1. Tür wechselt auf „eingeschaltet“
 
-## Manuelle Bedienung
-Noch zu ergänzen: Wie lässt sich diese Funktion von Hand auslösen oder übersteuern?
+## Sie läuft nur weiter, wenn …
 
-## Technische Angaben
-| Feld | Wert |
-|---|---|
-| Home-Assistant-ID | `1768303465614` |
-| Modus | `single` |
-| Kategorie | Licht & Präsenz |
-| Verwendete Entities | Tür (`binary_sensor.turkontakt_speisekammer_contact`), `light.speisekammer` |
+Keine weitere Voraussetzung ist hinterlegt.
 
-<p class="page-status">Automatisch erfasst: 12. Juli 2026 · Manuelle Erklärung noch zu prüfen</p>
+## Dann passiert …
+
+1. Speisekammer einschalten mit 100 % Helligkeit
+
+## So kannst du reagieren
+
+Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren.
+
+<div data-search-exclude markdown>
+
+??? info "Technik für Max"
+
+    | Feld | Wert |
+    |---|---|
+    | Ursprünglicher Name | Türkontakt Speisekammer ein |
+    | Home-Assistant-ID | `1768303465614` |
+    | Modus | `single` |
+    | Kategorie | Licht & Präsenz |
+    | Verwendete Entities | Tür (`binary_sensor.turkontakt_speisekammer_contact`), Speisekammer (`light.speisekammer`) |
+
+</div>
+
+<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
