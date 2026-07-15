@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Schaltet das Wohnzimmerlicht bei rechtem Tastendruck des Wohnzimmer-Wandschalters. Beim Einschalten werden 100 Prozent Helligkeit und die definierte Farbtemperatur gesetzt.
+Schaltet das Wohnzimmerlicht bei rechtem Tastendruck des Wohnzimmer\-Wandschalters. Beim Einschalten werden 100 Prozent Helligkeit und die definierte Farbtemperatur gesetzt.
 
 ## Sie startet, wenn …
 
@@ -34,11 +34,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Wohnzimmer unten |
-    | Home-Assistant-ID | `1768303742730` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768303742730 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Wohnzimmer (`light.wohnzimmer`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -1,6 +1,6 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Auto-Laden Zusammenfassung (Push)
+# Auto\-Laden Zusammenfassung \(Push\)
 
 !!! success "Status: aktiv"
     Diese Automation ist in Home Assistant eingeschaltet.
@@ -34,12 +34,12 @@ Die Nachricht ist nur eine Auswertung. Den wirklichen Ladezustand am Fahrzeug od
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | Auto-Laden Zusammenfassung (Push) |
-    | Home-Assistant-ID | `auto_laden_zusammenfassung` |
-    | Modus | `single` |
+    | Ursprünglicher Name | Auto\-Laden Zusammenfassung \(Push\) |
+    | Home-Assistant-ID | auto\_laden\_zusammenfassung |
+    | Modus | single |
     | Kategorie | Energie & Auto |
-    | Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Auto-Laden Session abgerechnet (`input_boolean.auto_laden_abgerechnet`), Auto Netz Energie Start (`input_number.auto_netz_energie_start`), Auto Netz Kosten Start (`input_number.auto_netz_kosten_start`), Auto Solar Energie Start (`input_number.auto_solar_energie_start`), Auto Netz Energie (`sensor.auto_netz_energie`), Auto Netz Kosten (`sensor.auto_netz_kosten`), Auto Solar Energie (`sensor.auto_solar_energie`), Wallbox Zielstatus (`sensor.wallbox_zielstatus`) |
+    | Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Auto\-Laden Session abgerechnet (`input_boolean.auto_laden_abgerechnet`), Auto Netz Energie Start (`input_number.auto_netz_energie_start`), Auto Netz Kosten Start (`input_number.auto_netz_kosten_start`), Auto Solar Energie Start (`input_number.auto_solar_energie_start`), Auto Netz Energie (`sensor.auto_netz_energie`), Auto Netz Kosten (`sensor.auto_netz_kosten`), Auto Solar Energie (`sensor.auto_solar_energie`), Wallbox Zielstatus (`sensor.wallbox_zielstatus`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

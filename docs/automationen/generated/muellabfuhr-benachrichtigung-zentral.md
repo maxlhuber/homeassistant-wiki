@@ -35,11 +35,11 @@ Bei einer fehlenden oder unklaren Meldung den Abfuhrtermin im Kalender beziehung
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Müllabfuhr Benachrichtigung Zentral |
-    | Home-Assistant-ID | `1776706598749` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1776706598749 |
+    | Modus | single |
     | Kategorie | Haushalt |
     | Verwendete Entities | AbfallBio (`sensor.abfallbio`), AbfallPapier (`sensor.abfallpapier`), AbfallRecycling (`sensor.abfallrecycling`), AbfallRestmuell (`sensor.abfallrestmuell`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

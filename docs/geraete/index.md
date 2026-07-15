@@ -2,13 +2,13 @@
 
 # Geräte und ihre Standorte
 
-Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich technische Dienste, Plugins, virtuelle Gruppen und Diagnoseeinträge; diese erscheinen bewusst nicht in der Familienansicht.
+Hier stehen **102 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich technische Dienste, Plugins, virtuelle Gruppen und Diagnoseeinträge; diese erscheinen bewusst nicht in der Familienansicht.
 
 ## Nach Raum
 
 | Gerät | Art | Standort | Standortstatus |
 |---|---|---|---|
-| Body+ | Waage | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
+| Body\+ | Waage | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
 | Fensterkontakt Bad | Tür-/Fensterkontakt | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
 | Lidl LED Panel Bad | Licht | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
 | Max' Echo Show | Lautsprecher / Sprachassistent | [Bad · Erdgeschoss](../raeume/generated/bad.md) | in Home Assistant bestätigt |
@@ -33,7 +33,7 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Temperatursensor 3D Drucker | Temperatur-/Feuchtesensor | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
 | Wandschalter Büro | Wandschalter / Taster | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
 | WLED Laterne | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
-| Dashboard-Tablet | Bedien-Tablet | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
+| Dashboard\-Tablet | Bedien-Tablet | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Filament Diele 1 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | aus Name/Funktion abgeleitet |
 | Filament Diele 2 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Filament Diele 3 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
@@ -48,7 +48,7 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Wandschalter Diele Eingang | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Wandschalter Diele Wohnzimmer | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Wandschalter Kinderzimmerflur | Wandschalter / Taster | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
-| Wallbox (go-e) | Wallbox | [Garage · Außenbereich](../raeume/generated/garage.md) | in Home Assistant bestätigt |
+| Wallbox \(go\-e\) | Wallbox | [Garage · Außenbereich](../raeume/generated/garage.md) | in Home Assistant bestätigt |
 | Heizstrahler Lounge | Heizgerät | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
 | Heizstrahler Tisch | Heizgerät | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
 | Hue color Terasse Stehlaterne | Licht | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
@@ -83,7 +83,7 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Wandschalter Schlafzimmer | Wandschalter / Taster | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
 | Weißer Dot | Lautsprecher / Sprachassistent | [Schlafzimmer · Erdgeschoss](../raeume/generated/schlafzimmer.md) | in Home Assistant bestätigt |
 | Strommesser Solar | Stromzähler / Energiemesser | [Sicherungskasten · Keller](../raeume/generated/sicherungskasten.md) | in Home Assistant bestätigt |
-| Tibber-Stromzähler | Stromzähler / Energiemesser | [Sicherungskasten · Keller](../raeume/generated/sicherungskasten.md) | in Home Assistant bestätigt |
+| Tibber\-Stromzähler | Stromzähler / Energiemesser | [Sicherungskasten · Keller](../raeume/generated/sicherungskasten.md) | in Home Assistant bestätigt |
 | Hue white Speisekammer | Licht | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
 | Temperatursensor Speisekammer | Temperatur-/Feuchtesensor | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
 | Türkontakt Speisekammer | Tür-/Fensterkontakt | [Speisekammer · Erdgeschoss](../raeume/generated/speisekammer.md) | in Home Assistant bestätigt |
@@ -107,6 +107,7 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Hue LED Stripe Fensterbank | Licht | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 | Kaffeemaschine | Kaffeemaschine | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 | Steckdose Entertainment | Smarte Steckdose | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
+| Steckdose Klimaanlage | Smarte Steckdose | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 | Temperatursensor Wohnzimmer | Temperatur-/Feuchtesensor | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 | Wandschalter Wohnzimmer | Wandschalter / Taster | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 
@@ -119,4 +120,4 @@ Hier stehen **101 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
     | Echo Kids | Lautsprecher / Sprachassistent | noch offen |
     | Schwarzer Dot | Lautsprecher / Sprachassistent | noch offen |
 
-<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

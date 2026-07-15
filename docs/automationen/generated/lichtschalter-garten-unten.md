@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Schaltet die Lounge-Beleuchtung bei rechtem Tastendruck des Garten-Wandschalters. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
+Schaltet die Lounge\-Beleuchtung bei rechtem Tastendruck des Garten\-Wandschalters. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
 
 ## Sie startet, wenn …
 
@@ -34,11 +34,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Garten unten |
-    | Home-Assistant-ID | `1768303858568` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768303858568 |
+    | Modus | single |
     | Kategorie | Garten & Wasser |
     | Verwendete Entities | Lounge (`light.lounge`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

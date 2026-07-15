@@ -35,11 +35,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Spielzimmer |
-    | Home-Assistant-ID | `1768302068809` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768302032548 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
-    | Verwendete Entities | Kinderzimmer (`light.kinderzimmer`) |
+    | Verwendete Entities | Spielzimmer (`light.spielzimmer`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

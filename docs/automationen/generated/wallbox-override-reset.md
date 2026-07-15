@@ -14,7 +14,7 @@ search:
 
 ## Das bemerkst du im Alltag
 
-Setzt den Wallbox-Override nach 2 Stunden wieder aus und informiert Max per Push-Nachricht.
+Setzt den Wallbox\-Override nach 2 Stunden wieder aus und informiert Max per Push\-Nachricht.
 
 ## Sie startet, wenn …
 
@@ -40,10 +40,10 @@ Nicht verwenden. Die Seite bleibt nur als Wartungshinweis erhalten.
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Wallbox Override Reset |
-    | Home-Assistant-ID | `1742245735922` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1742245735922 |
+    | Modus | single |
     | Kategorie | Energie & Auto |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

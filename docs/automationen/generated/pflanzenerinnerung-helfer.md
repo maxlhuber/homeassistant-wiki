@@ -14,7 +14,7 @@ search:
 
 ## Das bemerkst du im Alltag
 
-Beendet die Pflanzenerinnerung, wenn die Mobile-App-Aktion "gegossen" ausgelöst wird.
+Beendet die Pflanzenerinnerung, wenn die Mobile\-App\-Aktion "gegossen" ausgelöst wird.
 
 ## Sie startet, wenn …
 
@@ -39,11 +39,11 @@ Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erle
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Pflanzenerinnerung Helfer |
-    | Home-Assistant-ID | `1680326169555` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1680326169555 |
+    | Modus | single |
     | Kategorie | Garten & Wasser |
     | Verwendete Entities | Gießkanne (`input_boolean.giesskanne`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

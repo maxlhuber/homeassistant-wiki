@@ -37,11 +37,11 @@ Wenn die automatische Öffnung ausbleibt, Schlüssel oder Nuki-Bedienung verwend
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Tür öffnen wenn Max zuhause ankommt |
-    | Home-Assistant-ID | `1768477812326` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768477812326 |
+    | Modus | single |
     | Kategorie | Sicherheit & Zugang |
     | Verwendete Entities | Hase (`device_tracker.max_iphone`), Meikes iPhone (`device_tracker.meikes_iphone`), Nuki Öffner Lock (`lock.nuki_offner_lock`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

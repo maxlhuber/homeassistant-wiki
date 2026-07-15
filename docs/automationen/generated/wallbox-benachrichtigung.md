@@ -35,11 +35,11 @@ Den tatsächlichen Ladezustand im Fahrzeug oder an der Wallbox prüfen. Eine feh
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Wallbox Benachrichtigung |
-    | Home-Assistant-ID | `1763020246492` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1763020246492 |
+    | Modus | single |
     | Kategorie | Energie & Auto |
     | Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Force state (`select.go_echarger_252938_frc`), Aktueller Strompreis (`sensor.am_anger_3_aktueller_strompreis`), Ladezustand (`sensor.born_ladezustand_4`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

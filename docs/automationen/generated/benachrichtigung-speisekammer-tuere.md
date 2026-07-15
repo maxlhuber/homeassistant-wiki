@@ -35,11 +35,11 @@ Zuerst die reale Situation vor Ort prüfen. Türen und Fenster von Hand sichern;
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Benachrichtigung Speisekammer Türe |
-    | Home-Assistant-ID | `1768313917380` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768313917380 |
+    | Modus | single |
     | Kategorie | Sicherheit & Zugang |
     | Verwendete Entities | Tür (`binary_sensor.turkontakt_speisekammer_contact`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

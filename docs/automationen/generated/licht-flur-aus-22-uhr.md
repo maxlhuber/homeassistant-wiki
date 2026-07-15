@@ -34,11 +34,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Licht Flur aus 22 Uhr |
-    | Home-Assistant-ID | `1735752603155` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1735752603155 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Diele (`light.diele`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

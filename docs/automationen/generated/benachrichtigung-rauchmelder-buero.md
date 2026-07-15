@@ -26,7 +26,8 @@ Keine weitere Voraussetzung ist hinterlegt.
 
 1. Push-Nachricht an Max' iPhone senden
 2. Push-Nachricht an Meikes iPhone senden
-3. Beide Versandwege werden unabhängig voneinander versucht.
+3. Push-Nachricht an Meikes iPhone senden
+4. Beide Versandwege werden unabhängig voneinander versucht.
 
 ## So kannst du reagieren
 
@@ -39,11 +40,11 @@ Nicht auf die App warten: Den hörbaren Rauchmelder und die Situation vor Ort er
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Benachrichtigung Rauchmelder Büro |
-    | Home-Assistant-ID | `1768313703595` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768313703595 |
+    | Modus | single |
     | Kategorie | Sicherheit & Zugang |
     | Verwendete Entities | Rauch (`binary_sensor.rauchmelder_buro_smoke`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -34,12 +34,12 @@ Der Trockner funktioniert unabhängig von dieser Meldung. Bleibt die Nachricht a
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Trockner fertig Blueprint |
-    | Home-Assistant-ID | `1767206571243` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1767206571243 |
+    | Modus | single |
     | Kategorie | Haushalt |
     | Verwendete Entities | Leistung (`sensor.steckdose_trockner_power`) |
-    | Blueprint | `sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml` |
+    | Blueprint | sbyx/notify\-or\-do\-something\-when\-an\-appliance\-like\-a\-dishwasher\-or\-washing\-machine\-finishes.yaml |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

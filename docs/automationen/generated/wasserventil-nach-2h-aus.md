@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Schaltet das Garten-Wasserventil 2 Stunden nach dem Einschalten automatisch wieder aus.
+Schaltet das Garten\-Wasserventil 2 Stunden nach dem Einschalten automatisch wieder aus.
 
 ## Sie startet, wenn …
 
@@ -35,11 +35,11 @@ Die betroffene Funktion in Home Assistant direkt bedienen. Bei Wasser immer vor 
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Wasserventil nach 2h aus |
-    | Home-Assistant-ID | `1744732182203` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1744732182203 |
+    | Modus | single |
     | Kategorie | Garten & Wasser |
     | Verwendete Entities | Wasserventil garten (`switch.wasserventil_garten`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

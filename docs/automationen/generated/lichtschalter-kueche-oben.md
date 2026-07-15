@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Schaltet das Küchenlicht bei linkem Tastendruck des Z2M-Wandschalters. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
+Schaltet das Küchenlicht bei linkem Tastendruck des Z2M\-Wandschalters. Beim Einschalten wird immer 100 Prozent Helligkeit gesetzt.
 
 ## Sie startet, wenn …
 
@@ -34,11 +34,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Küche oben |
-    | Home-Assistant-ID | `1768302399176` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768302399176 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Küche (`light.kuche_2`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

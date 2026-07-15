@@ -5,7 +5,7 @@ search:
 
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# System - Recorder täglich auf 30 Tage begrenzen
+# System \- Recorder täglich auf 30 Tage begrenzen
 
 !!! info "Status: ausgeschaltet"
     Ausgeschaltet, weil Home Assistant die Aufbewahrungsdauer bereits selbst verwaltet.
@@ -14,7 +14,7 @@ search:
 
 ## Das bemerkst du im Alltag
 
-Hält die kurzfristige Recorder-History bei 30 Tagen. Long-term statistics bleiben erhalten und werden vom Energy-Dashboard weiter genutzt.
+Hält die kurzfristige Recorder\-History bei 30 Tagen. Long\-term statistics bleiben erhalten und werden vom Energy\-Dashboard weiter genutzt.
 
 ## Sie startet, wenn …
 
@@ -38,11 +38,11 @@ Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technisch
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | System - Recorder täglich auf 30 Tage begrenzen |
-    | Home-Assistant-ID | `1778143654356` |
-    | Modus | `single` |
+    | Ursprünglicher Name | System \- Recorder täglich auf 30 Tage begrenzen |
+    | Home-Assistant-ID | 1778143654356 |
+    | Modus | single |
     | Kategorie | System |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -14,7 +14,7 @@ search:
 
 ## Das bemerkst du im Alltag
 
-Aktualisiert den aktuellen Strompreis beim Home-Assistant-Start und anschließend alle 15 Minuten.
+Aktualisiert den aktuellen Strompreis beim Home\-Assistant\-Start und anschließend alle 15 Minuten.
 
 ## Sie startet, wenn …
 
@@ -40,11 +40,11 @@ Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox 
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Tibber API Timer |
-    | Home-Assistant-ID | `1742480921483` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1742480921483 |
+    | Modus | single |
     | Kategorie | Energie & Auto |
     | Verwendete Entities | Strompreis aktuell (`sensor.electricity_price_am_anger_3`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

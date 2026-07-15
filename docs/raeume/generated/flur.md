@@ -10,7 +10,7 @@
 
 | Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
 |---|---|---|---|---|
-| Dashboard-Tablet | Bedien-Tablet | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Dashboard\-Tablet | Bedien-Tablet | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 | Filament Diele 1 | Licht | aus Name/Funktion abgeleitet | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
 | Filament Diele 2 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
 | Filament Diele 3 | Licht | in Home Assistant bestätigt | genaue Position nicht hinterlegt | normalen Schalter verwenden, falls vorhanden |
@@ -44,4 +44,4 @@
 - Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
 - Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

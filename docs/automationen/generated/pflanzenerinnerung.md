@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Erinnert am 1. und 14. jedes Monats um 13:00 Uhr ans Gießen und wiederholt die Erinnerung alle 3 Stunden, bis der Gießkannen-Helfer zurückgesetzt wird.
+Erinnert am 1. und 14. jedes Monats um 13:00 Uhr ans Gießen und wiederholt die Erinnerung alle 3 Stunden, bis der Gießkannen\-Helfer zurückgesetzt wird.
 
 ## Sie startet, wenn …
 
@@ -35,11 +35,11 @@ Die Erinnerung kann über die Aktion „gegossen“ in der Handy-Meldung beendet
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Pflanzenerinnerung |
-    | Home-Assistant-ID | `1680323841770` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1680323841770 |
+    | Modus | single |
     | Kategorie | Garten & Wasser |
     | Verwendete Entities | Gießkanne (`input_boolean.giesskanne`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

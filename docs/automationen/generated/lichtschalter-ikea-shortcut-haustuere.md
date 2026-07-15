@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Nutzt den IKEA-Shortcut an der Haustüre als Alles-aus-Schalter für alle Lichter außer Büro oder als Einschalter für den Kronleuchter im Flur mit Standardhelligkeit.
+Nutzt den IKEA\-Shortcut an der Haustüre als Alles\-aus\-Schalter für alle Lichter außer Büro oder als Einschalter für den Kronleuchter im Flur mit Standardhelligkeit.
 
 ## Sie startet, wenn …
 
@@ -35,11 +35,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Ikea Shortcut Haustüre |
-    | Home-Assistant-ID | `1768303055798` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768303055798 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Alle Lichter außer Büro (`light.alle_lichter_ausser_buro`), Kronleuchter flur (`light.kronleuchter_flur`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

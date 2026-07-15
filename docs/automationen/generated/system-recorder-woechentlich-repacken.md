@@ -5,7 +5,7 @@ search:
 
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# System - Recorder wöchentlich repacken
+# System \- Recorder wöchentlich repacken
 
 !!! info "Status: ausgeschaltet"
     Ausgeschaltet; dieser zusätzliche Wartungsschritt ist derzeit nicht erforderlich.
@@ -14,7 +14,7 @@ search:
 
 ## Das bemerkst du im Alltag
 
-Repackt die MariaDB wöchentlich nach der 30-Tage-Purge, damit freigegebener Speicher tatsächlich zurückgewonnen wird. Bewusst nur wöchentlich, weil Repack I/O-intensiv ist.
+Repackt die MariaDB wöchentlich nach der 30\-Tage\-Purge, damit freigegebener Speicher tatsächlich zurückgewonnen wird. Bewusst nur wöchentlich, weil Repack I/O\-intensiv ist.
 
 ## Sie startet, wenn …
 
@@ -38,11 +38,11 @@ Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technisch
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | System - Recorder wöchentlich repacken |
-    | Home-Assistant-ID | `1778143687709` |
-    | Modus | `single` |
+    | Ursprünglicher Name | System \- Recorder wöchentlich repacken |
+    | Home-Assistant-ID | 1778143687709 |
+    | Modus | single |
     | Kategorie | System |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -39,11 +39,11 @@ In Home Assistant kann die Automation ausgeschaltet werden. Nach einer manuellen
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Bewässerung Urlaub |
-    | Home-Assistant-ID | `1780053635371` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1780053635371 |
+    | Modus | single |
     | Kategorie | Garten & Wasser |
     | Verwendete Entities | Wasserventil garten (`switch.wasserventil_garten`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

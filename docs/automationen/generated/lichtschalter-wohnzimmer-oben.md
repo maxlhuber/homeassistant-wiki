@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Schaltet das Licht am Esstisch bei linkem Tastendruck des Wohnzimmer-Wandschalters. Beim Einschalten werden 100 Prozent Helligkeit und die definierte Farbtemperatur gesetzt.
+Schaltet das Licht am Esstisch bei linkem Tastendruck des Wohnzimmer\-Wandschalters. Beim Einschalten werden 100 Prozent Helligkeit und die definierte Farbtemperatur gesetzt.
 
 ## Sie startet, wenn …
 
@@ -34,11 +34,11 @@ Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt b
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Lichtschalter Wohnzimmer oben |
-    | Home-Assistant-ID | `1768303690130` |
-    | Modus | `single` |
+    | Home-Assistant-ID | 1768303690130 |
+    | Modus | single |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Esstisch (`light.esstisch`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

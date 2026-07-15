@@ -10,7 +10,7 @@
 
 | Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |
 |---|---|---|---|---|
-| Body+ | Waage | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
+| Body\+ | Waage | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 | Fensterkontakt Bad | Tür-/Fensterkontakt | in Home Assistant bestätigt | am Fenster (aus Gerätename abgeleitet) | keine Bedienung; Meldungen können ausbleiben |
 | Lidl LED Panel Bad | Licht | in Home Assistant bestätigt | an der Decke (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
 | Max' Echo Show | Lautsprecher / Sprachassistent | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkt am Gerät bzw. mit Fernbedienung/App bedienen |
@@ -29,4 +29,4 @@
 - Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.
 - Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

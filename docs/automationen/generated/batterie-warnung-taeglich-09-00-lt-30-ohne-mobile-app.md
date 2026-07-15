@@ -1,6 +1,6 @@
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Batterie-Warnung täglich 09:00 (< 30%, ohne Mobile-App)
+# Batterie\-Warnung täglich 09:00 \(&lt; 30%, ohne Mobile\-App\)
 
 !!! success "Status: aktiv"
     Diese Automation ist in Home Assistant eingeschaltet.
@@ -9,7 +9,7 @@
 
 ## Das bemerkst du im Alltag
 
-Prüft täglich um 09:00 alle Batterie-Sensoren unter 30 Prozent, ignoriert Mobile-App-Geräte und sendet für jedes betroffene Gerät eine Push-Nachricht.
+Prüft täglich um 09:00 alle Batterie\-Sensoren unter 30 Prozent, ignoriert Mobile\-App\-Geräte und sendet für jedes betroffene Gerät eine Push\-Nachricht.
 
 ## Sie startet, wenn …
 
@@ -34,11 +34,11 @@ Das genannte Gerät aufsuchen und Batterie beziehungsweise Ladezustand direkt pr
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | Batterie-Warnung täglich 09:00 (< 30%, ohne Mobile-App) |
-    | Home-Assistant-ID | `1765563499671` |
-    | Modus | `single` |
+    | Ursprünglicher Name | Batterie\-Warnung täglich 09:00 \(&lt; 30%, ohne Mobile\-App\) |
+    | Home-Assistant-ID | 1765563499671 |
+    | Modus | single |
     | Kategorie | Energie & Auto |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

@@ -35,11 +35,11 @@ Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox 
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Wallbox Zentrale Steuerung |
-    | Home-Assistant-ID | `wallbox_central_control` |
-    | Modus | `restart` |
+    | Home-Assistant-ID | wallbox\_central\_control |
+    | Modus | restart |
     | Kategorie | Energie & Auto |
     | Verwendete Entities | Car connected (`binary_sensor.go_echarger_252938_car`), Force state dont charge (`button.go_echarger_252938_frc_2`), Force state charge (`button.go_echarger_252938_frc_3`), Wallbox Zielstatus (`sensor.wallbox_zielstatus`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

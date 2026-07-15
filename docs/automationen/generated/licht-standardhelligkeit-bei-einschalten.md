@@ -34,11 +34,11 @@ Die gewünschte Helligkeit am Wandschalter oder in Home Assistant direkt einstel
     | Feld | Wert |
     |---|---|
     | Ursprünglicher Name | Licht Standardhelligkeit bei Einschalten |
-    | Home-Assistant-ID | `1777792801744` |
-    | Modus | `queued` |
+    | Home-Assistant-ID | 1777792801744 |
+    | Modus | queued |
     | Kategorie | Licht & Präsenz |
     | Verwendete Entities | Bad (`light.bad`), Diele (`light.diele`), Flur (`light.flur`), Hue white schlafzimmer decke (`light.hue_white_schlafzimmer_decke`), Kronleuchter flur (`light.kronleuchter_flur`), Lidl led panel bad (`light.lidl_led_panel_bad`), Schlafzimmer (`light.schlafzimmer`) |
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 12. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

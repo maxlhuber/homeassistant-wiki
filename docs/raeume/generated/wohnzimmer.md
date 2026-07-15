@@ -4,7 +4,7 @@
 
 **Standort:** Erdgeschoss
 
-**Alltagsrelevante Geräte:** 15
+**Alltagsrelevante Geräte:** 16
 
 ## Geräte an diesem Standort
 
@@ -23,6 +23,7 @@
 | Hue LED Stripe Fensterbank | Licht | in Home Assistant bestätigt | auf/an der Fensterbank (aus Gerätename abgeleitet) | normalen Schalter verwenden, falls vorhanden |
 | Kaffeemaschine | Kaffeemaschine | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 | Steckdose Entertainment | Smarte Steckdose | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
+| Steckdose Klimaanlage | Smarte Steckdose | in Home Assistant bestätigt | genaue Position nicht hinterlegt | Taste an der Steckdose prüfen; Gerät nicht zurücksetzen |
 | Temperatursensor Wohnzimmer | Temperatur-/Feuchtesensor | in Home Assistant bestätigt | genaue Position nicht hinterlegt | keine Bedienung; Meldungen können ausbleiben |
 | Wandschalter Wohnzimmer | Wandschalter / Taster | in Home Assistant bestätigt | genaue Position nicht hinterlegt | direkte Bedienung am Gerät prüfen; nicht zurücksetzen |
 
@@ -38,4 +39,4 @@
 - Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
 - Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Inventar aus Backup vom 12. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
