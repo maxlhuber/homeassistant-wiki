@@ -103,7 +103,7 @@ sudo homeassistant-wiki-approve-review
 Installation beziehungsweise Reparatur der Pi-Dienste:
 
 ```bash
-sudo /srv/homeassistant-wiki/source/raspberry-pi/wiki-weekly-install.sh
+sudo bash /srv/homeassistant-wiki/source/raspberry-pi/wiki-weekly-install.sh
 ```
 
 ## Grundsätze
