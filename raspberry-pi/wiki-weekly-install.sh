@@ -28,6 +28,9 @@ apt-get install -y --no-install-recommends \
   ca-certificates cifs-utils curl git nginx python3-venv rsync util-linux
 
 install -d -m 0700 "${CONFIG_DIR}"
+if mountpoint -q "${MOUNT_POINT}"; then
+  umount "${MOUNT_POINT}"
+fi
 install -d -m 0750 -o wikiadmin -g wikiadmin "${MOUNT_POINT}"
 install -m 0644 "${REPO_DIR}/raspberry-pi/github_known_hosts" \
   "${CONFIG_DIR}/github-known-hosts"
@@ -101,9 +104,6 @@ chown -R wikiadmin:wikiadmin "${REPO_DIR}"
 install -d -m 0700 -o wikiadmin -g wikiadmin /var/lib/homeassistant-wiki
 
 systemctl daemon-reload
-if mountpoint -q "${MOUNT_POINT}"; then
-  umount "${MOUNT_POINT}"
-fi
 AUTOMOUNT_UNIT="$(systemd-escape --path --suffix=automount "${MOUNT_POINT}")"
 systemctl start "${AUTOMOUNT_UNIT}"
 timeout 30 ls "${MOUNT_POINT}" >/dev/null
