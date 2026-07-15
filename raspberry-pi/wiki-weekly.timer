@@ -1,0 +1,12 @@
+[Unit]
+Description=Home-Assistant-Wiki sonntags aktualisieren
+
+[Timer]
+OnCalendar=Sun *-*-* 06:00:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=15m
+AccuracySec=1m
+Unit=wiki-weekly.service
+
+[Install]
+WantedBy=timers.target

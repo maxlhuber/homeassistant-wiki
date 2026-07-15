@@ -9,6 +9,7 @@ read config entries, secrets, credentials, history databases or cloud data.
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import re
 import shutil
@@ -19,12 +20,42 @@ from typing import Any
 
 import yaml
 
+from wiki_snapshot import OPAQUE_VALUE, SECRET_VALUE_PATTERNS, SHORT_PRIVATE_NUMBER
+
 
 GENERATED_NOTICE = (
     "<!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. "
     "Nicht direkt bearbeiten. -->\n\n"
 )
 ENTITY_RE = re.compile(r"\b[a-z_]+\.[a-z0-9_]+\b")
+SOURCE_URL_PATTERN = re.compile(
+    r"(?:"
+    r"(?:(?:https?|ftp|file)\s*://|(?:javascript|data|mailto|tel)\s*:|www\.|"
+    r"(?<![\w.])//)[^\s<>'\"]+"
+    r"|(?<![\w@])(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?(?:/[^\s<>'\"]*)?"
+    r"|(?<![\w@])(?:[a-z0-9-]+\.)+"
+    r"(?:app|at|ch|cloud|com|de|dev|eu|info|io|local|me|net|org|uk|xyz)"
+    r"(?::\d+)?(?:/[^\s<>'\"]*)?"
+    r")",
+    re.IGNORECASE,
+)
+SOURCE_TEMPLATE_PATTERN = re.compile(
+    r"\{\{.*?\}\}|\{%.*?%\}|\{#.*?#\}", re.DOTALL
+)
+SOURCE_LABELED_SECRET = re.compile(
+    r"\b(?:password|passwort|passwd|secret|token|api[ _-]?key|access[ _-]?key|"
+    r"private[ _-]?key|pin|passcode|door[ _-]?code|türcode|alarmcode)\b"
+    r"(?:\s*(?::|=|\b(?:ist|is|lautet)\b))?\s+"
+    r"(?=[A-Za-z0-9_-]{4,16}\b)(?=[A-Za-z0-9_-]*\d)[A-Za-z0-9_-]{4,16}\b",
+    re.IGNORECASE,
+)
+SOURCE_EXPLICIT_SECRET = re.compile(
+    r"\b(?:password|passwort|passwd|secret|token|api[ _-]?key|access[ _-]?key|"
+    r"private[ _-]?key|pin|passcode|door[ _-]?code|türcode|alarmcode)\b"
+    r"\s*(?::|=|\b(?:ist|is|lautet)\b)\s*[^\s,;]{4,}",
+    re.IGNORECASE,
+)
+SOURCE_MARKDOWN_CHARACTER = re.compile(r"([\\`*_{}\[\]()#+!~-])")
 
 STATE_LABELS = {
     "on": "eingeschaltet",
@@ -48,6 +79,49 @@ def read_yaml(path: Path, default: Any) -> Any:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or default
 
 
+def merge_documentation_overrides(
+    generated: dict[str, Any], manual: dict[str, Any]
+) -> dict[str, Any]:
+    """Merge generated wording with reviewed data taking precedence.
+
+    The AI file is deliberately limited to automation wording.  Other sections
+    are copied only from the manually reviewed file so a generated response can
+    never move devices, change status flags or alter metadata.
+    """
+    result = dict(manual)
+    generated_automations = generated.get("automation_overrides", {})
+    manual_automations = manual.get("automation_overrides", {})
+    if not isinstance(generated_automations, dict):
+        generated_automations = {}
+    if not isinstance(manual_automations, dict):
+        manual_automations = {}
+
+    allowed_generated_fields = {
+        "description",
+        "trigger_steps",
+        "condition_steps",
+        "action_steps",
+        "manual",
+        "safety_note",
+    }
+    merged_automations: dict[str, Any] = {}
+    for alias, value in generated_automations.items():
+        if not isinstance(alias, str) or not isinstance(value, dict):
+            continue
+        merged_automations[alias] = {
+            key: item for key, item in value.items() if key in allowed_generated_fields
+        }
+    for alias, value in manual_automations.items():
+        if not isinstance(alias, str) or not isinstance(value, dict):
+            continue
+        merged_automations[alias] = {
+            **merged_automations.get(alias, {}),
+            **value,
+        }
+    result["automation_overrides"] = merged_automations
+    return result
+
+
 def slugify(value: str) -> str:
     value = (
         value.replace("ä", "ae")
@@ -67,6 +141,53 @@ def esc(value: Any) -> str:
     return str(value if value not in (None, "") else "–").replace("|", "\\|").replace("\n", " ")
 
 
+def safe_source_text(value: Any, field: str) -> str:
+    """Render backup/registry text as inert Markdown without exposing secrets.
+
+    `field` is always a fixed local label and deliberately the only source detail
+    included in an error.  The rejected value must never reach logs or status
+    notifications.
+    """
+    raw = str(value if value not in (None, "") else "–")
+    text = unicodedata.normalize("NFKC", raw)
+    if any(
+        unicodedata.category(character) in {"Cc", "Cf", "Zl", "Zp"}
+        and character not in "\r\n\t"
+        for character in text
+    ):
+        raise RuntimeError(
+            f"Ein Home-Assistant-Text enthält unzulässige Steuerzeichen ({field})."
+        )
+    text = re.sub(r"[\r\n\t]+", " ", text).strip() or "–"
+    if (
+        any(pattern.search(text) for pattern in SECRET_VALUE_PATTERNS)
+        or SOURCE_LABELED_SECRET.search(text)
+        or SOURCE_EXPLICIT_SECRET.search(text)
+    ):
+        raise RuntimeError(
+            f"Ein Home-Assistant-Text enthält ein geheimnisähnliches Muster ({field})."
+        )
+
+    # Links, templates, opaque identifiers and PIN-like numbers are useful
+    # neither to a family reader nor to the static site.  Replace them visibly
+    # before escaping every remaining Markdown/HTML control character.
+    text = SOURCE_URL_PATTERN.sub("[geschützter Link]", text)
+    text = SOURCE_TEMPLATE_PATTERN.sub("[geschützte Vorlage]", text)
+    text = OPAQUE_VALUE.sub("[geschützter Wert]", text)
+    text = SHORT_PRIVATE_NUMBER.sub("[geschützte Zahl]", text)
+    # Values are inserted as Markdown text, never as an HTML attribute.  Keeping
+    # quotes literal avoids numeric HTML entities whose `#` would be escaped next.
+    text = html.escape(text, quote=False)
+    return SOURCE_MARKDOWN_CHARACTER.sub(r"\\\1", text)
+
+
+def safe_source_scalar(value: Any, field: str) -> str:
+    """Render numeric HA settings literally and textual settings as protected text."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return str(value)
+    return safe_source_text(value, field)
+
+
 def listify(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -78,9 +199,10 @@ def duration(value: Any) -> str:
         parts = []
         for key, label in (("hours", "Std."), ("minutes", "Min."), ("seconds", "Sek.")):
             if value.get(key):
-                parts.append(f"{value[key]} {label}")
+                shown_value = safe_source_scalar(value[key], "Dauer")
+                parts.append(f"{shown_value} {label}")
         return " ".join(parts) or "festgelegte Dauer"
-    return str(value)
+    return safe_source_scalar(value, "Dauer")
 
 
 def category(alias: str) -> str:
@@ -98,7 +220,9 @@ def category(alias: str) -> str:
 
 def state_label(value: Any) -> str:
     raw = str(value)
-    return STATE_LABELS.get(raw, raw.replace("_", " "))
+    return STATE_LABELS.get(
+        raw, safe_source_text(raw.replace("_", " "), "Zustandsbezeichnung")
+    )
 
 
 def sentence_case(value: Any) -> str:
@@ -116,13 +240,26 @@ def main() -> None:
         default=Path(__file__).with_name("wiki_overrides.yaml"),
         help="Dauerhafte, geprüfte Ergänzungen zur Backup-Auswertung.",
     )
+    parser.add_argument(
+        "--ai-overrides",
+        type=Path,
+        help="Automatisch erzeugte Formulierungen; geprüfte Overrides haben Vorrang.",
+    )
+    parser.add_argument(
+        "--inventory-source-date",
+        help="Datum des automatisch gewählten Backups (nur Inventarstichtag).",
+    )
     args = parser.parse_args()
     source = args.source.resolve()
     docs = args.docs.resolve()
     if not source.is_dir() or not docs.is_dir():
         raise SystemExit("Quell- oder Dokumentationsordner fehlt.")
 
-    overrides = read_yaml(args.overrides.resolve(), {})
+    manual_overrides = read_yaml(args.overrides.resolve(), {})
+    generated_overrides = (
+        read_yaml(args.ai_overrides.resolve(), {}) if args.ai_overrides else {}
+    )
+    overrides = merge_documentation_overrides(generated_overrides, manual_overrides)
     automation_overrides = overrides.get("automation_overrides", {})
     device_area_overrides = overrides.get("device_area_overrides", {})
     entity_area_overrides = overrides.get("entity_area_overrides", {})
@@ -130,7 +267,11 @@ def main() -> None:
     scene_overrides = overrides.get("scene_overrides", {})
     force_include_devices = set(overrides.get("force_include_devices", []))
     metadata = overrides.get("metadata", {})
-    source_date = str(metadata.get("inventory_source_date") or "nicht dokumentiert")
+    source_date = str(
+        args.inventory_source_date
+        or metadata.get("inventory_source_date")
+        or "nicht dokumentiert"
+    )
     checked_on = str(metadata.get("live_checked_date") or source_date)
 
     storage = source / ".storage"
@@ -174,15 +315,16 @@ def main() -> None:
 
     def shown_floor_name(value: str | None) -> str:
         if value == "Ergeschoss":
-            return "Erdgeschoss"
+            value = "Erdgeschoss"
         if value == "Draussen":
-            return "Außenbereich"
-        return value or "Keine Etage zugeordnet"
+            value = "Außenbereich"
+        return safe_source_text(value or "Keine Etage zugeordnet", "Etagenname")
 
     def area_location(area_id: str) -> str:
         area = area_by_id.get(area_id, {})
         floor = floor_by_id.get(area.get("floor_id") or "", {})
-        return f"{area.get('name', area_id)} · {shown_floor_name(floor.get('name'))}"
+        area_name = safe_source_text(area.get("name", area_id), "Raumname")
+        return f"{area_name} · {shown_floor_name(floor.get('name'))}"
 
     def friendly_device_name(device: dict[str, Any]) -> str:
         raw = raw_device_name(device).strip()
@@ -209,15 +351,23 @@ def main() -> None:
             return "Dashboard-Tablet"
         return raw
 
+    def shown_device_name(device: dict[str, Any]) -> str:
+        raw_name = raw_device_name(device).strip()
+        shown_name = friendly_device_name(device)
+        if raw_name in device_name_overrides:
+            return shown_name
+        return safe_source_text(shown_name, "Gerätename")
+
     def device_name(device_id: str | None) -> str:
-        return friendly_device_name(device_by_id.get(device_id or "", {}))
+        return shown_device_name(device_by_id.get(device_id or "", {}))
 
     def entity_label(entity_id: str, technical: bool = False) -> str:
         entity = entity_by_id.get(entity_id, {})
         label = entity.get("name") or entity.get("original_name")
         if not label:
             label = entity_id.split(".", 1)[-1].replace("_", " ").capitalize()
-        return f"{label} (`{entity_id}`)" if technical else str(label)
+        shown_label = safe_source_text(label, "Entity-Name")
+        return f"{shown_label} (`{entity_id}`)" if technical else shown_label
 
     def names_for(value: Any, technical: bool = False) -> str:
         result = []
@@ -229,11 +379,11 @@ def main() -> None:
             elif isinstance(item, str) and item in device_by_id:
                 result.append(device_name(item))
             elif isinstance(item, str) and item in area_by_id:
-                result.append(area_by_id[item]["name"])
+                result.append(safe_source_text(area_by_id[item]["name"], "Raumname"))
             elif isinstance(item, str):
-                result.append(item.replace("_", " "))
+                result.append(safe_source_text(item.replace("_", " "), "Bezeichnung"))
             else:
-                result.append(str(item))
+                result.append(safe_source_text(item, "Bezeichnung"))
         return ", ".join(result) or "das betroffene Gerät"
 
     def device_platforms(device: dict[str, Any]) -> set[str]:
@@ -393,9 +543,13 @@ def main() -> None:
         if kind == "numeric_state":
             limits = []
             if item.get("above") is not None:
-                limits.append(f"über {item['above']}")
+                limits.append(
+                    f"über {safe_source_scalar(item['above'], 'Grenzwertbezeichnung')}"
+                )
             if item.get("below") is not None:
-                limits.append(f"unter {item['below']}")
+                limits.append(
+                    f"unter {safe_source_scalar(item['below'], 'Grenzwertbezeichnung')}"
+                )
             return f"der Messwert von {target} liegt {' und '.join(limits)}"
         if kind == "time":
             return f"es ist {names_for(item.get('at'))} Uhr"
@@ -404,7 +558,10 @@ def main() -> None:
         if kind == "sun":
             return "Sonnenaufgang oder Sonnenuntergang ist erreicht"
         if kind == "device":
-            event_type = str(item.get("type", "Ereignis")).replace("_", " ")
+            event_type = safe_source_text(
+                str(item.get("type", "Ereignis")).replace("_", " "),
+                "Ereignisbezeichnung",
+            )
             if event_type.casefold() == "action":
                 return f"eine Taste am {target} wird gedrückt"
             return f"{target} meldet „{event_type}“"
@@ -432,9 +589,13 @@ def main() -> None:
         if kind == "numeric_state":
             limits = []
             if item.get("above") is not None:
-                limits.append(f"über {item['above']}")
+                limits.append(
+                    f"über {safe_source_scalar(item['above'], 'Grenzwertbezeichnung')}"
+                )
             if item.get("below") is not None:
-                limits.append(f"unter {item['below']}")
+                limits.append(
+                    f"unter {safe_source_scalar(item['below'], 'Grenzwertbezeichnung')}"
+                )
             return f"{target} liegt {' und '.join(limits)}"
         if kind == "time":
             return "der festgelegte Zeitraum ist aktiv"
@@ -465,7 +626,8 @@ def main() -> None:
             if service.startswith("notify.mobile_app_"):
                 recipient = service.removeprefix("notify.mobile_app_").replace("_", " ")
                 recipient = {"max iphone": "Max' iPhone", "meikes iphone": "Meikes iPhone"}.get(recipient, recipient)
-                return f"Push-Nachricht an {recipient} senden"
+                shown_recipient = safe_source_text(recipient, "Empfängerbezeichnung")
+                return f"Push-Nachricht an {shown_recipient} senden"
             exact = {
                 "lock.open": "den Nuki-Öffner öffnen",
                 "recorder.purge": "die Home-Assistant-Datenbank warten",
@@ -489,7 +651,10 @@ def main() -> None:
             addition = ""
             data = item.get("data") or {}
             if data.get("brightness_pct") is not None:
-                addition = f" mit {data['brightness_pct']} % Helligkeit"
+                brightness = safe_source_scalar(
+                    data["brightness_pct"], "Helligkeitswert"
+                )
+                addition = f" mit {brightness} % Helligkeit"
             return f"{target_summary(item)} {verb}{addition}"
         if "delay" in item:
             return f"{duration(item['delay'])} warten"
@@ -581,10 +746,11 @@ def main() -> None:
     slug_counts: Counter[str] = Counter()
     auto_meta: list[dict[str, Any]] = []
     for automation in automations:
-        alias = automation.get("alias") or "Automation ohne Namen"
+        alias = str(automation.get("alias") or "Automation ohne Namen")
+        shown_alias = safe_source_text(alias, "Automationsname")
         override = automation_overrides.get(alias, {}) or {}
-        title = override.get("title") or alias
-        base_slug = slugify(alias)
+        title = override.get("title") or shown_alias
+        base_slug = slugify(shown_alias)
         slug_counts[base_slug] += 1
         slug = base_slug if slug_counts[base_slug] == 1 else f"{base_slug}-{slug_counts[base_slug]}"
         group = category(alias)
@@ -625,7 +791,11 @@ def main() -> None:
             action_lines = [str(x) for x in override.get("action_steps", [])]
         action_lines.extend(str(x) for x in override.get("result_append", []))
 
-        description = override.get("description") or automation.get("description")
+        description = override.get("description")
+        if not description and automation.get("description"):
+            description = safe_source_text(
+                automation["description"], "Automationsbeschreibung"
+            )
         if not description and trigger_lines and action_lines:
             description = f"Wenn {trigger_lines[0].lower()}, wird anschließend {action_lines[0].lower()}."
         if not description:
@@ -659,15 +829,24 @@ def main() -> None:
         page.append("<div data-search-exclude markdown>\n\n")
         page.append("??? info \"Technik für Max\"\n\n")
         page.append("    | Feld | Wert |\n    |---|---|\n")
-        page.append(f"    | Ursprünglicher Name | {esc(alias)} |\n")
-        page.append(f"    | Home-Assistant-ID | `{esc(automation.get('id'))}` |\n")
-        page.append(f"    | Modus | `{esc(automation.get('mode', 'single'))}` |\n")
+        page.append(f"    | Ursprünglicher Name | {esc(shown_alias)} |\n")
+        page.append(
+            "    | Home-Assistant-ID | "
+            f"{esc(safe_source_text(automation.get('id'), 'Automations-ID'))} |\n"
+        )
+        page.append(
+            "    | Modus | "
+            f"{esc(safe_source_text(automation.get('mode', 'single'), 'Automationsmodus'))} |\n"
+        )
         page.append(f"    | Kategorie | {group} |\n")
         if entity_ids:
             technical_entities = ", ".join(entity_label(x, True) for x in sorted(entity_ids)[:30])
             page.append(f"    | Verwendete Entities | {technical_entities} |\n")
         if blueprint:
-            page.append(f"    | Blueprint | `{blueprint.get('path', 'nicht angegeben')}` |\n")
+            blueprint_path = safe_source_text(
+                blueprint.get("path", "nicht angegeben"), "Blueprint-Pfad"
+            )
+            page.append(f"    | Blueprint | {esc(blueprint_path)} |\n")
         page.append("\n</div>\n\n")
         page.append(f"<p class=\"page-status\">Definition aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
         (auto_dir / f"{slug}.md").write_text("".join(page), encoding="utf-8")
@@ -726,10 +905,11 @@ def main() -> None:
         auto_index.append("## Szenen\n\n")
         auto_index.append("Eine Szene stellt mehrere Geräte gemeinsam auf gespeicherte Werte.\n\n")
         for scene in shown_scenes:
-            name = scene.get("name") or "Szene ohne Namen"
+            name = str(scene.get("name") or "Szene ohne Namen")
+            shown_name = safe_source_text(name, "Szenenname")
             count = scene_overrides.get("entity_counts", {}).get(name, len(scene.get("entities") or {}))
             description = scene_overrides.get("descriptions", {}).get(name, f"Verändert {count} gespeicherte Zustände.")
-            auto_index.append(f"- **{name}:** {description}\n")
+            auto_index.append(f"- **{shown_name}:** {description}\n")
         auto_index.append("\n")
     auto_index.append(f"<p class=\"page-status\">Definitionen aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "automationen" / "index.md").write_text("".join(auto_index), encoding="utf-8")
@@ -755,13 +935,17 @@ def main() -> None:
     for entity in everyday_entities:
         area_entities[area_id_for_entity(entity)].append(entity)
 
-    room_slug: dict[str, str] = {area["id"]: slugify(area["name"]) for area in areas}
+    room_slug: dict[str, str] = {
+        area["id"]: slugify(safe_source_text(area["name"], "Raumname"))
+        for area in areas
+    }
     for area in areas:
         area_id = area["id"]
+        shown_area_name = safe_source_text(area["name"], "Raumname")
         floor = shown_floor_name(floor_by_id.get(area.get("floor_id") or "", {}).get("name"))
         room_devices = area_devices.get(area_id, [])
         related = [x for x in auto_meta if x["enabled"] and not x["technical"] and area_id in x["areas"]]
-        page = [GENERATED_NOTICE, f"# {area['name']}\n\n"]
+        page = [GENERATED_NOTICE, f"# {shown_area_name}\n\n"]
         page.append(f"**Standort:** {floor}\n\n**Alltagsrelevante Geräte:** {len(room_devices)}\n\n")
         if area["name"] == "Gästeklo":
             page.append("!!! note \"Abweichender Gerätename\"\n    Das sichtbare Licht trägt in Home Assistant „Gästebad“ im Namen. Gemeint ist nach aktueller Raumzuordnung das Gästeklo.\n\n")
@@ -772,7 +956,7 @@ def main() -> None:
             for device in room_devices:
                 assignment = "in Home Assistant bestätigt" if device.get("area_id") else "aus Name/Funktion abgeleitet"
                 page.append(
-                    f"| {esc(friendly_device_name(device))} | {device_kind(device)} | {assignment} | "
+                    f"| {esc(shown_device_name(device))} | {device_kind(device)} | {assignment} | "
                     f"{position_hint(device)} | {outage_hint(device)} |\n"
                 )
         else:
@@ -808,7 +992,8 @@ def main() -> None:
         room_index.append(f"## {shown_name}\n\n")
         for area in sorted(floor_areas[floor["floor_id"]], key=lambda x: x["name"].casefold()):
             count = len(area_devices.get(area["id"], []))
-            room_index.append(f"- [{area['name']}](generated/{room_slug[area['id']]}.md) – {count} alltagsrelevante Geräte\n")
+            area_name = safe_source_text(area["name"], "Raumname")
+            room_index.append(f"- [{area_name}](generated/{room_slug[area['id']]}.md) – {count} alltagsrelevante Geräte\n")
         room_index.append("\n")
     room_index.append(f"<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "raeume" / "index.md").write_text("".join(room_index), encoding="utf-8")
@@ -822,7 +1007,7 @@ def main() -> None:
         for device in area_devices.get(area["id"], []):
             status = "in Home Assistant bestätigt" if device.get("area_id") else "aus Name/Funktion abgeleitet"
             device_index.append(
-                f"| {esc(friendly_device_name(device))} | {device_kind(device)} | "
+                f"| {esc(shown_device_name(device))} | {device_kind(device)} | "
                 f"[{area_location(area['id'])}](../raeume/generated/{room_slug[area['id']]}.md) | {status} |\n"
             )
 
@@ -850,7 +1035,9 @@ def main() -> None:
         device_index.append("    Diese Geräte wirken stationär, haben aber noch keinen verlässlichen festen Raum. Es wird bewusst kein Standort erfunden.\n\n")
         device_index.append("    | Gerät | Art | Standort |\n    |---|---|---|\n")
         for device in unassigned_candidates:
-            device_index.append(f"    | {esc(friendly_device_name(device))} | {device_kind(device)} | noch offen |\n")
+            device_index.append(
+                f"    | {esc(shown_device_name(device))} | {device_kind(device)} | noch offen |\n"
+            )
 
     device_index.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "geraete" / "index.md").write_text("".join(device_index), encoding="utf-8")

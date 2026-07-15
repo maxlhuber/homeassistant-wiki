@@ -31,6 +31,10 @@ apt-get install -y --no-install-recommends \
   python3-pip \
   python3-venv \
   rsync \
+  curl \
+  git \
+  cifs-utils \
+  util-linux \
   ca-certificates \
   avahi-daemon
 
@@ -49,21 +53,57 @@ SOURCE_DIR="/srv/homeassistant-wiki/source"
 RELEASES_DIR="/var/www/homeassistant-wiki-releases"
 CURRENT_LINK="/var/www/homeassistant-wiki-current"
 RELEASE_DIR="${RELEASES_DIR}/release-$(date +%Y%m%d%H%M%S)-$$"
+OLD_TARGET=""
+SWITCHED=0
 install -d -m 0755 "${RELEASES_DIR}" "${RELEASE_DIR}"
 cleanup_failed_release() {
-  rm -rf -- "${RELEASE_DIR}" "${CURRENT_LINK}.new"
+  local exit_code="${1:-1}"
+  trap - ERR INT TERM
+  rm -f -- "${CURRENT_LINK}.new"
+  if [ "${SWITCHED}" -eq 1 ]; then
+    if [ -n "${OLD_TARGET}" ] && [ -d "${OLD_TARGET}" ]; then
+      ln -s "${OLD_TARGET}" "${CURRENT_LINK}.new"
+      mv -Tf "${CURRENT_LINK}.new" "${CURRENT_LINK}"
+      systemctl reload nginx.service || true
+    else
+      rm -f -- "${CURRENT_LINK}"
+    fi
+  fi
+  rm -rf -- "${RELEASE_DIR}"
+  exit "${exit_code}"
 }
-trap cleanup_failed_release ERR INT TERM
+trap 'cleanup_failed_release $?' ERR
+trap 'cleanup_failed_release 130' INT
+trap 'cleanup_failed_release 143' TERM
 /opt/homeassistant-wiki-venv/bin/python -m mkdocs build \
   --clean \
   --strict \
   --config-file "${SOURCE_DIR}/mkdocs.yml" \
   --site-dir "${RELEASE_DIR}"
+test -s "${RELEASE_DIR}/index.html"
+grep -Fq "Unser Zuhause" "${RELEASE_DIR}/index.html"
+nginx -t
 chown -R www-data:www-data "${RELEASE_DIR}"
+if [ -L "${CURRENT_LINK}" ]; then
+  OLD_TARGET="$(readlink -f "${CURRENT_LINK}")"
+fi
 ln -s "${RELEASE_DIR}" "${CURRENT_LINK}.new"
 mv -Tf "${CURRENT_LINK}.new" "${CURRENT_LINK}"
+SWITCHED=1
+systemctl reload nginx.service
+HEALTHY=0
+for _ in 1 2 3 4 5; do
+  if curl --fail --silent --show-error --max-time 10 \
+    --header 'Host: homeassistant-wiki.local' \
+    http://127.0.0.1/ | grep -Fq "Unser Zuhause"; then
+    HEALTHY=1
+    break
+  fi
+  sleep 1
+done
+test "${HEALTHY}" -eq 1
+SWITCHED=0
 trap - ERR INT TERM
-systemctl reload nginx.service 2>/dev/null || true
 ls -1dt "${RELEASES_DIR}"/release-* 2>/dev/null | tail -n +4 | xargs -r rm -rf --
 EOF
 chmod 0755 /usr/local/sbin/wiki-update

@@ -11,3 +11,7 @@ eingang/
 *.tar.gz
 *.backup
 .sdcard-build/
+
+# Laufzeitdaten der wöchentlichen Aktualisierung bleiben ausschließlich auf dem Pi.
+.wiki-state/
+scripts/wiki_ai_overrides.yaml
