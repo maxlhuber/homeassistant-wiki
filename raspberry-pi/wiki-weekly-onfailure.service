@@ -1,0 +1,27 @@
+[Unit]
+Description=Frühen Fehler der Wiki-Aktualisierung melden
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=wikiadmin
+Group=wikiadmin
+EnvironmentFile=-/etc/homeassistant-wiki/weekly.env
+LoadCredential=ha_webhook_url:/etc/homeassistant-wiki/ha-webhook-url
+ExecStart=/usr/local/sbin/wiki-weekly-onfailure
+StateDirectory=homeassistant-wiki
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadOnlyPaths=/opt/homeassistant-wiki-runner /usr/local/sbin/wiki-weekly-onfailure
+ReadWritePaths=/var/lib/homeassistant-wiki

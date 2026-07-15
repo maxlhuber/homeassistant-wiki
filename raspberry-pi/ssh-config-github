@@ -1,0 +1,7 @@
+Host github-homeassistant-wiki
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github_homeassistant_wiki
+    IdentitiesOnly yes
+    UserKnownHostsFile ~/.ssh/github_known_hosts
+    StrictHostKeyChecking yes

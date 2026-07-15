@@ -43,6 +43,17 @@ device_name_overrides:
   "Temperatur Spielzimmer": "Temperatursensor Spielzimmer"
 
 automation_overrides:
+  "System: Wiki-Aktualisierung Statusmeldung":
+    technical: true
+    description: "Informiert Max, ob die automatische Wiki-Aktualisierung erfolgreich war oder Hilfe braucht. Sie steuert keine Geräte und verändert keine Hausfunktion."
+    manual: "Im Alltag ist keine Bedienung nötig. Bei einer Fehlermeldung bleibt die letzte funktionierende Wiki-Version verfügbar; Max prüft den genannten Bereich."
+    trigger_steps:
+      - "Der Wiki-Raspberry-Pi sendet nach seinem Wochenlauf einen internen Status an Home Assistant."
+    condition_steps:
+      - "Nur fest vorgegebene Statusarten werden angenommen."
+    action_steps:
+      - "Home Assistant sendet Max eine passende iPhone-Nachricht."
+
   "Auto-Laden Session Start (Snapshot)":
     technical: true
     description: "Merkt sich beim Anstecken die Zählerstände, damit Home Assistant später Energieanteile und Kosten dieser Ladesitzung berechnen kann. Der Ladevorgang wird dadurch nicht gestartet."

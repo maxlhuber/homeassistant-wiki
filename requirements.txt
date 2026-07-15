@@ -1,2 +1,4 @@
-mkdocs-material>=9,<10
-PyYAML>=6,<7
+mkdocs==1.6.1
+mkdocs-material==9.7.6
+PyYAML==6.0.3
+securetar==2026.4.1

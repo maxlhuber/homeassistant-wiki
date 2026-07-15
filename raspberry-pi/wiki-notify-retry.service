@@ -1,0 +1,27 @@
+[Unit]
+Description=Ausstehende Wiki-Meldungen an Home Assistant senden
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=wikiadmin
+Group=wikiadmin
+WorkingDirectory=/srv/homeassistant-wiki/source
+EnvironmentFile=-/etc/homeassistant-wiki/weekly.env
+LoadCredential=ha_webhook_url:/etc/homeassistant-wiki/ha-webhook-url
+ExecStart=/usr/local/sbin/wiki-notify-retry
+StateDirectory=homeassistant-wiki
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/homeassistant-wiki

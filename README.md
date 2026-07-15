@@ -53,15 +53,58 @@ Dauerhafte Korrekturen und vorsichtige Standortzuordnungen stehen in
 und keine Geheimnisse. Änderungen an generierten Seiten gehören in diese Datei oder
 in den Generator, weil direkte Änderungen beim nächsten Lauf überschrieben werden.
 
-Bei jedem neuen Backup müssen dort außerdem
-`metadata.inventory_source_date` (Stichtag des importierten Backups) und
-`metadata.live_checked_date` (Datum der tatsächlich live geprüften Ergänzungen und
-Statuswerte) bewusst aktualisiert werden. Der Generator rückt diese Daten nicht
-automatisch weiter, damit ein altes Backup nie als aktueller Live-Abgleich erscheint.
+Beim Wochenlauf wird `metadata.inventory_source_date` aus dem geprüften Backup
+übernommen. `metadata.live_checked_date` (Datum tatsächlich live geprüfter
+Ergänzungen und Statuswerte) rückt dagegen nie automatisch weiter, damit ein Backup
+nicht fälschlich als aktueller Live-Abgleich erscheint.
 
 Die Familienansicht filtert deaktivierte Entitäten, Diagnose- und Konfigurationswerte,
 interne Dienste, virtuelle Gruppen und erkennbare Duplikate. Ein abgeleiteter Standort
 wird im Wiki ausdrücklich anders gekennzeichnet als ein in Home Assistant bestätigter Raum.
+
+## Automatische Wochenaktualisierung auf dem Raspberry Pi
+
+Der Raspberry Pi erledigt den vollständigen Lauf sonntags ab 06:00 Uhr selbstständig;
+ein eingeschalteter PC ist nicht erforderlich. Der Ablauf ist absichtlich streng:
+
+1. Das neueste **gültige Home-Assistant-Backup** wird im nur lesbar eingebundenen
+   NAS-Ordner gesucht.
+2. Ausschließlich Automationen, Szenen sowie Raum-, Geräte- und Entity-Register
+   werden im Datenstrom entschlüsselt. Das vollständige Backup wird nicht entpackt.
+3. Ein semantischer Vergleich übermittelt nur geänderte Automationen an das kleine,
+   fest angeheftete OpenAI-Modell. Ohne Änderungen erfolgt nur eine minimale
+   Guthabenprobe. Die API speichert die Anfrage nicht (`store: false`).
+4. Der Generator läuft zweimal. Stimmen beide Ergebnisse nicht exakt überein,
+   fehlen Inhalte oder sieht ein Text wie ein Geheimnis aus, wird abgebrochen.
+5. Erst nach strengem MkDocs-Build werden die erzeugten Seiten nach GitHub
+   übertragen. Danach schaltet der Pi atomar auf das neue Release um und prüft die
+   echte Startseite. Bei einem Fehler bleibt beziehungsweise wird die letzte
+   funktionierende Version aktiv.
+6. Home Assistant meldet Erfolg, Prüfbedarf, Backup-/GitHub-Fehler und insbesondere
+   aufgebrauchtes OpenAI-Guthaben an das iPhone. Ist Home Assistant kurzzeitig nicht
+   erreichbar, bleibt die Meldung in einer lokalen Warteschlange.
+
+Geheimnisse liegen ausschließlich als root-geschützte Dateien unter
+`/etc/homeassistant-wiki`. Der NAS-Zugriff ist `ro,nosuid,nodev,noexec` eingebunden.
+Ein neuer OpenAI-Schlüssel wird auf dem Pi interaktiv mit folgendem Befehl hinterlegt:
+
+```bash
+sudo homeassistant-wiki-set-openai-key
+```
+
+Wenn eine sicherheitsrelevante oder ungewöhnlich große Änderung bewusst geprüft
+werden muss, bleibt das bisherige Wiki aktiv. Nach der Prüfung wird exakt dieser
+Stand einmalig freigegeben mit:
+
+```bash
+sudo homeassistant-wiki-approve-review
+```
+
+Installation beziehungsweise Reparatur der Pi-Dienste:
+
+```bash
+sudo /srv/homeassistant-wiki/source/raspberry-pi/wiki-weekly-install.sh
+```
 
 ## Grundsätze
 
