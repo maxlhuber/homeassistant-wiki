@@ -16,6 +16,8 @@ for required in \
   "${REPO_DIR}/requirements.txt" \
   "${REPO_DIR}/raspberry-pi/wiki-weekly.service" \
   "${REPO_DIR}/raspberry-pi/wiki-weekly.timer" \
+  "${REPO_DIR}/raspberry-pi/wiki-mqtt-trigger.sh" \
+  "${REPO_DIR}/raspberry-pi/wiki-mqtt-trigger.service" \
   "${REPO_DIR}/raspberry-pi/wiki-notify-retry.service" \
   "${REPO_DIR}/raspberry-pi/wiki-notify-retry.timer" \
   "${REPO_DIR}/raspberry-pi/wiki-weekly-onfailure.service"; do
@@ -25,7 +27,7 @@ done
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y --no-install-recommends \
-  ca-certificates cifs-utils curl git nginx python3-venv rsync util-linux
+  ca-certificates cifs-utils curl git mosquitto-clients nginx python3-venv rsync util-linux
 
 install -d -m 0700 "${CONFIG_DIR}"
 if mountpoint -q "${MOUNT_POINT}"; then
@@ -46,6 +48,8 @@ install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-notify-retry.sh" \
   /usr/local/sbin/wiki-notify-retry
 install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-weekly-onfailure.sh" \
   /usr/local/sbin/wiki-weekly-onfailure
+install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-mqtt-trigger.sh" \
+  /usr/local/sbin/wiki-mqtt-trigger
 install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-set-openai-key.sh" \
   /usr/local/sbin/homeassistant-wiki-set-openai-key
 install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-approve-review.py" \
@@ -68,6 +72,16 @@ for secret in nas-credentials ha-backup-key ha-webhook-url openai-api-key; do
   chmod 0600 "${CONFIG_DIR}/${secret}"
 done
 
+MQTT_TRIGGER_READY=true
+for secret in mqtt-username mqtt-password mqtt-topic mqtt-payload; do
+  if [ ! -s "${CONFIG_DIR}/${secret}" ]; then
+    MQTT_TRIGGER_READY=false
+    continue
+  fi
+  chown root:root "${CONFIG_DIR}/${secret}"
+  chmod 0600 "${CONFIG_DIR}/${secret}"
+done
+
 cat >"${CONFIG_DIR}/weekly.env" <<'EOF'
 WIKI_REPO_DIR=/srv/homeassistant-wiki/source
 WIKI_STATE_DIR=/var/lib/homeassistant-wiki
@@ -75,6 +89,8 @@ WIKI_BACKUP_DIR=/mnt/homeassistant-backups
 WIKI_RUNNER_DIR=/opt/homeassistant-wiki-runner
 WIKI_MAX_BACKUP_AGE=691200
 OPENAI_MODEL=gpt-5.4-nano-2026-03-17
+WIKI_MQTT_HOST=192.168.1.100
+WIKI_MQTT_PORT=1883
 EOF
 chmod 0644 "${CONFIG_DIR}/weekly.env"
 
@@ -99,6 +115,8 @@ install -m 0644 "${REPO_DIR}/raspberry-pi/wiki-notify-retry.timer" \
   /etc/systemd/system/wiki-notify-retry.timer
 install -m 0644 "${REPO_DIR}/raspberry-pi/wiki-weekly-onfailure.service" \
   /etc/systemd/system/wiki-weekly-onfailure.service
+install -m 0644 "${REPO_DIR}/raspberry-pi/wiki-mqtt-trigger.service" \
+  /etc/systemd/system/wiki-mqtt-trigger.service
 
 chown -R wikiadmin:wikiadmin "${REPO_DIR}"
 install -d -m 0700 -o wikiadmin -g wikiadmin /var/lib/homeassistant-wiki
@@ -113,7 +131,15 @@ systemd-analyze verify \
   /etc/systemd/system/wiki-weekly.timer \
   /etc/systemd/system/wiki-notify-retry.service \
   /etc/systemd/system/wiki-notify-retry.timer \
-  /etc/systemd/system/wiki-weekly-onfailure.service
+  /etc/systemd/system/wiki-weekly-onfailure.service \
+  /etc/systemd/system/wiki-mqtt-trigger.service
 systemctl enable --now wiki-weekly.timer wiki-notify-retry.timer
+
+if [ "${MQTT_TRIGGER_READY}" = true ]; then
+  systemctl enable --now wiki-mqtt-trigger.service
+else
+  systemctl disable --now wiki-mqtt-trigger.service 2>/dev/null || true
+  echo "Manueller MQTT-Start bleibt deaktiviert: Zugangsdaten fehlen."
+fi
 
 echo "Wöchentliche Wiki-Aktualisierung ist installiert."

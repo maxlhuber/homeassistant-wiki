@@ -106,6 +106,13 @@ Installation beziehungsweise Reparatur der Pi-Dienste:
 sudo bash /srv/homeassistant-wiki/source/raspberry-pi/wiki-weekly-install.sh
 ```
 
+Ein manueller Lauf kann zusätzlich über die Home-Assistant-Automation
+„System: Wiki jetzt aktualisieren“ gestartet werden. Home Assistant veröffentlicht
+dabei eine nicht gespeicherte MQTT-Nachricht mit einem zufälligen, nur lokal
+hinterlegten Freigabewert. Der Pi ignoriert falsche Nachrichten, Doppelstarts und
+weitere Startversuche innerhalb von 60 Sekunden. Abschluss oder Fehler werden über
+die bestehende iPhone-Statusmeldung gemeldet.
+
 ## Grundsätze
 
 - Verständliche Alltagssprache steht vor technischen Details.
