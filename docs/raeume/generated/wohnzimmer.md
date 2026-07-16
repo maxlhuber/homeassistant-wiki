@@ -39,4 +39,4 @@
 - Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.
 - Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.
 
-<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 16. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

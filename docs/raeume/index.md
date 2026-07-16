@@ -30,4 +30,4 @@ Die Raumseiten zeigen nur physische beziehungsweise im Alltag erkennbare Geräte
 - [Garage](generated/garage.md) – 1 alltagsrelevante Geräte
 - [Garten](generated/garten.md) – 11 alltagsrelevante Geräte
 
-<p class="page-status">Inventar aus Backup vom 15. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 16. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>

@@ -42,4 +42,4 @@ Den tatsächlichen Ladezustand im Fahrzeug oder an der Wallbox prüfen. Eine feh
 
 </div>
 
-<p class="page-status">Definition aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definition aus Backup vom 16. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

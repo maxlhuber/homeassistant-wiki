@@ -78,6 +78,12 @@ Hier stehen nur Funktionen, die im Alltag sichtbar oder wichtig sind. Dazu gehö
 | [Laden bei Anwesenheit anbieten](generated/wallbox-benachrichtigung-2.md) | Garage · Außenbereich | Informiert Max über den aktuellen Strompreis, wenn das Auto zuhause, aber noch nicht angesteckt und nicht voll geladen ist. |
 | [Wallbox Zentrale Steuerung](generated/wallbox-zentrale-steuerung.md) | Garage · Außenbereich | Steuert die Wallbox abhängig vom Zielstatus: Sicherheitsladen und preisoptimiertes Laden erzwingen das Laden; Warten und Voll geladen stoppen das L… |
 
+## Sonstiges
+
+| Funktion | Ort | Worum geht es? |
+|---|---|---|
+| [Bürokühlung](generated/buerokuehlung.md) | Büro · Erdgeschoss | Wenn es ist 05:00:00 uhr, wird anschließend klimaanlage schalter umschalten. |
+
 ??? info "Ausgeschaltete Automationen"
 
     - [System \- Recorder täglich auf 30 Tage begrenzen](generated/system-recorder-taeglich-auf-30-tage-begrenzen.md) – Ausgeschaltet, weil Home Assistant die Aufbewahrungsdauer bereits selbst verwaltet.
@@ -89,6 +95,7 @@ Hier stehen nur Funktionen, die im Alltag sichtbar oder wichtig sind. Dazu gehö
     - [Auto\-Laden Session Start \(Snapshot\)](generated/auto-laden-session-start-snapshot.md)
     - [Pflanzenerinnerung Helfer](generated/pflanzenerinnerung-helfer.md)
     - [System \- Recorder Diagnosewerte täglich bereinigen](generated/system-recorder-diagnosewerte-taeglich-bereinigen.md)
+    - [System: Wiki\-Aktualisierung – Statusmeldung](generated/system-wiki-aktualisierung-statusmeldung.md)
     - [Tibber API Timer](generated/tibber-api-timer.md)
     - [Tibber Reload](generated/tibber-reload.md)
 
@@ -98,4 +105,4 @@ Eine Szene stellt mehrere Geräte gemeinsam auf gespeicherte Werte.
 
 - **Filmabend:** Schaltet die drei aktuell hinterlegten Wohnzimmerlichter in die gespeicherte Filmabend-Stimmung.
 
-<p class="page-status">Definitionen aus Backup vom 15. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Definitionen aus Backup vom 16. Juli 2026; Status und dauerhafte Ergänzungen geprüft am 13. Juli 2026</p>

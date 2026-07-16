@@ -5,20 +5,20 @@ search:
 
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# System \- Recorder täglich auf 30 Tage begrenzen
+# System: Wiki\-Aktualisierung – Statusmeldung
 
-!!! info "Status: ausgeschaltet"
-    Ausgeschaltet, weil Home Assistant die Aufbewahrungsdauer bereits selbst verwaltet.
+!!! success "Status: aktiv"
+    Diese Automation ist in Home Assistant eingeschaltet.
 
 **Ort:** kein fester Raum – betrifft das ganze Haus
 
 ## Das bemerkst du im Alltag
 
-Hält die kurzfristige Recorder\-History bei 30 Tagen. Long\-term statistics bleiben erhalten und werden vom Energy\-Dashboard weiter genutzt.
+Empfängt ausschließlich lokale Statuscodes des Wiki\-Raspberry\-Pi und sendet feste Meldungen an Max' iPhone. Der Webhook steuert keine Geräte.
 
 ## Sie startet, wenn …
 
-1. Es ist 03:10:00 Uhr
+1. Das betroffene Gerät meldet das passende Ereignis
 
 ## Sie läuft nur weiter, wenn …
 
@@ -26,7 +26,7 @@ Keine weitere Voraussetzung ist hinterlegt.
 
 ## Dann passiert …
 
-1. Die Home-Assistant-Datenbank warten
+1. Max iphone die hinterlegte Funktion ausführen
 
 ## So kannst du reagieren
 
@@ -38,10 +38,11 @@ Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technisch
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | System \- Recorder täglich auf 30 Tage begrenzen |
-    | Home-Assistant-ID | 1778143654356 |
-    | Modus | single |
+    | Ursprünglicher Name | System: Wiki\-Aktualisierung – Statusmeldung |
+    | Home-Assistant-ID | 1784145881373 |
+    | Modus | queued |
     | Kategorie | System |
+    | Verwendete Entities | Max iphone (`notify.max_iphone`) |
 
 </div>
 

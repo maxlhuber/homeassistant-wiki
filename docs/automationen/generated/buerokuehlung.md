@@ -1,24 +1,19 @@
----
-search:
-  exclude: true
----
-
 <!-- Automatisch aus einem lokalen Home-Assistant-Backup erzeugt. Nicht direkt bearbeiten. -->
 
-# Pflanzenerinnerung Helfer
+# Bürokühlung
 
 !!! success "Status: aktiv"
     Diese Automation ist in Home Assistant eingeschaltet.
 
-**Ort:** kein fester Raum – betrifft das ganze Haus
+**Ort:** Büro · Erdgeschoss
 
 ## Das bemerkst du im Alltag
 
-Beendet die Pflanzenerinnerung, wenn die Mobile\-App\-Aktion "gegossen" ausgelöst wird.
+Wenn es ist 05:00:00 uhr, wird anschließend klimaanlage schalter umschalten.
 
 ## Sie startet, wenn …
 
-1. Home Assistant erkennt den passenden Bedienbefehl
+1. Es ist 05:00:00 Uhr
 
 ## Sie läuft nur weiter, wenn …
 
@@ -26,11 +21,11 @@ Keine weitere Voraussetzung ist hinterlegt.
 
 ## Dann passiert …
 
-1. Gießkanne ausschalten
+1. Klimaanlage schalter umschalten
 
 ## So kannst du reagieren
 
-Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erledigt bestätigen.
+Die betroffene Funktion direkt am Gerät oder in Home Assistant prüfen. Nichts löschen oder auf Werkseinstellungen zurücksetzen.
 
 <div data-search-exclude markdown>
 
@@ -38,11 +33,11 @@ Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erle
 
     | Feld | Wert |
     |---|---|
-    | Ursprünglicher Name | Pflanzenerinnerung Helfer |
-    | Home-Assistant-ID | 1680326169555 |
+    | Ursprünglicher Name | Bürokühlung |
+    | Home-Assistant-ID | 1784147015466 |
     | Modus | single |
-    | Kategorie | Garten & Wasser |
-    | Verwendete Entities | Gießkanne (`input_boolean.giesskanne`) |
+    | Kategorie | Sonstiges |
+    | Verwendete Entities | Klimaanlage schalter (`switch.klimaanlage_schalter`) |
 
 </div>
 
