@@ -58,7 +58,7 @@ install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-approve-review.py" \
 install -d -m 0755 -o root -g root "${RUNNER_DIR}"
 for runner_file in \
   generate_docs.py weekly_update.py wiki_backup.py wiki_notify.py \
-  wiki_openai.py wiki_snapshot.py wiki_ai_prompt.txt; do
+  wiki_dashboards.py wiki_openai.py wiki_snapshot.py wiki_ai_prompt.txt; do
   install -m 0644 -o root -g root "${REPO_DIR}/scripts/${runner_file}" \
     "${RUNNER_DIR}/${runner_file}"
 done

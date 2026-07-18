@@ -3,11 +3,17 @@
 
 metadata:
   inventory_source_date: "12. Juli 2026"
-  live_checked_date: "13. Juli 2026"
+  live_checked_date: "18. Juli 2026"
 
 force_include_devices:
   - "Wandschalter Bad"
   - "Heizstrahler"
+
+hidden_devices:
+  - "Dashboard Tablet"
+  - "Dashboard-Tablet"
+  - "Max' Fire"
+  - "Schwarzer Dot"
 
 device_area_overrides:
   "Büro": buro
@@ -28,6 +34,7 @@ device_area_overrides:
   "Hue white Spielzimmer Decke": spielzimmer
   "Wandschalter Spielzimmer": spielzimmer
   "WLED Hoehle": spielzimmer
+  "Echo Kids": kinderzimmer
 
 entity_area_overrides:
   binary_sensor.prasenzmelder_kuche_presence: kuche

@@ -23,10 +23,15 @@ from generate_docs import (  # noqa: E402
     merge_documentation_overrides,
     safe_source_text,
 )
-from weekly_update import merge_ai_overrides  # noqa: E402
+from weekly_update import (  # noqa: E402
+    _review_credit_probe_required,
+    _review_reason,
+    merge_ai_overrides,
+)
 from wiki_backup import (  # noqa: E402
     ALLOWED_MEMBERS,
     BackupExtractionError,
+    REQUIRED_MEMBER_NAMES,
     discover_latest_backup,
     extract_home_assistant_backup,
 )
@@ -38,6 +43,10 @@ from wiki_openai import (  # noqa: E402
     validate_ai_document,
 )
 from wiki_snapshot import build_snapshot, calculate_delta  # noqa: E402
+from wiki_dashboards import (  # noqa: E402
+    build_dashboard_snapshot,
+    write_dashboard_inventory,
+)
 
 
 def _registry(items_key: str, items: list[dict]) -> str:
@@ -111,6 +120,11 @@ class BackupExtractionTests(unittest.TestCase):
             payload = b"[]\n" if member.endswith(".yaml") else b'{"data": {}}\n'
             self._add_bytes(archive, "data/" + member, payload)
 
+    def _add_required_members(self, archive: tarfile.TarFile) -> None:
+        for member in REQUIRED_MEMBER_NAMES:
+            payload = b"[]\n" if member.endswith(".yaml") else b'{"data": {}}\n'
+            self._add_bytes(archive, "data/" + member, payload)
+
     def _official_backup(
         self,
         path: Path,
@@ -174,6 +188,23 @@ class BackupExtractionTests(unittest.TestCase):
                 if path.is_file() and path.name != ".wiki_backup_metadata.json"
             }
             self.assertEqual(extracted, set(ALLOWED_MEMBERS))
+
+    def test_optional_dashboard_files_may_be_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            archive = root / "minimal.tar"
+            with tarfile.open(archive, "w:") as handle:
+                self._add_required_members(handle)
+            destination = root / "output"
+
+            extract_home_assistant_backup(archive, destination)
+
+            extracted = {
+                path.relative_to(destination).as_posix()
+                for path in destination.rglob("*")
+                if path.is_file() and path.name != ".wiki_backup_metadata.json"
+            }
+            self.assertEqual(extracted, set(REQUIRED_MEMBER_NAMES))
             self.assertFalse((root / "outside.txt").exists())
             self.assertFalse((destination / "secrets.yaml").exists())
 
@@ -319,6 +350,224 @@ class BackupExtractionTests(unittest.TestCase):
 
 
 class SnapshotTests(unittest.TestCase):
+    @staticmethod
+    def _write_dashboard(source: Path, entity_id: str) -> None:
+        storage = source / ".storage"
+        document = {
+            "version": 1,
+            "key": "lovelace.lovelace",
+            "data": {
+                "config": {
+                    "title": "Übersicht",
+                    "views": [
+                        {
+                            "title": "Start",
+                            "path": "home",
+                            "type": "sections",
+                            "sections": [
+                                {
+                                    "type": "grid",
+                                    "cards": [{"type": "tile", "entity": entity_id}],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            },
+        }
+        (storage / "lovelace.lovelace").write_text(
+            json.dumps(document), encoding="utf-8"
+        )
+
+    @staticmethod
+    def _write_dashboard_registry(source: Path, item: dict) -> None:
+        storage = source / ".storage"
+        (storage / "lovelace_dashboards").write_text(
+            json.dumps({"version": 1, "data": {"items": [item]}}),
+            encoding="utf-8",
+        )
+
+    def test_dashboard_change_is_local_and_secret_free(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            _write_source(first, [])
+            _write_source(second, [])
+            self._write_dashboard(first, "light.flur")
+            self._write_dashboard(second, "light.private_room")
+
+            old = build_snapshot(first)
+            new = build_snapshot(second)
+            delta = calculate_delta(old, new)
+
+            self.assertEqual(delta.sections["dashboards"]["modified"], ["uebersicht"])
+            self.assertEqual(delta.automation_candidates, [])
+            self.assertFalse(_review_credit_probe_required(False, delta))
+            serialised = json.dumps(new["dashboards"], ensure_ascii=False)
+            self.assertNotIn("light.private_room", serialised)
+
+    def test_dashboard_registry_change_is_detected_without_leaking_text(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            _write_source(first, [])
+            _write_source(second, [])
+            self._write_dashboard(first, "light.flur")
+            self._write_dashboard(second, "light.flur")
+            self._write_dashboard_registry(
+                first,
+                {
+                    "id": "main",
+                    "url_path": "lovelace",
+                    "title": "Privat 123456 https://unsafe.example",
+                    "show_in_sidebar": True,
+                    "mode": "storage",
+                },
+            )
+            self._write_dashboard_registry(
+                second,
+                {
+                    "id": "main",
+                    "url_path": "lovelace",
+                    "title": "<script>privat</script>",
+                    "show_in_sidebar": False,
+                    "mode": "storage",
+                },
+            )
+
+            old = build_snapshot(first)
+            new = build_snapshot(second)
+            delta = calculate_delta(old, new)
+            serialised = json.dumps(new["dashboards"], ensure_ascii=False)
+
+            self.assertEqual(delta.sections["dashboards"]["modified"], ["uebersicht"])
+            self.assertFalse(new["dashboards"]["uebersicht"]["visible"])
+            for private_text in ("123456", "unsafe.example", "<script>", "privat"):
+                self.assertNotIn(private_text, serialised.lower())
+
+    def test_dashboard_inventory_with_no_sources_replaces_stale_page(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "docs" / "automatisch.md"
+            source.mkdir()
+            destination.parent.mkdir()
+            destination.write_text("VERALTETER INHALT", encoding="utf-8")
+
+            count = write_dashboard_inventory(source, destination, "18. Juli 2026")
+            rendered = destination.read_text(encoding="utf-8")
+
+            self.assertEqual(count, 0)
+            self.assertNotIn("VERALTETER INHALT", rendered)
+            self.assertIn("keine Dashboard-Dateien erkannt", rendered)
+            self.assertIn("exclude: true", rendered)
+
+    def test_unknown_dashboard_metadata_is_generic_and_secret_free(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            (source / ".storage").mkdir()
+            self._write_dashboard_registry(
+                source,
+                {
+                    "id": "secret-id",
+                    "url_path": "private-123456",
+                    "title": "[Intern](https://unsafe.example)",
+                    "show_in_sidebar": True,
+                    "mode": "storage",
+                },
+            )
+
+            snapshot = build_dashboard_snapshot(source)
+            serialised = json.dumps(snapshot, ensure_ascii=False)
+
+            self.assertEqual(len(snapshot), 1)
+            self.assertIn("Neues Dashboard", serialised)
+            for private_text in (
+                "secret-id",
+                "private-123456",
+                "unsafe.example",
+                "[Intern]",
+            ):
+                self.assertNotIn(private_text, serialised)
+
+    def test_dashboard_migration_blocks_unknown_or_empty_inventory(self) -> None:
+        for with_unknown in (False, True):
+            with self.subTest(
+                with_unknown=with_unknown
+            ), tempfile.TemporaryDirectory() as temporary:
+                source = Path(temporary)
+                _write_source(source, [])
+                if with_unknown:
+                    self._write_dashboard_registry(
+                        source,
+                        {
+                            "id": "new-private-dashboard",
+                            "url_path": "new-private-dashboard",
+                            "show_in_sidebar": True,
+                            "mode": "storage",
+                        },
+                    )
+                new = build_snapshot(source)
+                old = json.loads(json.dumps(new))
+                old.pop("dashboards")
+                delta = calculate_delta(old, new)
+
+                reason = _review_reason(delta, old, new, set())
+
+                self.assertIsNotNone(reason)
+                self.assertIn("Dashboard", reason)
+
+    def test_dashboard_migration_accepts_known_inventory_as_baseline(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            _write_source(source, [])
+            self._write_dashboard(source, "light.flur")
+            new = build_snapshot(source)
+            old = json.loads(json.dumps(new))
+            old.pop("dashboards")
+            delta = calculate_delta(old, new)
+
+            self.assertIsNone(_review_reason(delta, old, new, set()))
+
+    def test_review_reason_aggregates_dashboard_manual_and_critical_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            alias = "Haustür öffnen"
+            old_automation = {
+                "id": "door",
+                "alias": alias,
+                "trigger": [{"platform": "time", "at": "10:00:00"}],
+                "action": [{"service": "notify.mobile_app"}],
+            }
+            new_automation = json.loads(json.dumps(old_automation))
+            new_automation["trigger"][0]["at"] = "10:05:00"
+            _write_source(first, [old_automation])
+            _write_source(second, [new_automation])
+            self._write_dashboard(first, "light.flur")
+            self._write_dashboard(second, "light.kueche")
+
+            old = build_snapshot(first)
+            new = build_snapshot(second)
+            delta = calculate_delta(old, new)
+            reason = _review_reason(delta, old, new, {alias})
+
+            self.assertIsNotNone(reason)
+            self.assertIn("Dashboard", reason)
+            self.assertIn("manuelle Beschreibung", reason)
+            self.assertIn("sicherheits-", reason)
+            self.assertTrue(_review_credit_probe_required(False, delta))
+            self.assertFalse(_review_credit_probe_required(True, delta))
+
     def test_mapping_order_and_comments_are_not_semantic_changes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -752,6 +1001,22 @@ class OverrideTests(unittest.TestCase):
             existing, result, {"Bleibt", "Neu"}, drop_aliases={"Bleibt"}
         )
         self.assertEqual(set(merged["automation_overrides"]), {"Neu"})
+
+
+class PiInstallationTests(unittest.TestCase):
+    def test_installer_copies_every_python_runner(self) -> None:
+        installer = (ROOT / "raspberry-pi" / "wiki-weekly-install.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("wiki_dashboards.py", installer)
+
+    def test_weekly_runner_only_fast_forwards_remote_main(self) -> None:
+        runner = (ROOT / "raspberry-pi" / "wiki-weekly-update.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("refs/heads/main:refs/remotes/origin/main", runner)
+        self.assertIn("git merge-base --is-ancestor", runner)
+        self.assertIn('git merge --ff-only "${REMOTE_HEAD}"', runner)
 
 
 if __name__ == "__main__":

@@ -391,6 +391,42 @@ if [ -n "$(git status --porcelain --untracked-files=normal)" ]; then
   exit 30
 fi
 
+# Adopt only an already reviewed, straight-ahead GitHub state. A divergent or
+# locally ahead history is never merged automatically.
+if ! git fetch --no-tags origin \
+  refs/heads/main:refs/remotes/origin/main; then
+  notify_kind github_failed
+  mark_failure_handled
+  exit 30
+fi
+CURRENT_HEAD="$(git rev-parse --verify HEAD)" || {
+  notify_kind github_failed
+  mark_failure_handled
+  exit 30
+}
+REMOTE_HEAD="$(git rev-parse --verify origin/main)" || {
+  notify_kind github_failed
+  mark_failure_handled
+  exit 30
+}
+if ! git merge-base --is-ancestor "${CURRENT_HEAD}" "${REMOTE_HEAD}"; then
+  notify_kind github_failed
+  mark_failure_handled
+  exit 30
+fi
+if [ "${CURRENT_HEAD}" != "${REMOTE_HEAD}" ]; then
+  if ! git merge --ff-only "${REMOTE_HEAD}"; then
+    notify_kind github_failed
+    mark_failure_handled
+    exit 30
+  fi
+fi
+working_tree_is_clean || {
+  notify_kind github_failed
+  mark_failure_handled
+  exit 30
+}
+
 BASE_HEAD="$(git rev-parse --verify HEAD)"
 
 if ! write_run_marker RUNNING "${BASE_HEAD}"; then

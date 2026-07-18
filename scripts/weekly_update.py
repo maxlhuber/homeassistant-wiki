@@ -416,15 +416,35 @@ def _review_reason(
     new: dict[str, Any],
     manual_aliases: set[str],
 ) -> str | None:
+    reasons: list[str] = []
     destructive = destructive_change_reason(old, delta)
     if destructive:
-        return destructive
+        reasons.append(destructive)
     if old is None:
-        return None
+        return " ".join(reasons) or None
+    dashboard_changes = delta.sections.get("dashboards", {})
+    new_dashboards = new.get("dashboards", {})
+    dashboard_migration_needs_review = (
+        "dashboards" not in old
+        and isinstance(new_dashboards, dict)
+        and (
+            not new_dashboards
+            or any(str(key).startswith("unbekannt-") for key in new_dashboards)
+        )
+    )
+    dashboard_changed = "dashboards" in old and any(
+        dashboard_changes.get(kind) for kind in ("added", "removed", "modified")
+    )
+    if dashboard_migration_needs_review or dashboard_changed:
+        reasons.append(
+            "Mindestens ein Home-Assistant-Dashboard wurde geändert. "
+            "Die bebilderten Wiki-Anleitungen müssen vor der Veröffentlichung "
+            "auf Aktualität geprüft werden."
+        )
     new_aliases, old_aliases = _changed_aliases(delta, old, new)
     manual_changed = sorted((new_aliases | old_aliases) & manual_aliases, key=str.casefold)
     if manual_changed:
-        return (
+        reasons.append(
             "Mindestens eine geänderte Automation besitzt eine bewusst geprüfte manuelle "
             "Beschreibung: " + ", ".join(manual_changed)
         )
@@ -433,8 +453,16 @@ def _review_reason(
         key=str.casefold,
     )
     if critical:
-        return "Eine sicherheits- oder versorgungsrelevante Automation wurde geändert: " + ", ".join(critical)
-    return None
+        reasons.append(
+            "Eine sicherheits- oder versorgungsrelevante Automation wurde geändert: "
+            + ", ".join(critical)
+        )
+    return " ".join(reasons) or None
+
+
+def _review_credit_probe_required(no_ai: bool, delta: SnapshotDelta) -> bool:
+    """Avoid an API call when a local-only dashboard review already blocks the run."""
+    return not no_ai and bool(delta.automation_candidates)
 
 
 def _arguments() -> argparse.Namespace:
@@ -527,13 +555,21 @@ def run(args: argparse.Namespace) -> int:
                     )
             except (OSError, ValueError, TypeError, json.JSONDecodeError):
                 rollback_reason = "Der gespeicherte Backup-Zeitpunkt ist unlesbar und muss geprüft werden."
-        review_reason = rollback_reason or _review_reason(
-            delta, old_snapshot, new_snapshot, manual_aliases
-        )
+        review_reasons = [
+            reason
+            for reason in (
+                rollback_reason,
+                _review_reason(delta, old_snapshot, new_snapshot, manual_aliases),
+            )
+            if reason
+        ]
+        review_reason = " ".join(review_reasons) or None
         if review_reason and not review_approved:
             review_probe = OpenAIResult({}, False, None, {}, None)
             review_warning: OpenAIClientError | None = None
-            review_probe_attempted = not args.no_ai
+            review_probe_attempted = _review_credit_probe_required(
+                args.no_ai, delta
+            )
             if review_probe_attempted:
                 try:
                     review_probe = probe_api_credit(
@@ -572,7 +608,7 @@ def run(args: argparse.Namespace) -> int:
             for item in delta.automation_candidates
             if item["alias"] not in manual_aliases
         ]
-        if old_snapshot is not None and candidates and not review_approved:
+        if old_snapshot is not None and candidates:
             regular_ai_attempted = True
             try:
                 if args.no_ai:
@@ -624,7 +660,7 @@ def run(args: argparse.Namespace) -> int:
             current_aliases,
             drop_aliases=(
                 {str(item["alias"]) for item in candidates}
-                if (warning and regular_ai_attempted) or review_approved
+                if warning and regular_ai_attempted
                 else set()
             ),
         )

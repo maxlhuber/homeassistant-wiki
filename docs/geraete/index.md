@@ -33,7 +33,6 @@ Hier stehen **102 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Temperatursensor 3D Drucker | Temperatur-/Feuchtesensor | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
 | Wandschalter Büro | Wandschalter / Taster | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
 | WLED Laterne | Licht | [Büro · Erdgeschoss](../raeume/generated/buero.md) | in Home Assistant bestätigt |
-| Dashboard\-Tablet | Bedien-Tablet | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Filament Diele 1 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | aus Name/Funktion abgeleitet |
 | Filament Diele 2 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
 | Filament Diele 3 | Licht | [Flur · Erdgeschoss](../raeume/generated/flur.md) | in Home Assistant bestätigt |
@@ -61,6 +60,7 @@ Hier stehen **102 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Wandschalter Garten | Wandschalter / Taster | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
 | Wasserventil Garten | Wasserventil | [Garten · Außenbereich](../raeume/generated/garten.md) | in Home Assistant bestätigt |
 | Hue white Gästebad | Licht | [Gästeklo · Erdgeschoss](../raeume/generated/gaesteklo.md) | in Home Assistant bestätigt |
+| Echo Kids | Lautsprecher / Sprachassistent | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | aus Name/Funktion abgeleitet |
 | Kinderzimmer Decke 1 | Licht | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Kinderzimmer Decke 2 | Licht | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
 | Temperatursensor Kinderzimmer | Temperatur-/Feuchtesensor | [Kinderzimmer · Erdgeschoss](../raeume/generated/kinderzimmer.md) | in Home Assistant bestätigt |
@@ -111,13 +111,4 @@ Hier stehen **102 alltagsrelevante Geräte**. Home Assistant kennt zusätzlich t
 | Temperatursensor Wohnzimmer | Temperatur-/Feuchtesensor | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 | Wandschalter Wohnzimmer | Wandschalter / Taster | [Wohnzimmer · Erdgeschoss](../raeume/generated/wohnzimmer.md) | in Home Assistant bestätigt |
 
-??? question "Geräte ohne bestätigten festen Raum"
-
-    Diese Geräte wirken stationär, haben aber noch keinen verlässlichen festen Raum. Es wird bewusst kein Standort erfunden.
-
-    | Gerät | Art | Standort |
-    |---|---|---|
-    | Echo Kids | Lautsprecher / Sprachassistent | noch offen |
-    | Schwarzer Dot | Lautsprecher / Sprachassistent | noch offen |
-
-<p class="page-status">Inventar aus Backup vom 16. Juli 2026; gekennzeichnete Ergänzungen geprüft am 13. Juli 2026</p>
+<p class="page-status">Inventar aus Backup vom 16. Juli 2026; Standortkorrekturen geprüft am 18. Juli 2026</p>

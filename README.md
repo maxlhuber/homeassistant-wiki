@@ -22,14 +22,18 @@ Die fertige Website liegt anschließend im Ordner `site`.
 
 ## Auf dem Raspberry Pi veröffentlichen
 
+Änderungen zuerst bewusst nach `main` in das private GitHub-Repository übertragen.
+Danach kann der ohnehin auf dem Raspberry Pi installierte, sichere Wochenlauf auch
+manuell gestartet werden:
+
 ```powershell
 .\scripts\publish_to_pi.ps1
 ```
 
-Das Skript führt zuerst einen lokalen Strict-Build aus. Auf dem Raspberry Pi wird
-anschließend in ein neues Release-Verzeichnis gebaut; erst nach erfolgreichem Build
-wird der Nginx-Zeiger atomar umgeschaltet. Ein fehlerhafter Build ersetzt daher nicht
-das zuletzt funktionierende Wiki.
+Das Windows-Skript kopiert und löscht keine Dateien. Es startet nur den Dienst auf dem
+Raspberry Pi. Der Pi holt den freigegebenen GitHub-Stand, prüft das neueste Backup,
+baut ein neues Release und schaltet erst nach erfolgreicher Prüfung den Nginx-Zeiger
+atomar um. Ein fehlerhafter Build ersetzt daher nicht das zuletzt funktionierende Wiki.
 
 ## Inventarseiten aktualisieren
 
@@ -67,20 +71,28 @@ wird im Wiki ausdrücklich anders gekennzeichnet als ein in Home Assistant best�
 Der Raspberry Pi erledigt den vollständigen Lauf sonntags ab 06:00 Uhr selbstständig;
 ein eingeschalteter PC ist nicht erforderlich. Der Ablauf ist absichtlich streng:
 
-1. Das neueste **gültige Home-Assistant-Backup** wird im nur lesbar eingebundenen
+1. Der Pi lädt zuerst ausschließlich einen geradlinig vorausliegenden, bereits
+   freigegebenen Stand von `main`. Abweichende Git-Verläufe werden nicht automatisch
+   zusammengeführt.
+2. Das neueste **gültige Home-Assistant-Backup** wird im nur lesbar eingebundenen
    NAS-Ordner gesucht.
-2. Ausschließlich Automationen, Szenen sowie Raum-, Geräte- und Entity-Register
-   werden im Datenstrom entschlüsselt. Das vollständige Backup wird nicht entpackt.
-3. Ein semantischer Vergleich übermittelt nur geänderte Automationen an das kleine,
+3. Ausschließlich Automationen, Szenen, Raum-, Geräte- und Entity-Register sowie
+   das Dashboard-Verzeichnis und die fest benannten Dashboard-Dateien werden im
+   Datenstrom entschlüsselt. Das vollständige Backup wird nicht entpackt.
+4. Ein semantischer Vergleich übermittelt nur geänderte Automationen an das kleine,
    fest angeheftete OpenAI-Modell. Ohne Änderungen erfolgt nur eine minimale
-   Guthabenprobe. Die API speichert die Anfrage nicht (`store: false`).
-4. Der Generator läuft zweimal. Stimmen beide Ergebnisse nicht exakt überein,
+   Guthabenprobe. Ein reiner Dashboard-Prüfstopp löst keine Guthabenprobe aus.
+   Dashboard-Änderungen werden vollständig lokal erkannt. Die API speichert die
+   Anfrage nicht (`store: false`).
+5. Der Generator läuft zweimal. Stimmen beide Ergebnisse nicht exakt überein,
    fehlen Inhalte oder sieht ein Text wie ein Geheimnis aus, wird abgebrochen.
-5. Erst nach strengem MkDocs-Build werden die erzeugten Seiten nach GitHub
+6. Eine geänderte Dashboard-Struktur verlangt eine bewusste Prüfung der bebilderten
+   Seiten. So gelangen keine veralteten Dashboard-Bilder unbemerkt ins Wiki.
+7. Erst nach strengem MkDocs-Build werden die erzeugten Seiten nach GitHub
    übertragen. Danach schaltet der Pi atomar auf das neue Release um und prüft die
    echte Startseite. Bei einem Fehler bleibt beziehungsweise wird die letzte
    funktionierende Version aktiv.
-6. Home Assistant meldet Erfolg, Prüfbedarf, Backup-/GitHub-Fehler und insbesondere
+8. Home Assistant meldet Erfolg, Prüfbedarf, Backup-/GitHub-Fehler und insbesondere
    aufgebrauchtes OpenAI-Guthaben an das iPhone. Ist Home Assistant kurzzeitig nicht
    erreichbar, bleibt die Meldung in einer lokalen Warteschlange.
 
@@ -118,5 +130,5 @@ die bestehende iPhone-Statusmeldung gemeldet.
 - Verständliche Alltagssprache steht vor technischen Details.
 - Keine Passwörter, Tokens, Alarmcodes oder sonstigen Geheimnisse eintragen.
 - Jede Seite erhält ein Datum „Zuletzt geprüft“.
-- Technische Namen und Entity-IDs werden nur dort ergänzt, wo sie bei der Fehlersuche helfen.
+- Technische Namen und Entity-IDs werden nur auf bewusst geprüften Wartungsseiten ergänzt, wo sie bei der Fehlersuche helfen.
 - Unklare Fakten werden als offen markiert und nicht erfunden.

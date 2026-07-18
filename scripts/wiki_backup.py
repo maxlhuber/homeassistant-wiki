@@ -16,7 +16,7 @@ from pathlib import Path, PurePosixPath
 from typing import BinaryIO, IO, Any
 
 
-ALLOWED_MEMBERS = (
+REQUIRED_MEMBER_NAMES = (
     "automations.yaml",
     "scenes.yaml",
     ".storage/core.floor_registry",
@@ -25,7 +25,18 @@ ALLOWED_MEMBERS = (
     ".storage/core.device_registry",
     ".storage/core.entity_registry",
 )
-REQUIRED_MEMBERS = frozenset(ALLOWED_MEMBERS)
+OPTIONAL_MEMBER_NAMES = (
+    ".storage/lovelace_dashboards",
+    ".storage/lovelace.lovelace",
+    ".storage/lovelace.dashboard_test",
+    ".storage/lovelace.map",
+    ".storage/lovelace.familien_karte",
+    ".storage/lovelace.system_status",
+    "dashboards/cupra_laden.yaml",
+)
+ALLOWED_MEMBERS = REQUIRED_MEMBER_NAMES + OPTIONAL_MEMBER_NAMES
+ALLOWED_MEMBER_SET = frozenset(ALLOWED_MEMBERS)
+REQUIRED_MEMBERS = frozenset(REQUIRED_MEMBER_NAMES)
 MAX_MEMBER_BYTES = 64 * 1024 * 1024
 MAX_TOTAL_BYTES = 192 * 1024 * 1024
 MAX_INNER_ARCHIVE_BYTES = 8 * 1024 * 1024 * 1024
@@ -97,7 +108,7 @@ def _wiki_name(name: str) -> str | None:
         return None
     if clean.startswith("data/"):
         clean = clean.removeprefix("data/")
-    return clean if clean in REQUIRED_MEMBERS else None
+    return clean if clean in ALLOWED_MEMBER_SET else None
 
 
 def _metadata_from_bytes(raw: bytes) -> tuple[str | None, str | None]:

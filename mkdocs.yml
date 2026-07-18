@@ -15,20 +15,9 @@ theme:
     - search.highlight
     - content.code.copy
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
+    - scheme: slate
       primary: teal
       accent: teal
-      toggle:
-        icon: material/weather-night
-        name: Dunkles Design verwenden
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: teal
-      accent: teal
-      toggle:
-        icon: material/weather-sunny
-        name: Helles Design verwenden
 
 plugins:
   - search:
@@ -58,6 +47,17 @@ extra_css:
 
 nav:
   - Start: index.md
+  - Hier starten, Meike: meike/index.md
+  - Home Assistant bedienen:
+      - bedienung/index.md
+      - Einstellungen verstehen: bedienung/einstellungen.md
+  - Dashboards:
+      - dashboards/index.md
+      - Übersicht: dashboards/uebersicht.md
+      - Cupra Laden: dashboards/cupra-laden.md
+      - Karte: dashboards/karte.md
+      - Systemstatus: dashboards/systemstatus.md
+      - Weitere Seiten: dashboards/weitere-seiten.md
   - So funktioniert es: grundlagen.md
   - Alltag:
       - alltag/index.md
@@ -76,6 +76,8 @@ nav:
       - Hilfe anfordern: schnellhilfe/kontakte.md
   - Wartung für Max:
       - technik/index.md
+      - Automatisch erkannte Dashboard-Struktur: dashboards/automatisch.md
       - Systemübersicht: technik/systemuebersicht.md
       - Sicherungen: technik/sicherungen.md
       - Wartung: technik/wartung.md
+      - Wiki-Aktualisierung: technik/wiki-aktualisierung.md

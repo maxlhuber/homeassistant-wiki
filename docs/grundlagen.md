@@ -10,15 +10,15 @@ Beispiel: Der Türkontakt meldet „Speisekammertür offen“. Home Assistant sc
 
 ### Home-Assistant-Thin-Client
 
-Auf dem Thin Client läuft **Home Assistant OS**. Das ist die Zentrale: Dort liegen Geräte, Räume, Automationen und das Dashboard. Wenn der Thin Client nicht läuft, kann das Wiki trotzdem erreichbar sein, aber die Smart-Home-Steuerung ist gestört.
+Auf dem Thin Client läuft **Home Assistant OS**. Das ist die Zentrale: Dort liegen Geräte, Räume, Automationen und das Dashboard. Wenn der Thin Client nicht läuft, kann das Wiki trotzdem erreichbar sein, aber die Smart-Home-Steuerung ist gestört. Er liegt im Büro in der rechten Schublade unter dem Fernseher.
 
 ### Raspberry Pi
 
-Der Raspberry Pi stellt **nur dieses Wiki** im Heimnetz bereit. Änderungen am Wiki schalten keine Lampe und öffnen keine Tür. Umgekehrt bedeutet ein erreichbares Wiki nicht automatisch, dass Home Assistant funktioniert.
+Der Raspberry Pi stellt **nur dieses Wiki** im Heimnetz bereit. Änderungen am Wiki schalten keine Lampe und öffnen keine Tür. Umgekehrt bedeutet ein erreichbares Wiki nicht automatisch, dass Home Assistant funktioniert. Er liegt ebenfalls im Büro in der rechten Schublade unter dem Fernseher.
 
 ### WD My Cloud EX2 Ultra
 
-Das NAS bewahrt Home-Assistant-Sicherungen auf. Es ist für Wiederherstellung und Wartung wichtig, steuert aber im Normalbetrieb keine Lampe.
+Das NAS bewahrt Home-Assistant-Sicherungen auf. Es ist für Wiederherstellung und Wartung wichtig, steuert aber im Normalbetrieb keine Lampe. Es liegt zusammen mit Thin Client und Raspberry Pi im Büro in der rechten Schublade unter dem Fernseher.
 
 ## Fünf Begriffe ohne Technikdeutsch
 
@@ -36,7 +36,7 @@ Viele lokale Schalter, Funkgeräte wie Sensoren und Lampen (bei uns häufig übe
 
 ## Zugriff von unterwegs
 
-Dieses Raspberry-Pi-Wiki ist derzeit nur im Heimnetz nachweislich erreichbar. Es darf nicht durch eine einfache Router-Portfreigabe ungeschützt ins Internet gestellt werden. Für einen späteren Zugriff von unterwegs ist ein abgesicherter VPN-Zugang die passende Lösung; dieser ist im aktuellen Stand noch nicht eingerichtet.
+Die Home-Assistant-App erreicht unser Zuhause von unterwegs über **Home Assistant Cloud**. Meike verwendet dafür ihren eigenen Home-Assistant-Benutzer. Das Raspberry-Pi-Wiki ist derzeit nur im Heimnetz erreichbar; ein sicherer externer Wiki-Zugang wird später getrennt eingerichtet. Eine einfache Router-Portfreigabe ist dafür nicht geeignet.
 
 ## Was bedeutet der Standort im Wiki?
 
@@ -54,4 +54,4 @@ Eine genaue Position wie „an der Decke“ erscheint nur, wenn sie sicher aus d
 4. Uhrzeit, Raum und Beobachtung notieren.
 5. In der passenden [Raumseite](raeume/index.md), [Automationsseite](automationen/index.md) oder [Schnellhilfe](schnellhilfe/index.md) nachsehen.
 
-<p class="page-status">Mit dem laufenden System abgeglichen: 13. Juli 2026</p>
+<p class="page-status">Mit dem laufenden System abgeglichen: 18. Juli 2026</p>

@@ -12,6 +12,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 import yaml
 
+from wiki_dashboards import DashboardInventoryError, build_dashboard_snapshot
+
 
 SNAPSHOT_VERSION = 1
 SENSITIVE_KEY = re.compile(
@@ -350,6 +352,10 @@ def build_snapshot(source: Path) -> dict[str, Any]:
     entities_raw = _read_registry(source, "core.entity_registry", "entities")
     automations_raw = _read_yaml_list(source / "automations.yaml")
     scenes_raw = _read_yaml_list(source / "scenes.yaml")
+    try:
+        dashboards = build_dashboard_snapshot(source)
+    except DashboardInventoryError as error:
+        raise SnapshotError(str(error)) from error
 
     floors = _registry_map(floors_raw, "floors", "floor_id")
     areas = _registry_map(areas_raw, "areas", "id")
@@ -387,6 +393,7 @@ def build_snapshot(source: Path) -> dict[str, Any]:
         "entities": entities,
         "automations": {key: automations[key] for key in sorted(automations)},
         "scenes": {key: scenes[key] for key in sorted(scenes)},
+        "dashboards": dashboards,
     }
 
 
@@ -399,7 +406,16 @@ def _record_changed(section: str, old: dict[str, Any], new: dict[str, Any]) -> b
 def calculate_delta(old: dict[str, Any] | None, new: dict[str, Any]) -> SnapshotDelta:
     sections: dict[str, dict[str, list[str]]] = {}
     automation_candidates: list[dict[str, Any]] = []
-    for section in ("floors", "areas", "labels", "devices", "entities", "automations", "scenes"):
+    for section in (
+        "floors",
+        "areas",
+        "labels",
+        "devices",
+        "entities",
+        "automations",
+        "scenes",
+        "dashboards",
+    ):
         old_items = (old or {}).get(section, {})
         new_items = new.get(section, {})
         if not isinstance(old_items, dict) or not isinstance(new_items, dict):

@@ -20,6 +20,8 @@ from typing import Any
 
 import yaml
 
+from wiki_dashboards import DashboardInventoryError, write_dashboard_inventory
+
 from wiki_snapshot import OPAQUE_VALUE, SECRET_VALUE_PATTERNS, SHORT_PRIVATE_NUMBER
 
 
@@ -266,6 +268,7 @@ def main() -> None:
     device_name_overrides = overrides.get("device_name_overrides", {})
     scene_overrides = overrides.get("scene_overrides", {})
     force_include_devices = set(overrides.get("force_include_devices", []))
+    hidden_devices = set(overrides.get("hidden_devices", []))
     metadata = overrides.get("metadata", {})
     source_date = str(
         args.inventory_source_date
@@ -520,7 +523,11 @@ def main() -> None:
     def dedupe_devices(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         result: dict[str, dict[str, Any]] = {}
         for device in sorted(items, key=lambda x: friendly_device_name(x).casefold()):
-            if is_virtual_device(device):
+            if (
+                is_virtual_device(device)
+                or raw_device_name(device) in hidden_devices
+                or friendly_device_name(device) in hidden_devices
+            ):
                 continue
             key = friendly_device_name(device).casefold().strip()
             result.setdefault(key, device)
@@ -1042,6 +1049,13 @@ def main() -> None:
     device_index.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
     (docs / "geraete" / "index.md").write_text("".join(device_index), encoding="utf-8")
 
+    try:
+        dashboard_count = write_dashboard_inventory(
+            source, docs / "dashboards" / "automatisch.md", source_date
+        )
+    except DashboardInventoryError as error:
+        raise RuntimeError(str(error)) from error
+
     summary = {
         "floors": len(floors),
         "areas": len(areas),
@@ -1052,6 +1066,7 @@ def main() -> None:
         "everyday_entities": len(everyday_entities),
         "automations": len(automations),
         "scenes": len(shown_scenes),
+        "dashboards": dashboard_count,
         "source_date": source_date,
         "checked_on": checked_on,
     }

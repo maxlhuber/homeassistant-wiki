@@ -23,6 +23,6 @@
 - Manche Geräte lokal – aber nicht jede Automation und nicht jede App-Anzeige
 
 !!! warning "Keine pauschale Neustartanleitung"
-    Der genaue physische Standort und die freigegebene Neustartmethode des Thin Clients sind noch nicht dokumentiert. Deshalb nicht auf Verdacht einen ähnlich aussehenden Computer oder das NAS ausschalten.
+    Der Thin Client liegt im Büro in der rechten Schublade unter dem Fernseher. Dort liegen auch NAS und Raspberry Pi; die freigegebene Neustartmethode ist noch nicht dokumentiert. Deshalb nicht auf Verdacht eines der Geräte ausschalten.
 
 <p class="page-status">Geprüft: 13. Juli 2026</p>

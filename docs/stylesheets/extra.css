@@ -28,3 +28,84 @@
   margin-top: 2rem;
   padding-top: 0.5rem;
 }
+
+.annotated-image,
+.guide-image {
+  position: relative;
+  display: inline-block;
+  max-width: 390px;
+  margin: 0.7rem auto 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.4rem rgba(0, 0, 0, 0.24);
+}
+
+.annotated-image img,
+.guide-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.callout-marker {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  transform: translate(-50%, -50%);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #00a896;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1;
+  box-shadow: 0 0.15rem 0.45rem rgba(0, 0, 0, 0.55);
+}
+
+.image-caption {
+  max-width: 390px;
+  margin: -0.4rem 0 1rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.78rem;
+}
+
+.step-legend {
+  counter-reset: wiki-step;
+  list-style: none;
+  padding-left: 0;
+}
+
+.step-legend > li {
+  position: relative;
+  min-height: 2rem;
+  padding: 0.25rem 0 0.5rem 2.4rem;
+}
+
+.step-legend > li::before {
+  counter-increment: wiki-step;
+  content: counter(wiki-step);
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: #00a896;
+  color: #fff;
+  font-weight: 750;
+}
+
+@media (max-width: 420px) {
+  .annotated-image,
+  .guide-image {
+    max-width: 100%;
+  }
+}
