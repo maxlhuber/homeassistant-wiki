@@ -14,7 +14,12 @@ Auf dem Thin Client läuft **Home Assistant OS**. Das ist die Zentrale: Dort lie
 
 ### Raspberry Pi
 
-Der Raspberry Pi stellt **nur dieses Wiki** im Heimnetz bereit. Änderungen am Wiki schalten keine Lampe und öffnen keine Tür. Umgekehrt bedeutet ein erreichbares Wiki nicht automatisch, dass Home Assistant funktioniert. Er liegt ebenfalls im Büro in der rechten Schublade unter dem Fernseher.
+Der Raspberry Pi stellt **nur dieses Wiki** im Heimnetz bereit. Home Assistant
+leitet es über einen abgesicherten Seitenleisteneintrag auch an angemeldete
+Benutzer von unterwegs weiter. Änderungen am Wiki schalten keine Lampe und
+öffnen keine Tür. Umgekehrt bedeutet ein erreichbares Wiki nicht automatisch,
+dass Home Assistant funktioniert. Er liegt ebenfalls im Büro in der rechten
+Schublade unter dem Fernseher.
 
 ### WD My Cloud EX2 Ultra
 
@@ -36,7 +41,11 @@ Viele lokale Schalter, Funkgeräte wie Sensoren und Lampen (bei uns häufig übe
 
 ## Zugriff von unterwegs
 
-Die Home-Assistant-App erreicht unser Zuhause von unterwegs über **Home Assistant Cloud**. Meike verwendet dafür ihren eigenen Home-Assistant-Benutzer. Das Raspberry-Pi-Wiki ist derzeit nur im Heimnetz erreichbar; ein sicherer externer Wiki-Zugang wird später getrennt eingerichtet. Eine einfache Router-Portfreigabe ist dafür nicht geeignet.
+Die Home-Assistant-App erreicht unser Zuhause von unterwegs über **Home
+Assistant Cloud**. Meike verwendet dafür ihren eigenen Home-Assistant-Benutzer.
+Der Seitenleisteneintrag **Haus-Wiki** nutzt denselben verschlüsselten Zugang.
+Home Assistant leitet die Anfrage intern zum Raspberry Pi weiter; der Pi besitzt
+keine öffentliche Portfreigabe und ist nicht direkt aus dem Internet erreichbar.
 
 ## Was bedeutet der Standort im Wiki?
 
@@ -54,4 +63,4 @@ Eine genaue Position wie „an der Decke“ erscheint nur, wenn sie sicher aus d
 4. Uhrzeit, Raum und Beobachtung notieren.
 5. In der passenden [Raumseite](raeume/index.md), [Automationsseite](automationen/index.md) oder [Schnellhilfe](schnellhilfe/index.md) nachsehen.
 
-<p class="page-status">Mit dem laufenden System abgeglichen: 18. Juli 2026</p>
+<p class="page-status">Mit dem laufenden System abgeglichen: 19. Juli 2026</p>

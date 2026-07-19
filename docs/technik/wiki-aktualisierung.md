@@ -7,6 +7,23 @@ search:
 
 Der vollständige Wochenlauf findet auf dem Raspberry Pi statt. Ein laufender Windows-PC ist nicht erforderlich.
 
+## Zugriff in Home Assistant und von unterwegs
+
+Das Wiki erscheint als **Haus-Wiki** in der Seitenleiste von Home Assistant.
+Eine kleine lokale Home-Assistant-App leitet die Wiki-Seiten über den
+abgesicherten Ingress-Zugang zum Raspberry Pi weiter.
+
+- Zu Hause und unterwegs wird dasselbe Home-Assistant-Benutzerkonto verwendet.
+- Home Assistant Cloud übernimmt den verschlüsselten Fernzugriff.
+- Am Router ist keine Portfreigabe für das Wiki eingerichtet.
+- Der Raspberry Pi ist nicht direkt aus dem Internet erreichbar.
+- Auch ein normaler Home-Assistant-Benutzer wie Meike darf den Eintrag öffnen.
+
+Wenn der Raspberry Pi nicht antwortet, zeigt der Seitenleisteneintrag eine
+verständliche Hinweisseite. Home Assistant und die übrigen Dashboards sind davon
+nicht betroffen. Der Tunnel verändert den Wochenlauf nicht: Das Wiki wird
+weiterhin auf dem Raspberry Pi erzeugt und veröffentlicht.
+
 ## Normaler Ablauf
 
 1. Der Pi holt ausschließlich einen geradlinig vorausliegenden Stand des privaten GitHub-Branches `main`. Ein abweichender Verlauf stoppt den Lauf.

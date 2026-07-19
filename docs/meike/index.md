@@ -37,7 +37,11 @@ Du meldest dich mit deinem eigenen Home-Assistant-Benutzer an. Dadurch bleiben p
 
 ## Von unterwegs
 
-Die Home-Assistant-App funktioniert von unterwegs über **Home Assistant Cloud**. Das Wiki selbst ist vorerst nur zu Hause im WLAN erreichbar. Wenn Home Assistant unterwegs nicht lädt, zuerst Mobilfunk/WLAN prüfen und die App einmal neu öffnen.
+Die Home-Assistant-App funktioniert von unterwegs über **Home Assistant Cloud**.
+Öffne dort in der Seitenleiste **Haus-Wiki**; eine zusätzliche App, Anmeldung
+oder VPN-Verbindung ist nicht nötig. Der Raspberry Pi bleibt dabei vor dem
+Internet verborgen. Wenn Home Assistant unterwegs nicht lädt, zuerst
+Mobilfunk/WLAN prüfen und die App einmal neu öffnen.
 
 ## Wenn etwas nicht klappt
 
@@ -51,4 +55,4 @@ Die Home-Assistant-App funktioniert von unterwegs über **Home Assistant Cloud**
 
 Als Nächstes: [Home Assistant Schritt für Schritt bedienen](../bedienung/index.md).
 
-<p class="page-status">Persönliche Einstiegshilfe geprüft am 18. Juli 2026</p>
+<p class="page-status">Persönliche Einstiegshilfe geprüft am 19. Juli 2026</p>

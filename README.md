@@ -125,6 +125,14 @@ hinterlegten Freigabewert. Der Pi ignoriert falsche Nachrichten, Doppelstarts un
 weitere Startversuche innerhalb von 60 Sekunden. Abschluss oder Fehler werden über
 die bestehende iPhone-Statusmeldung gemeldet.
 
+## Wiki in der Home-Assistant-Seitenleiste
+
+Die lokale App unter `home-assistant-apps/homewiki_gateway` stellt das Wiki über
+Home Assistant Ingress bereit. Dadurch funktioniert der Seitenleisteneintrag über
+die Home-Assistant-App auch von unterwegs mit Home Assistant Cloud, ohne VPN und
+ohne öffentliche Portfreigabe für den Raspberry Pi. Die App ist nur ein
+abgesicherter Proxy; Build, Veröffentlichung und Datenhaltung bleiben auf dem Pi.
+
 ## Grundsätze
 
 - Verständliche Alltagssprache steht vor technischen Details.

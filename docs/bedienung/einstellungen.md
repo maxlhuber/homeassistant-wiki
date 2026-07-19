@@ -44,6 +44,8 @@ Hier sieht man die Sicherungsorte, Kategorien und vorhandenen Backups. **Wiederh
 
 „Verbunden“ bedeutet, dass die App den vorgesehenen Cloud-Zugang von unterwegs verwenden kann.
 
-Das Wiki bleibt unabhängig davon zunächst nur im Heimnetz erreichbar.
+Über den Seitenleisteneintrag **Haus-Wiki** funktioniert jetzt auch das Wiki mit
+diesem Cloud-Zugang. Dafür ist weder eine VPN-Verbindung noch eine zusätzliche
+Anmeldung erforderlich.
 
-<p class="page-status">Einstellungsübersicht geprüft am 18. Juli 2026</p>
+<p class="page-status">Einstellungsübersicht geprüft am 19. Juli 2026</p>
