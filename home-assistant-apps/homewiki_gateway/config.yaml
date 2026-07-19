@@ -1,5 +1,5 @@
 name: "Haus-Wiki"
-version: "1.0.1"
+version: "1.0.2"
 slug: "homewiki_gateway"
 description: "Sicherer Home-Assistant-Zugang zum Haus-Wiki auf dem Raspberry Pi"
 arch:
