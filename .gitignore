@@ -15,3 +15,6 @@ eingang/
 # Laufzeitdaten der wöchentlichen Aktualisierung bleiben ausschließlich auf dem Pi.
 .wiki-state/
 scripts/wiki_ai_overrides.yaml
+
+# Projektweite Zugangsdaten werden lokal mit Windows DPAPI verschlüsselt.
+/.project-secrets/
