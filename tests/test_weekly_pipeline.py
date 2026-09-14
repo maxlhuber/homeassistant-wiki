@@ -23,11 +23,7 @@ from generate_docs import (  # noqa: E402
     merge_documentation_overrides,
     safe_source_text,
 )
-from weekly_update import (  # noqa: E402
-    _review_credit_probe_required,
-    _review_reason,
-    merge_ai_overrides,
-)
+from weekly_update import merge_ai_overrides  # noqa: E402
 from wiki_backup import (  # noqa: E402
     ALLOWED_MEMBERS,
     BackupExtractionError,
@@ -405,7 +401,6 @@ class SnapshotTests(unittest.TestCase):
 
             self.assertEqual(delta.sections["dashboards"]["modified"], ["uebersicht"])
             self.assertEqual(delta.automation_candidates, [])
-            self.assertFalse(_review_credit_probe_required(False, delta))
             serialised = json.dumps(new["dashboards"], ensure_ascii=False)
             self.assertNotIn("light.private_room", serialised)
 
@@ -495,78 +490,6 @@ class SnapshotTests(unittest.TestCase):
                 "[Intern]",
             ):
                 self.assertNotIn(private_text, serialised)
-
-    def test_dashboard_migration_blocks_unknown_or_empty_inventory(self) -> None:
-        for with_unknown in (False, True):
-            with self.subTest(
-                with_unknown=with_unknown
-            ), tempfile.TemporaryDirectory() as temporary:
-                source = Path(temporary)
-                _write_source(source, [])
-                if with_unknown:
-                    self._write_dashboard_registry(
-                        source,
-                        {
-                            "id": "new-private-dashboard",
-                            "url_path": "new-private-dashboard",
-                            "show_in_sidebar": True,
-                            "mode": "storage",
-                        },
-                    )
-                new = build_snapshot(source)
-                old = json.loads(json.dumps(new))
-                old.pop("dashboards")
-                delta = calculate_delta(old, new)
-
-                reason = _review_reason(delta, old, new, set())
-
-                self.assertIsNotNone(reason)
-                self.assertIn("Dashboard", reason)
-
-    def test_dashboard_migration_accepts_known_inventory_as_baseline(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            source = Path(temporary)
-            _write_source(source, [])
-            self._write_dashboard(source, "light.flur")
-            new = build_snapshot(source)
-            old = json.loads(json.dumps(new))
-            old.pop("dashboards")
-            delta = calculate_delta(old, new)
-
-            self.assertIsNone(_review_reason(delta, old, new, set()))
-
-    def test_review_reason_aggregates_dashboard_manual_and_critical_changes(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            first = root / "first"
-            second = root / "second"
-            first.mkdir()
-            second.mkdir()
-            alias = "Haustür öffnen"
-            old_automation = {
-                "id": "door",
-                "alias": alias,
-                "trigger": [{"platform": "time", "at": "10:00:00"}],
-                "action": [{"service": "notify.mobile_app"}],
-            }
-            new_automation = json.loads(json.dumps(old_automation))
-            new_automation["trigger"][0]["at"] = "10:05:00"
-            _write_source(first, [old_automation])
-            _write_source(second, [new_automation])
-            self._write_dashboard(first, "light.flur")
-            self._write_dashboard(second, "light.kueche")
-
-            old = build_snapshot(first)
-            new = build_snapshot(second)
-            delta = calculate_delta(old, new)
-            reason = _review_reason(delta, old, new, {alias})
-
-            self.assertIsNotNone(reason)
-            self.assertIn("Dashboard", reason)
-            self.assertIn("manuelle Beschreibung", reason)
-            self.assertIn("sicherheits-", reason)
-            self.assertTrue(_review_credit_probe_required(False, delta))
-            self.assertFalse(_review_credit_probe_required(True, delta))
 
     def test_mapping_order_and_comments_are_not_semantic_changes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -7,6 +7,12 @@ search:
 
 Hier werden inhaltlich wichtige Änderungen am Wiki festgehalten. Kleine Rechtschreibkorrekturen müssen nicht einzeln aufgeführt werden.
 
+## 14. September 2026
+
+- Manuellen Prüf- und Freigabestopp aus dem automatischen Wochenlauf entfernt
+- Umfangreiche, kritische und Dashboard-bezogene Änderungen werden vollständig automatisch verarbeitet und veröffentlicht
+- Prüfhinweise des Sprachmodells werden nur noch im Laufstatus protokolliert; technische Validierungen und atomarer Rollback bleiben aktiv
+
 ## 13. Juli 2026
 
 - Familienansicht vollständig überarbeitet: verständlicher Einstieg, Grundlagen und konkrete Schnellhilfe statt leerer Vorlagen

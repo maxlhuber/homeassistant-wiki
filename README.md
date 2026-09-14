@@ -81,18 +81,18 @@ ein eingeschalteter PC ist nicht erforderlich. Der Ablauf ist absichtlich streng
    Datenstrom entschlüsselt. Das vollständige Backup wird nicht entpackt.
 4. Ein semantischer Vergleich übermittelt nur geänderte Automationen an das kleine,
    fest angeheftete OpenAI-Modell. Ohne Änderungen erfolgt nur eine minimale
-   Guthabenprobe. Ein reiner Dashboard-Prüfstopp löst keine Guthabenprobe aus.
-   Dashboard-Änderungen werden vollständig lokal erkannt. Die API speichert die
-   Anfrage nicht (`store: false`).
+   Guthabenprobe. Dashboard-Änderungen werden vollständig lokal erkannt. Die API
+   speichert die Anfrage nicht (`store: false`).
 5. Der Generator läuft zweimal. Stimmen beide Ergebnisse nicht exakt überein,
    fehlen Inhalte oder sieht ein Text wie ein Geheimnis aus, wird abgebrochen.
-6. Eine geänderte Dashboard-Struktur verlangt eine bewusste Prüfung der bebilderten
-   Seiten. So gelangen keine veralteten Dashboard-Bilder unbemerkt ins Wiki.
+6. Auch umfangreiche, kritische oder Dashboard-bezogene Änderungen laufen ohne
+   manuellen Prüf- oder Freigabestopp weiter. Ein Prüfhinweis des Modells wird nur
+   im Laufstatus protokolliert.
 7. Erst nach strengem MkDocs-Build werden die erzeugten Seiten nach GitHub
    übertragen. Danach schaltet der Pi atomar auf das neue Release um und prüft die
    echte Startseite. Bei einem Fehler bleibt beziehungsweise wird die letzte
    funktionierende Version aktiv.
-8. Home Assistant meldet Erfolg, Prüfbedarf, Backup-/GitHub-Fehler und insbesondere
+8. Home Assistant meldet Erfolg, Backup-/GitHub-Fehler und insbesondere
    aufgebrauchtes OpenAI-Guthaben an das iPhone. Ist Home Assistant kurzzeitig nicht
    erreichbar, bleibt die Meldung in einer lokalen Warteschlange.
 
@@ -104,13 +104,12 @@ Ein neuer OpenAI-Schlüssel wird auf dem Pi interaktiv mit folgendem Befehl hint
 sudo homeassistant-wiki-set-openai-key
 ```
 
-Wenn eine sicherheitsrelevante oder ungewöhnlich große Änderung bewusst geprüft
-werden muss, bleibt das bisherige Wiki aktiv. Nach der Prüfung wird exakt dieser
-Stand einmalig freigegeben mit:
-
-```bash
-sudo homeassistant-wiki-approve-review
-```
+Der Aktualisierungslauf kennt keine manuelle Inhaltsfreigabe. Mengenbasierte,
+sicherheitsbezogene, Dashboard- oder Modell-Prüfhinweise blockieren den LLM-Aufruf
+und die Veröffentlichung nicht. Harte technische Validierungen bleiben aktiv:
+ungültige oder veraltete Backups, geheimnisähnliche Inhalte, ungültige
+Modellantworten, nicht reproduzierbare Generierung und fehlerhafte Builds werden
+nicht veröffentlicht.
 
 Installation beziehungsweise Reparatur der Pi-Dienste:
 

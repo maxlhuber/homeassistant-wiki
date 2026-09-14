@@ -52,8 +52,8 @@ install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-mqtt-trigger.sh" \
   /usr/local/sbin/wiki-mqtt-trigger
 install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-set-openai-key.sh" \
   /usr/local/sbin/homeassistant-wiki-set-openai-key
-install -m 0755 "${REPO_DIR}/raspberry-pi/wiki-approve-review.py" \
-  /usr/local/sbin/homeassistant-wiki-approve-review
+rm -f -- /usr/local/sbin/homeassistant-wiki-approve-review \
+  /var/lib/homeassistant-wiki/review-approval.json
 
 install -d -m 0755 -o root -g root "${RUNNER_DIR}"
 for runner_file in \

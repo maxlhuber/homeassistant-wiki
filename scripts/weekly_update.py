@@ -12,7 +12,6 @@ import datetime as dt
 import hashlib
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -41,19 +40,13 @@ from wiki_snapshot import (
     SnapshotError,
     build_snapshot,
     calculate_delta,
-    destructive_change_reason,
     load_snapshot,
-    semantic_hash,
     write_snapshot,
 )
 
 
 BLOCKED_EXIT = 20
 FAILED_EXIT = 30
-CRITICAL_AUTOMATION = re.compile(
-    r"(?:rauch|feuer|alarm|tür|tuer|schloss|nuki|wasser|ventil|wallbox|laden|lade)",
-    re.IGNORECASE,
-)
 GENERATED_FIELDS = {
     "description",
     "trigger_steps",
@@ -95,18 +88,6 @@ def _write_json_atomic(path: Path, value: dict[str, Any]) -> None:
 def _write_status(path: Path, **values: Any) -> None:
     document = {"updated_at": _now_iso(), **values}
     _write_json_atomic(path, document)
-
-
-def _review_is_approved(path: Path, fingerprint: str) -> bool:
-    try:
-        document = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return False
-    return (
-        isinstance(document, dict)
-        and document.get("snapshot_fingerprint") == fingerprint
-        and document.get("approved") is True
-    )
 
 
 def _backup_date_label(raw: str | None, fallback: Path) -> str:
@@ -393,78 +374,6 @@ def _replace_publish_site(state_dir: Path, staged_site: Path) -> None:
     shutil.rmtree(previous, ignore_errors=True)
 
 
-def _changed_aliases(
-    delta: SnapshotDelta, old: dict[str, Any] | None, new: dict[str, Any]
-) -> tuple[set[str], set[str]]:
-    new_aliases = {
-        new["automations"][key]["alias"]
-        for key in delta.sections["automations"]["added"]
-        + delta.sections["automations"]["modified"]
-    }
-    old_aliases = {
-        old["automations"][key]["alias"]
-        for key in delta.sections["automations"]["removed"]
-        + delta.sections["automations"]["modified"]
-        if old and key in old.get("automations", {})
-    }
-    return new_aliases, old_aliases
-
-
-def _review_reason(
-    delta: SnapshotDelta,
-    old: dict[str, Any] | None,
-    new: dict[str, Any],
-    manual_aliases: set[str],
-) -> str | None:
-    reasons: list[str] = []
-    destructive = destructive_change_reason(old, delta)
-    if destructive:
-        reasons.append(destructive)
-    if old is None:
-        return " ".join(reasons) or None
-    dashboard_changes = delta.sections.get("dashboards", {})
-    new_dashboards = new.get("dashboards", {})
-    dashboard_migration_needs_review = (
-        "dashboards" not in old
-        and isinstance(new_dashboards, dict)
-        and (
-            not new_dashboards
-            or any(str(key).startswith("unbekannt-") for key in new_dashboards)
-        )
-    )
-    dashboard_changed = "dashboards" in old and any(
-        dashboard_changes.get(kind) for kind in ("added", "removed", "modified")
-    )
-    if dashboard_migration_needs_review or dashboard_changed:
-        reasons.append(
-            "Mindestens ein Home-Assistant-Dashboard wurde geändert. "
-            "Die bebilderten Wiki-Anleitungen müssen vor der Veröffentlichung "
-            "auf Aktualität geprüft werden."
-        )
-    new_aliases, old_aliases = _changed_aliases(delta, old, new)
-    manual_changed = sorted((new_aliases | old_aliases) & manual_aliases, key=str.casefold)
-    if manual_changed:
-        reasons.append(
-            "Mindestens eine geänderte Automation besitzt eine bewusst geprüfte manuelle "
-            "Beschreibung: " + ", ".join(manual_changed)
-        )
-    critical = sorted(
-        (alias for alias in new_aliases | old_aliases if CRITICAL_AUTOMATION.search(alias)),
-        key=str.casefold,
-    )
-    if critical:
-        reasons.append(
-            "Eine sicherheits- oder versorgungsrelevante Automation wurde geändert: "
-            + ", ".join(critical)
-        )
-    return " ".join(reasons) or None
-
-
-def _review_credit_probe_required(no_ai: bool, delta: SnapshotDelta) -> bool:
-    """Avoid an API call when a local-only dashboard review already blocks the run."""
-    return not no_ai and bool(delta.automation_candidates)
-
-
 def _arguments() -> argparse.Namespace:
     repo_default = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
@@ -502,7 +411,6 @@ def run(args: argparse.Namespace) -> int:
     snapshot_path = state_dir / "last_snapshot.json"
     last_backup_path = state_dir / "last_backup.json"
     ai_overrides_path = state_dir / "wiki_ai_overrides.yaml"
-    review_approval_path = state_dir / "review-approval.json"
     manual_overrides_path = repo / "scripts" / "wiki_overrides.yaml"
     prompt_path = Path(__file__).with_name("wiki_ai_prompt.txt")
     backup_key = _read_secret_file(args.backup_key_file, "Home Assistant")
@@ -531,74 +439,11 @@ def run(args: argparse.Namespace) -> int:
         backup_time = _backup_time(extracted.backup_date, backup)
         source_date = _backup_date_label(extracted.backup_date, backup)
         new_snapshot = build_snapshot(extracted.destination)
-        snapshot_fingerprint = semantic_hash(new_snapshot)
-        review_approved = _review_is_approved(
-            review_approval_path, snapshot_fingerprint
-        )
         old_snapshot = load_snapshot(snapshot_path)
         delta = calculate_delta(old_snapshot, new_snapshot)
         manual = _load_yaml_mapping(manual_overrides_path)
         manual_automations = manual.get("automation_overrides", {})
         manual_aliases = set(manual_automations) if isinstance(manual_automations, dict) else set()
-        rollback_reason: str | None = None
-        if last_backup_path.exists():
-            try:
-                last_backup = json.loads(last_backup_path.read_text(encoding="utf-8"))
-                previous_raw = last_backup.get("backup_time")
-                previous_time = dt.datetime.fromisoformat(str(previous_raw))
-                if previous_time.tzinfo is None:
-                    previous_time = previous_time.replace(tzinfo=dt.timezone.utc)
-                if backup_time < previous_time.astimezone(dt.timezone.utc):
-                    rollback_reason = (
-                        "Das ausgewählte Backup ist älter als der zuletzt veröffentlichte "
-                        "Wiki-Stand und braucht eine bewusste Freigabe."
-                    )
-            except (OSError, ValueError, TypeError, json.JSONDecodeError):
-                rollback_reason = "Der gespeicherte Backup-Zeitpunkt ist unlesbar und muss geprüft werden."
-        review_reasons = [
-            reason
-            for reason in (
-                rollback_reason,
-                _review_reason(delta, old_snapshot, new_snapshot, manual_aliases),
-            )
-            if reason
-        ]
-        review_reason = " ".join(review_reasons) or None
-        if review_reason and not review_approved:
-            review_probe = OpenAIResult({}, False, None, {}, None)
-            review_warning: OpenAIClientError | None = None
-            review_probe_attempted = _review_credit_probe_required(
-                args.no_ai, delta
-            )
-            if review_probe_attempted:
-                try:
-                    review_probe = probe_api_credit(
-                        api_key=api_key,
-                        model=args.model,
-                        endpoint=args.endpoint,
-                    )
-                except OpenAIClientError as error:
-                    review_warning = error
-            _write_status(
-                status_path,
-                outcome="blocked",
-                reason_kind="review_required",
-                message=review_reason,
-                backup=backup.name,
-                backup_date=source_date,
-                delta=delta.summary(),
-                snapshot_fingerprint=snapshot_fingerprint,
-                warning_kind=review_warning.kind if review_warning else None,
-                warning_message=str(review_warning) if review_warning else None,
-                warning_retryable=(review_warning.retryable if review_warning else None),
-                warning_http_status=(review_warning.status if review_warning else None),
-                openai_credit_probe=review_probe_attempted,
-                openai_model=args.model if review_probe_attempted else None,
-                openai_usage=review_probe.usage,
-                openai_response_id=review_probe.response_id,
-            )
-            return BLOCKED_EXIT
-
         ai_result = OpenAIResult({}, False, None, {}, None)
         warning: OpenAIClientError | None = None
         regular_ai_attempted = False
@@ -625,21 +470,7 @@ def run(args: argparse.Namespace) -> int:
                 )
             except OpenAIClientError as error:
                 warning = error
-            if ai_result.review_required:
-                _write_status(
-                    status_path,
-                    outcome="blocked",
-                    reason_kind="model_review_required",
-                    message=ai_result.review_reason or "Die KI hat eine manuelle Prüfung angefordert.",
-                    backup=backup.name,
-                    backup_date=source_date,
-                    delta=delta.summary(),
-                    snapshot_fingerprint=snapshot_fingerprint,
-                    openai_usage=ai_result.usage,
-                    openai_response_id=ai_result.response_id,
-                )
-                return BLOCKED_EXIT
-        elif not args.no_ai and not review_approved:
+        elif not args.no_ai:
             credit_probe_attempted = True
             try:
                 ai_result = probe_api_credit(
@@ -686,8 +517,6 @@ def run(args: argparse.Namespace) -> int:
             last_backup_path,
             {"backup_time": backup_time.isoformat(), "backup_name": backup.name},
         )
-        if review_approved:
-            review_approval_path.unlink(missing_ok=True)
         if old_snapshot is None:
             outcome = "ready_baseline"
         elif delta.has_changes:
@@ -710,7 +539,8 @@ def run(args: argparse.Namespace) -> int:
             openai_model=args.model if regular_ai_attempted or credit_probe_attempted else None,
             openai_usage=ai_result.usage,
             openai_response_id=ai_result.response_id,
-            review_approved=review_approved,
+            openai_review_requested=ai_result.review_required,
+            openai_review_reason=ai_result.review_reason,
         )
         return 0
     except OpenAIClientError as error:

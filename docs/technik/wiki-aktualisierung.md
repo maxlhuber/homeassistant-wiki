@@ -30,7 +30,7 @@ weiterhin auf dem Raspberry Pi erzeugt und veröffentlicht.
 2. Sonntags ab 06:00 Uhr sucht er im nur lesbar eingebundenen NAS-Ordner nach dem neuesten gültigen Home-Assistant-Backup.
 3. Er liest ausschließlich eine feste Positivliste: Automationen, Szenen, Raum-/Geräte-/Entity-Register, das Dashboard-Verzeichnis und die bekannten Dashboard-Dateien.
 4. Ein semantischer Vergleich erkennt echte Änderungen. Kommentare oder eine andere Reihenfolge lösen keine unnötige KI-Anfrage aus.
-5. Nur neue oder veränderte Automationen ohne manuelle Beschreibung werden an das festgelegte OpenAI-Modell gesendet. Ohne solche Änderungen erfolgt normalerweise lediglich die kleine Guthabenprobe; bei einem reinen Dashboard-Prüfstopp entfällt auch diese.
+5. Nur neue oder veränderte Automationen ohne manuelle Beschreibung werden an das festgelegte OpenAI-Modell gesendet. Ohne solche Änderungen erfolgt normalerweise lediglich die kleine Guthabenprobe.
 6. Der Generator läuft zweimal. Nur identische Ergebnisse bestehen die Prüfung.
 7. Geheimnissuche und strenger Website-Build müssen erfolgreich sein.
 8. Der Pi überträgt nur die erzeugten Wiki-Seiten nach GitHub, baut ein neues Release und schaltet erst danach atomar auf die neue Website um.
@@ -40,15 +40,11 @@ weiterhin auf dem Raspberry Pi erzeugt und veröffentlicht.
 
 Dashboard-Dateien werden ohne LLM ausgewertet. Das Wiki speichert dabei nur fest hinterlegte Wiki-Namen, Sichtbarkeit, Anzahl der Ansichten, grobe Layoutarten, die Zahl der Strukturelemente und semantische Fingerabdrücke. Titel, Pfade, Karteninhalte und technische Kennungen aus Home Assistant werden nicht veröffentlicht. Ein unbekanntes Dashboard erscheint nur als neutraler Prüfhinweis.
 
-Ändert sich ein Dashboard, stoppt die Veröffentlichung mit **Prüfung erforderlich**. Dadurch bleiben die bisherigen Bilder online, bis Max:
-
-1. die betroffene Ansicht auf dem iPhone im Hochformat prüft,
-2. veraltete Screenshots ersetzt,
-3. die zugehörige Erklärung anpasst,
-4. den Stand testet und in GitHub speichert,
-5. genau diesen Backup-Stand mit `sudo homeassistant-wiki-approve-review` freigibt.
-
-Eine vollautomatische Bildschirmaufnahme ist absichtlich nicht eingerichtet: Dafür müsste der Pi dauerhaft einen Home-Assistant-Benutzer samt Anmeldedaten und Browsersitzung besitzen. Die strukturelle Erkennung verhindert dennoch, dass geänderte Dashboards unbemerkt mit alten Bildern veröffentlicht werden.
+Dashboard-Änderungen werden ohne manuellen Prüf- oder Freigabestopp veröffentlicht.
+Die Strukturübersicht wird automatisch aktualisiert; vorhandene Screenshots werden
+dabei nicht automatisch neu aufgenommen. Eine vollautomatische Bildschirmaufnahme
+ist nicht eingerichtet, weil der Pi dafür dauerhaft einen Home-Assistant-Benutzer
+samt Anmeldedaten und Browsersitzung besitzen müsste.
 
 Die vollständigen Beispielbilder wurden für dieses private Wiki bewusst freigegeben. Sie können reale Zustände, Termine oder Standorte zeigen; deshalb muss das GitHub-Repository privat bleiben. Zugangsdaten, Tokens und Codes dürfen trotzdem nie in einem Screenshot stehen.
 
@@ -69,8 +65,11 @@ Der frühere PC-Upload per Dateisynchronisierung ist entfernt. Das verbliebene W
 ## Fehlerverhalten
 
 - Die letzte funktionierende Website bleibt erreichbar.
-- Kritische, große oder destruktiv wirkende Änderungen brauchen eine bewusste Freigabe.
+- Umfangreiche, kritische und Dashboard-bezogene Änderungen laufen ohne manuellen
+  Prüf- oder Freigabestopp weiter. Modellhinweise werden nur protokolliert.
+- Ungültige oder veraltete Backups, Geheimnisfunde, ungültige Modellantworten,
+  nicht reproduzierbare Generierung und fehlerhafte Builds werden nicht veröffentlicht.
 - GitHub-, Backup-, Build-, Benachrichtigungs- und API-Fehler besitzen getrennte Statusmeldungen.
 - Geheimnisse liegen nur in root-geschützten Dateien auf dem Pi und werden weder ins Wiki noch nach GitHub übernommen.
 
-<p class="page-status">Wochenlauf und Dashboard-Prüfung dokumentiert am 18. Juli 2026</p>
+<p class="page-status">Vollautomatischen Wochenlauf dokumentiert am 14. September 2026</p>

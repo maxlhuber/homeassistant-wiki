@@ -463,16 +463,3 @@ def write_snapshot(path: Path, snapshot: dict[str, Any]) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
-
-
-def destructive_change_reason(
-    old: dict[str, Any] | None, delta: SnapshotDelta
-) -> str | None:
-    if old is None:
-        return None
-    for section in ("areas", "devices", "entities", "automations"):
-        old_count = len(old.get(section, {}))
-        removed = len(delta.sections[section]["removed"])
-        if old_count and removed >= max(3, int(old_count * 0.10) + 1):
-            return f"Im Abschnitt {section} würden auffällig viele Einträge verschwinden ({removed} von {old_count})."
-    return None
