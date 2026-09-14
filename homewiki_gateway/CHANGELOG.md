@@ -1,3 +1,8 @@
+# 3.0.1
+
+- Automatische NAS-Backups werden auch in Unterordnern gefunden; ältere Supervisor-Metadaten ohne `type` bleiben kompatibel.
+- Fehlerprotokolle enthalten eine begrenzte, bereinigte Diagnose.
+
 # 3.0.0
 
 - Neue responsive Oberfläche mit Leser-Einstieg und eigener Verwaltung.

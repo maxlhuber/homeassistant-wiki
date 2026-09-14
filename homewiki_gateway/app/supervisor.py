@@ -126,7 +126,13 @@ def latest_automatic_backup_file(export_path: Path) -> Path | None:
                     if metadata_member.size > 1_000_000:
                         continue
                     document = json.loads(archive.extractfile(metadata_member).read())
-                if document.get("type") != "full":
+                backup_type = document.get("type")
+                if backup_type not in (None, "full"):
+                    continue
+                # Some Supervisor releases omit ``type`` in the archive
+                # metadata.  The presence of Home Assistant content is the
+                # compatible full-backup indicator in that case.
+                if backup_type is None and document.get("homeassistant_included") is not True:
                     continue
                 stamp = dt.datetime.fromisoformat(document["date"].replace("Z", "+00:00")).timestamp()
                 candidates.append((stamp, validated))

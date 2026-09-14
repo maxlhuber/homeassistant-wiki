@@ -26,7 +26,7 @@ class OperationLog:
     def emit(self, event: str, message: str, level: str = "info", **fields):
         # Callers use fixed messages. Exceptions, credentials, names and CLI output
         # are deliberately excluded from the structured event schema.
-        allowed = {"run_id", "phase", "duration_seconds", "version", "outcome", "backup_date", "source", "reason", "error_type"}
+        allowed = {"run_id", "phase", "duration_seconds", "version", "outcome", "backup_date", "source", "reason", "error_type", "error_detail"}
         entry = {"at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "level": level, "event": event, "message": message}
         entry.update({key: value for key, value in fields.items() if key in allowed})
         with self.lock:

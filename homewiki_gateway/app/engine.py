@@ -68,6 +68,14 @@ def _write_json(path: Path, value: Any) -> None:
     temporary.replace(path)
 
 
+def _safe_error_detail(error: Exception) -> str:
+    """Keep diagnostics useful without copying arbitrary backend output."""
+    detail = str(error).replace("\r", " ").replace("\n", " ").strip()
+    detail = re.sub(r"(?i)(?:password|passwort|token|api[- ]?key|secret|private[- ]?key)\s*[:=]\s*\S+", "[geschützt]", detail)
+    detail = re.sub(r"https?://\S+", "[Adresse]", detail)
+    return detail[:240] or type(error).__name__
+
+
 def _replace_tree(source: Path, destination: Path) -> None:
     incoming = destination.with_name(destination.name + ".new")
     previous = destination.with_name(destination.name + ".old")
@@ -299,7 +307,7 @@ class WikiEngine:
             REBUILD_REQUIRED.unlink(missing_ok=True)
             self._record({"reason": reason, "outcome": outcome, "backup": backup.get("name"), "warning": result.get("warning_kind")})
         except Exception as error:
-            self.operation_log.emit("run_failed", "Wiki-Aktualisierung fehlgeschlagen. Bestehenden Stand prüfen.", level="error", run_id=run_id, error_type=type(error).__name__, duration_seconds=round(time.monotonic() - started, 2))
+            self.operation_log.emit("run_failed", "Wiki-Aktualisierung fehlgeschlagen. Bestehenden Stand prüfen.", level="error", run_id=run_id, error_type=type(error).__name__, error_detail=_safe_error_detail(error), duration_seconds=round(time.monotonic() - started, 2))
             message = "Die Aktualisierung ist fehlgeschlagen. Bitte Backup, NAS-Verbindung und Anmeldung prüfen."
             self._set_app_status(state="failed", phase="failed", message=message)
             self._record({"reason": reason, "outcome": "failed", "message": message})
