@@ -13,7 +13,7 @@ from urllib.parse import unquote, urlsplit
 
 from .wiki_snapshot import SECRET_VALUE_PATTERNS
 
-from .engine import BUILT_VERSION, DATA, MANUAL, MANUAL_DIRTY, PROJECT, WikiEngine, scheduler
+from .engine import BUILT_VERSION, DATA, MANUAL, MANUAL_DIRTY, PROJECT, WikiEngine, runtime_version, scheduler
 from .settings import load_settings
 
 
@@ -128,7 +128,7 @@ def main() -> None:
         if bootstrap.is_dir(): shutil.copytree(bootstrap,DATA/"publish-site")
     threading.Thread(target=scheduler,args=(engine,),daemon=True).start()
     built_version = BUILT_VERSION.read_text(encoding="utf-8").strip() if BUILT_VERSION.exists() else ""
-    if built_version != __import__("os").environ.get("HOMEWIKI_VERSION", "dev"):
+    if built_version != runtime_version():
         engine.trigger("version_update")
     print("[haus-wiki] Dienst bereit auf Port 8099")
     ThreadingHTTPServer(("0.0.0.0",8099),Handler).serve_forever()

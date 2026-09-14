@@ -19,6 +19,7 @@ WORKDIR /app
 COPY homewiki_gateway/requirements-addon.txt /app/requirements-addon.txt
 RUN pip install --no-cache-dir -r /app/requirements-addon.txt
 COPY homewiki_gateway/app /app/homewiki
+COPY homewiki_gateway/config.yaml /app/homewiki-config.yaml
 COPY scripts/*.py scripts/wiki_ai_prompt.txt /app/project/scripts/
 # The ingress server imports the redaction patterns directly. Keep this
 # module beside the app as a packaging-safe fallback in case the Supervisor

@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "homewiki_gateway"))
 
-from app import codex_client, settings, supervisor  # noqa: E402
+from app import codex_client, engine, settings, supervisor  # noqa: E402
 
 
 class SettingsTests(unittest.TestCase):
@@ -24,6 +24,13 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(value.schedule_days, ("wed", "sun"))
         self.assertEqual(value.backup_password, "private")
         self.assertEqual(value.admin_users, frozenset({"Max"}))
+
+    def test_runtime_version_comes_from_packaged_config(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            config = Path(temporary) / "config.yaml"
+            config.write_text('name: "Haus-Wiki"\nversion: "2.0.6"\n', encoding="utf-8")
+            with patch.object(engine, "VERSION_CONFIG", config), patch.dict("os.environ", {"HOMEWIKI_VERSION": "dev"}):
+                self.assertEqual(engine.runtime_version(), "2.0.6")
 
 
 class SupervisorTests(unittest.TestCase):

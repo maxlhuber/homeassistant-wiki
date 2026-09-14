@@ -30,12 +30,24 @@ WORK = DATA / "work"
 MANUAL_DIRTY = DATA / "manual-dirty"
 BUILT_VERSION = DATA / "built-version"
 REBUILD_REQUIRED = DATA / "rebuild-required"
+VERSION_CONFIG = Path("/app/homewiki-config.yaml")
 ORIGINAL_REQUEST_AUTOMATION_WORDING = weekly_update.request_automation_wording
 ORIGINAL_PROBE_API_CREDIT = weekly_update.probe_api_credit
 
 
 def _now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+
+def runtime_version() -> str:
+    """Read the packaged app version without relying on the s6 environment."""
+    try:
+        for line in VERSION_CONFIG.read_text(encoding="utf-8").splitlines():
+            if line.startswith("version:"):
+                return line.partition(":")[2].strip().strip('"\'') or "dev"
+    except OSError:
+        pass
+    return os.environ.get("HOMEWIKI_VERSION", "dev")
 
 
 def _read_json(path: Path, default: Any) -> Any:
@@ -105,7 +117,7 @@ class WikiEngine:
             "running": bool(self.thread and self.thread.is_alive()),
             "updated_at": app.get("updated_at"),
             "completed_at": app.get("completed_at"),
-            "version": os.environ.get("HOMEWIKI_VERSION", "dev"),
+            "version": runtime_version(),
         }
 
     def history(self) -> list[dict[str, Any]]:
@@ -199,7 +211,7 @@ class WikiEngine:
                     reason == "manual_edit"
                     or MANUAL_DIRTY.exists()
                     or REBUILD_REQUIRED.exists()
-                    or BUILT_VERSION.read_text(encoding="utf-8").strip() != os.environ.get("HOMEWIKI_VERSION", "dev")
+                    or BUILT_VERSION.read_text(encoding="utf-8").strip() != runtime_version()
                     if BUILT_VERSION.exists()
                     else True
                 ),
@@ -235,7 +247,7 @@ class WikiEngine:
             if result.get("warning_kind"):
                 notify("Haus-Wiki: LLM-Hinweis", str(result.get("warning_message") or "Der deterministische Wiki-Stand wurde ohne LLM-Ergänzung veröffentlicht."), "haus_wiki_llm")
             self._set_app_status(state="idle", message=message, completed_at=_now(), retry_at=None)
-            BUILT_VERSION.write_text(os.environ.get("HOMEWIKI_VERSION", "dev") + "\n", encoding="utf-8")
+            BUILT_VERSION.write_text(runtime_version() + "\n", encoding="utf-8")
             MANUAL_DIRTY.unlink(missing_ok=True)
             REBUILD_REQUIRED.unlink(missing_ok=True)
             self._record({"reason": reason, "outcome": outcome, "backup": backup.get("name"), "warning": result.get("warning_kind")})
