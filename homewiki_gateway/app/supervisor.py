@@ -27,6 +27,8 @@ def _request(path: str, *, method: str = "GET", body: dict[str, Any] | None = No
     )
     try:
         return urllib.request.urlopen(request, timeout=timeout)
+    except urllib.error.HTTPError as error:
+        raise SupervisorError(f"Supervisor-Anfrage wurde abgelehnt (HTTP {error.code}).") from error
     except (urllib.error.URLError, TimeoutError, OSError) as error:
         raise SupervisorError("Home Assistant Supervisor ist nicht erreichbar.") from error
 
