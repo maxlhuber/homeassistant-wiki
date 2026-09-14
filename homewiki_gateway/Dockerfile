@@ -20,6 +20,10 @@ COPY homewiki_gateway/requirements-addon.txt /app/requirements-addon.txt
 RUN pip install --no-cache-dir -r /app/requirements-addon.txt
 COPY homewiki_gateway/app /app/homewiki
 COPY scripts/*.py scripts/wiki_ai_prompt.txt /app/project/scripts/
+# The ingress server imports the redaction patterns directly. Keep this
+# module beside the app as a packaging-safe fallback in case the Supervisor
+# runtime does not preserve PYTHONPATH for the service process.
+COPY scripts/wiki_snapshot.py /app/homewiki/wiki_snapshot.py
 COPY homewiki_gateway/runtime/wiki_overrides.yaml /app/project/scripts/wiki_overrides.yaml
 COPY homewiki_gateway/runtime/mkdocs.yml /app/project/mkdocs.yml
 COPY homewiki_gateway/runtime/docs /app/project/docs
