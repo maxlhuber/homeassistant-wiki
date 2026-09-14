@@ -16,6 +16,10 @@ from app import codex_client, engine, settings, supervisor  # noqa: E402
 
 
 class SettingsTests(unittest.TestCase):
+    def test_container_command_restores_supervisor_environment(self):
+        dockerfile = (ROOT / "homewiki_gateway" / "Dockerfile").read_text(encoding="utf-8")
+        self.assertIn('CMD ["/command/with-contenv", "python3", "-m", "homewiki"]', dockerfile)
+
     def test_defaults_and_secret_values_are_loaded_without_logging(self):
         with tempfile.TemporaryDirectory() as temporary:
             options = Path(temporary) / "options.json"

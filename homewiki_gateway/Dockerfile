@@ -36,4 +36,6 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app/homewiki:/app/project/scripts \
     HOMEWIKI_VERSION=${BUILD_VERSION}
 
-CMD ["python3", "-m", "homewiki"]
+# s6-overlay v3 starts Docker CMD with a minimal environment. Restore the
+# Supervisor-provided environment (especially SUPERVISOR_TOKEN) before Python.
+CMD ["/command/with-contenv", "python3", "-m", "homewiki"]
