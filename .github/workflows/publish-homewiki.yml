@@ -50,3 +50,13 @@ jobs:
             ghcr.io/maxlhuber/homeassistant-wiki:latest
           build-args: |
             BUILD_VERSION=${{ steps.version.outputs.value }}
+      # 2.0.3 could not start because HA's s6 runtime discarded PYTHONPATH.
+      # Publish the corrected 2.0.4 image under that already-installed tag once
+      # so affected installations can be rebuilt without waiting for store cache
+      # expiry. Later releases do not touch the compatibility tag.
+      - name: Publish 2.0.3 recovery tag
+        if: steps.version.outputs.value == '2.0.4'
+        run: >-
+          docker buildx imagetools create
+          --tag ghcr.io/maxlhuber/homeassistant-wiki:2.0.3
+          ghcr.io/maxlhuber/homeassistant-wiki:${{ steps.version.outputs.value }}
