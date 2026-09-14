@@ -9,10 +9,14 @@ configuration:
     name: Backup encryption password
   llm_provider:
     name: LLM authentication
+    description: Choose Codex or Claude subscription, optional API key, or disabled.
   openai_api_key:
     name: OpenAI API key
+  anthropic_api_key:
+    name: Anthropic API key
+    description: Optional for Claude API mode; leave empty to use Claude account login.
   model:
-    name: Codex model
+    name: LLM model
   llm_timeout_minutes:
     name: Maximum run time in minutes
   quota_retry_minutes:

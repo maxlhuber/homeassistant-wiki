@@ -18,6 +18,7 @@ import weekly_update
 from wiki_openai import OpenAIResult
 
 from .codex_client import request_automation_wording_codex
+from .claude_client import request_automation_wording_claude
 from .settings import load_settings
 from .operation_log import OperationLog
 from .supervisor import download_backup, ensure_share_mount, homeassistant_timezone, latest_automatic_backup_file, latest_full_backup, notify, wait_for_backup_jobs
@@ -104,7 +105,7 @@ class WikiEngine:
         self.login_cancel = threading.Event()
         self.login_state: dict[str, Any] = {"state": "idle", "code": None, "url": None, "expires_at": None, "retry_at": None, "attempts": 0}
         self.auth_cache: tuple[float, dict[str, Any]] = (0, {})
-        for path in (DATA, MANUAL, RELEASES, WORK, DATA / "codex-home"):
+        for path in (DATA, MANUAL, RELEASES, WORK, DATA / "codex-home", DATA / "claude-home"):
             path.mkdir(parents=True, exist_ok=True)
         self.operation_log = OperationLog(DATA / "logs")
         if not APP_STATUS.exists():
@@ -190,12 +191,22 @@ class WikiEngine:
     def _configure_llm(self, settings) -> bool:
         weekly_update.request_automation_wording = ORIGINAL_REQUEST_AUTOMATION_WORDING
         weekly_update.probe_api_credit = ORIGINAL_PROBE_API_CREDIT
-        if settings.llm_provider == "chatgpt":
+        if settings.llm_provider == "codex":
             weekly_update.request_automation_wording = lambda candidates, **kwargs: request_automation_wording_codex(
                 candidates,
                 prompt_path=kwargs["prompt_path"],
                 model=settings.model,
                 timeout_seconds=settings.llm_timeout_minutes * 60,
+            )
+            weekly_update.probe_api_credit = lambda **kwargs: OpenAIResult({}, False, None, {}, None)
+            return False
+        if settings.llm_provider == "claude":
+            weekly_update.request_automation_wording = lambda candidates, **kwargs: request_automation_wording_claude(
+                candidates,
+                prompt_path=kwargs["prompt_path"],
+                model=settings.model or "sonnet",
+                timeout_seconds=settings.llm_timeout_minutes * 60,
+                api_key=settings.anthropic_api_key,
             )
             weekly_update.probe_api_credit = lambda **kwargs: OpenAIResult({}, False, None, {}, None)
             return False
@@ -262,8 +273,9 @@ class WikiEngine:
             if code != 0:
                 if result.get("reason_kind") == "quota_exhausted":
                     retry = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=settings.quota_retry_minutes)
-                    self._set_app_status(state="waiting_quota", phase="waiting_quota", message="Codex-Kontingent erschöpft; der Lauf wird automatisch fortgesetzt.", retry_at=retry.isoformat(timespec="seconds"))
-                    notify("Haus-Wiki wartet", "Das Codex-Kontingent ist erschöpft. Die bestehende Wiki-Version bleibt aktiv; der Lauf wird automatisch wiederholt.")
+                    provider_name = "Claude" if settings.llm_provider == "claude" else "Codex"
+                    self._set_app_status(state="waiting_quota", phase="waiting_quota", message=f"{provider_name}-Kontingent erschöpft; der Lauf wird automatisch fortgesetzt.", retry_at=retry.isoformat(timespec="seconds"))
+                    notify("Haus-Wiki wartet", f"Das {provider_name}-Kontingent ist erschöpft. Die bestehende Wiki-Version bleibt aktiv; der Lauf wird automatisch wiederholt.")
                 else:
                     self._set_app_status(state="failed", phase="failed", message="Die Aktualisierung ist fehlgeschlagen. Bitte Backup, Verbindung und Anmeldung prüfen.")
                     notify("Haus-Wiki: Fehler", "Die Aktualisierung ist fehlgeschlagen. Bitte Backup, Verbindung und Anmeldung prüfen.")
@@ -344,9 +356,23 @@ class WikiEngine:
     def auth_status(self) -> dict[str, Any]:
         if time.monotonic() - self.auth_cache[0] < 15:
             return dict(self.auth_cache[1])
+        settings = load_settings()
+        if settings.llm_provider in {"disabled", "api"}:
+            status = {"logged_in": settings.llm_provider == "api" and bool(settings.openai_api_key), "message": "API-Key konfiguriert" if settings.openai_api_key else "Keine Anmeldung erforderlich"}
+            self.auth_cache = (time.monotonic(), status)
+            return dict(status)
         try:
-            result = subprocess.run(["codex", "login", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
-            status = {"logged_in": result.returncode == 0, "message": "Angemeldet" if result.returncode == 0 else "Nicht angemeldet"}
+            if settings.llm_provider == "claude":
+                if settings.anthropic_api_key:
+                    status = {"logged_in": True, "message": "Anthropic-API-Key konfiguriert"}
+                else:
+                    result = subprocess.run(["claude", "auth", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home")})
+                    output = (result.stdout + "\n" + result.stderr).lower()
+                    logged_in = result.returncode == 0 and not any(word in output for word in ("not logged", "not authenticated", "login required", "unauthorized"))
+                    status = {"logged_in": logged_in, "message": "Angemeldet" if logged_in else "Nicht angemeldet"}
+            else:
+                result = subprocess.run(["codex", "login", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
+                status = {"logged_in": result.returncode == 0, "message": "Angemeldet" if result.returncode == 0 else "Nicht angemeldet"}
         except Exception:
             status = {"logged_in": False, "message": "Status nicht verfügbar"}
         self.auth_cache = (time.monotonic(), status)
@@ -362,7 +388,8 @@ class WikiEngine:
             self.login_output = []
             self.login_state = {"state": "starting", "code": None, "url": None, "expires_at": None, "retry_at": None, "attempts": 0}
             threading.Thread(target=self._login_flow, args=(generation, self.login_cancel), daemon=True).start()
-        self.operation_log.emit("login_started", "ChatGPT-Anmeldung gestartet.")
+        provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+        self.operation_log.emit("login_started", f"{provider}-Anmeldung gestartet.")
         return True
 
     def stop_device_login(self) -> None:
@@ -376,7 +403,8 @@ class WikiEngine:
             self.auth_cache = (0, {})
         if process and process.poll() is None:
             process.terminate()
-        self.operation_log.emit("login_cancelled", "ChatGPT-Anmeldung abgebrochen.")
+        provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+        self.operation_log.emit("login_cancelled", f"{provider}-Anmeldung abgebrochen.")
 
     def _collect_login(self, process, generation: int) -> None:
         if process.stdout:
@@ -390,9 +418,13 @@ class WikiEngine:
                     code = re.search(r"\b[A-Z0-9]{4,5}-[A-Z0-9]{4,5}\b", clean)
                     if "https://auth.openai.com/codex/device" in clean:
                         self.login_state["url"] = "https://auth.openai.com/codex/device"
+                    else:
+                        url = re.search(r"https://[^\s<>]+", clean)
+                        if url:
+                            self.login_state["url"] = url.group(0).rstrip(".,)")
                     if code and not self.login_state.get("code"):
                         expires = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=15)
-                        self.login_state.update(state="pending", code=code.group(), url="https://auth.openai.com/codex/device", expires_at=expires.isoformat(timespec="seconds"))
+                        self.login_state.update(state="pending", code=code.group(), expires_at=expires.isoformat(timespec="seconds"))
 
     def _login_flow(self, generation: int, cancel: threading.Event) -> None:
         failures = 0
@@ -403,7 +435,14 @@ class WikiEngine:
                 self.login_state.update(state="starting", code=None, expires_at=None, retry_at=None, attempts=self.login_state["attempts"] + 1)
                 self.login_output = []
                 try:
-                    process = subprocess.Popen(["codex", "login", "--device-auth"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home"), "NO_COLOR": "1", "TERM": "dumb"}, bufsize=1)
+                    settings = load_settings()
+                    if settings.llm_provider == "claude":
+                        command = ["claude", "auth", "login"]
+                        environment = {**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home"), "NO_COLOR": "1", "TERM": "dumb"}
+                    else:
+                        command = ["codex", "login", "--device-auth"]
+                        environment = {**os.environ, "CODEX_HOME": str(DATA / "codex-home"), "NO_COLOR": "1", "TERM": "dumb"}
+                    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=environment, bufsize=1)
                     self.login_process = process
                 except OSError:
                     self.login_state.update(state="failed")
@@ -441,7 +480,8 @@ class WikiEngine:
                 self.login_output = []
                 if authenticated:
                     self.login_state.update(state="authenticated", retry_at=None)
-                    self.operation_log.emit("login_completed", "ChatGPT-Anmeldung erfolgreich.")
+                    provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+                    self.operation_log.emit("login_completed", f"{provider}-Anmeldung erfolgreich.")
                     return
                 failures = 0 if expired else failures + 1
                 if failures >= 3:
@@ -458,7 +498,21 @@ class WikiEngine:
         with self.login_lock:
             running = self.login_state["state"] in {"starting", "pending", "retrying"}
             code = None if running or not self.login_process else self.login_process.returncode
-            return {"running": running, "exit_code": code, "output": "\n".join(self.login_output[-30:]), **self.login_state}
+            provider = load_settings().llm_provider
+            return {"running": running, "exit_code": code, "output": "\n".join(self.login_output[-30:]), "provider": provider, **self.login_state}
+
+    def submit_login_code(self, code: str) -> None:
+        value = str(code or "").strip()
+        if not value or len(value) > 200 or any(ord(char) < 32 for char in value):
+            raise ValueError("Ungültiger Anmeldecode.")
+        with self.login_lock:
+            process = self.login_process
+            if not process or process.poll() is not None or load_settings().llm_provider != "claude":
+                raise ValueError("Es läuft keine Claude-Anmeldung, die einen Code erwartet.")
+            if process.stdin is None:
+                raise ValueError("Die Claude-Anmeldung akzeptiert derzeit keine Eingabe.")
+            process.stdin.write(value + "\n")
+            process.stdin.flush()
 
 
 def scheduler(engine: WikiEngine) -> None:

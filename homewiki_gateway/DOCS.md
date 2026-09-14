@@ -20,15 +20,15 @@ Die App wartet auf laufende Supervisor-Backup-Jobs. Automatische NAS-Archive wer
 
 Die Website wird lokal bereitgestellt und nach `export_path` exportiert. `release_retention` bestimmt die Anzahl früherer Wiki-Stände (Standard: 3). Eine Wiederherstellung ersetzt ausschließlich das Wiki. Während einer Aktualisierung ist sie gesperrt.
 
-## ChatGPT und LLM
+## Codex, Claude und LLM
 
-`llm_provider` wählt `chatgpt`, `api` oder `disabled`. „ChatGPT anmelden“ startet die Device-Anmeldung des mitgelieferten Codex-CLI. Link, Code und Ablauf werden separat angezeigt. Die Bestätigung im ChatGPT-Konto erfolgt durch den Benutzer. Nach erfolgreicher Anmeldung ist keine Bestätigung einzelner Wiki-Läufe nötig.
+`llm_provider` wählt `codex`, `claude`, `api` oder `disabled` (`chatgpt` bleibt als alter Migrationswert kompatibel). Bei `codex` startet „Codex anmelden“ die Device-Anmeldung des mitgelieferten Codex-CLI. Bei `claude` startet „Claude anmelden“ den offiziellen Claude-Code-Login; bei Claude Pro/Max erfolgt die OAuth-Bestätigung im Browser. Alternativ kann `anthropic_api_key` als geschütztes Add-on-Geheimnis gesetzt werden. Die Oberfläche passt Link, Status und Schaltflächen automatisch an.
 
 Abgelaufene Codes werden während einer aktiven Anmeldung erneuert. Wiederholte technische Fehler führen zu einem sichtbaren Fehler statt einer endlosen Anmeldeschleife. Die Anmeldung kann abgebrochen werden.
 
-Ein fertig erzeugtes Wiki bedeutet nicht automatisch einen erfolgreichen LLM-Aufruf; fehlende Ergänzungen bleiben sichtbar. Geheimnisse werden vor LLM-Anfragen entfernt. Bei erschöpftem Kontingent wird mit `quota_retry_minutes` erneut versucht; es gibt keinen automatischen kostenpflichtigen API-Fallback. `model` ist optional; `openai_api_key` wird nur für den ausdrücklich gewählten API-Modus benötigt.
+Ein fertig erzeugtes Wiki bedeutet nicht automatisch einen erfolgreichen LLM-Aufruf; fehlende Ergänzungen bleiben sichtbar. Geheimnisse werden vor LLM-Anfragen entfernt. Bei erschöpftem Kontingent wird mit `quota_retry_minutes` erneut versucht; es gibt keinen automatischen kostenpflichtigen Anbieter-Fallback. `model` ist optional (`sonnet` ist der Claude-Standard); `openai_api_key` und `anthropic_api_key` werden nur für den jeweils ausdrücklich gewählten API-Modus benötigt.
 
-Codex-Zugangsdaten liegen unter /data/codex-home und sind von HA-App-Backups ausgeschlossen. Nach Wiederherstellung kann eine erneute Anmeldung nötig sein.
+Codex-Zugangsdaten liegen unter `/data/codex-home`, Claude-Zugangsdaten unter `/data/claude-home`; beide Verzeichnisse sind von HA-App-Backups ausgeschlossen. Nach Wiederherstellung kann eine erneute Anmeldung nötig sein.
 
 ## Eigene Seiten
 

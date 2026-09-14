@@ -1,3 +1,12 @@
+# 3.1.0
+
+- Claude Code ist als gleichwertige Alternative zum Codex-CLI auswählbar.
+- Nicht-interaktive Claude-Aufrufe laufen mit strikt begrenzten Berechtigungen,
+  strukturiertem JSON und derselben Validierung wie Codex.
+- Providerabhängige Anmeldung, Statusanzeige und Schaltflächen in der Ingress-Oberfläche.
+- Optionaler `ANTHROPIC_API_KEY` aus der geschützten Add-on-Konfiguration; OAuth-
+  Anmeldung über Claude Code bleibt für Pro/Max-Abos möglich.
+
 # 3.0.2
 
 - Die neueste automatische NAS-Datei wird nach dem Dateinamen ausgewählt; die vollständige Backup-Prüfung bleibt im Generator und verhindert weiterhin unsichere Ersatzstände.

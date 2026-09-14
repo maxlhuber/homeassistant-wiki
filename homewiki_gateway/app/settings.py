@@ -16,6 +16,7 @@ class Settings:
     backup_password: str
     llm_provider: str
     openai_api_key: str
+    anthropic_api_key: str
     model: str
     llm_timeout_minutes: int
     quota_retry_minutes: int
@@ -41,8 +42,9 @@ def load_settings(path: Path = OPTIONS) -> Settings:
         schedule_time=str(raw.get("schedule_time", "02:00")),
         catch_up=bool(raw.get("catch_up", True)),
         backup_password=str(raw.get("backup_password") or ""),
-        llm_provider=str(raw.get("llm_provider") or "chatgpt"),
+        llm_provider={"chatgpt": "codex"}.get(str(raw.get("llm_provider") or "codex").lower(), str(raw.get("llm_provider") or "codex").lower()),
         openai_api_key=str(raw.get("openai_api_key") or ""),
+        anthropic_api_key=str(raw.get("anthropic_api_key") or ""),
         model=str(raw.get("model") or ""),
         llm_timeout_minutes=max(5, min(240, int(raw.get("llm_timeout_minutes", 90)))),
         quota_retry_minutes=max(5, min(360, int(raw.get("quota_retry_minutes", 30)))),

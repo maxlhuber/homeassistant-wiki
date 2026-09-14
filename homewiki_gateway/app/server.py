@@ -220,9 +220,16 @@ class Handler(BaseHTTPRequestHandler):
             if path == "api/auth/device/cancel":
                 self.engine.stop_device_login()
                 return self._json({"ok": True})
+            if path == "api/auth/device/code":
+                self.engine.submit_login_code(str(self._body().get("code") or ""))
+                return self._json({"ok": True})
             if path == "api/auth/logout":
                 self.engine.stop_device_login()
-                subprocess.run(["codex", "logout"], timeout=20, capture_output=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
+                settings = load_settings()
+                if settings.llm_provider == "claude":
+                    subprocess.run(["claude", "auth", "logout"], timeout=20, capture_output=True, env={**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home")})
+                else:
+                    subprocess.run(["codex", "logout"], timeout=20, capture_output=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
                 self.engine.auth_cache = (0, {})
                 return self._json({"ok": True})
         except (ValueError, UnicodeError):

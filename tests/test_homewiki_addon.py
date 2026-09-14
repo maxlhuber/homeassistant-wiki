@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "homewiki_gateway"))
 
-from app import codex_client, engine, settings, supervisor  # noqa: E402
+from app import claude_client, codex_client, engine, settings, supervisor  # noqa: E402
 
 
 class SettingsTests(unittest.TestCase):
@@ -28,6 +28,14 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(value.schedule_days, ("wed", "sun"))
         self.assertEqual(value.backup_password, "private")
         self.assertEqual(value.admin_users, frozenset({"Max"}))
+
+    def test_legacy_chatgpt_option_migrates_to_codex_and_claude_key_is_loaded(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            options = Path(temporary) / "options.json"
+            options.write_text(json.dumps({"llm_provider": "chatgpt", "anthropic_api_key": "secret"}), encoding="utf-8")
+            value = settings.load_settings(options)
+        self.assertEqual(value.llm_provider, "codex")
+        self.assertEqual(value.anthropic_api_key, "secret")
 
     def test_runtime_version_comes_from_packaged_config(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -98,6 +106,31 @@ class CodexClientTests(unittest.TestCase):
             result = codex_client.request_automation_wording_codex(
                 [{"alias": private_alias, "change": "modified", "definition": {"alias": private_alias, "action": []}}],
                 prompt_path=prompt, model="", timeout_seconds=30,
+            )
+        self.assertIn(private_alias, result.overrides)
+
+
+class ClaudeClientTests(unittest.TestCase):
+    def test_claude_uses_print_json_and_redacts_alias(self):
+        private_alias = "Türcode 654321"
+
+        def fake_run(command, **kwargs):
+            self.assertEqual(command[:5], ["claude", "-p", "--output-format", "json", "--max-turns"])
+            self.assertNotIn(private_alias, kwargs["input"])
+            payload = {"automations": [{
+                "alias": "automation_1", "description": "Eine sichere Beschreibung.",
+                "trigger_steps": [], "condition_steps": [], "action_steps": ["Eine Aktion wird ausgeführt."],
+                "manual": "Keine Bedienung erforderlich.", "safety_note": None,
+                "confidence": "high", "review_required": False,
+            }], "review_required": False, "review_reason": None}
+            return type("Completed", (), {"returncode": 0, "stdout": json.dumps({"result": json.dumps(payload)}), "stderr": ""})()
+
+        with tempfile.TemporaryDirectory() as temporary, patch("app.claude_client.subprocess.run", side_effect=fake_run):
+            prompt = Path(temporary) / "prompt.txt"
+            prompt.write_text("Nur Fakten.", encoding="utf-8")
+            result = claude_client.request_automation_wording_claude(
+                [{"alias": private_alias, "change": "modified", "definition": {"alias": private_alias, "action": []}}],
+                prompt_path=prompt, model="sonnet", timeout_seconds=30,
             )
         self.assertIn(private_alias, result.overrides)
 

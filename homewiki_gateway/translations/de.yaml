@@ -11,13 +11,16 @@ configuration:
     name: Backup-Verschlüsselungscode
   llm_provider:
     name: LLM-Anmeldung
-    description: ChatGPT-Abo, API-Key oder deaktiviert.
+    description: Codex oder Claude per Abo, optional API-Key, oder deaktiviert.
   openai_api_key:
     name: OpenAI API-Key
     description: Nur im API-Modus erforderlich.
+  anthropic_api_key:
+    name: Anthropic API-Key
+    description: Optional für Claude im API-Modus; leer verwendet die Claude-Kontoanmeldung.
   model:
-    name: Codex-Modell
-    description: Leer lassen, um das aktuelle Standardmodell zu verwenden.
+    name: LLM-Modell
+    description: "Leer lassen, um das aktuelle Standardmodell des gewählten Anbieters zu verwenden (Claude: sonnet)."
   llm_timeout_minutes:
     name: Maximale Laufzeit in Minuten
   quota_retry_minutes:

@@ -1,7 +1,7 @@
 name: "Haus-Wiki"
-version: "3.0.2"
+version: "3.1.0"
 slug: "homewiki_gateway"
-description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit optionaler Codex-Unterstützung"
+description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit Codex- oder Claude-Unterstützung"
 url: "https://github.com/maxlhuber/homeassistant-wiki"
 image: "ghcr.io/maxlhuber/homeassistant-wiki"
 arch:
@@ -24,6 +24,7 @@ backup: hot
 backup_exclude:
   - "work/**"
   - "codex-home/**"
+  - "claude-home/**"
   - "logs/**"
 map:
   - type: share
@@ -35,7 +36,8 @@ options:
   schedule_time: "02:00"
   catch_up: true
   backup_password: ""
-  llm_provider: chatgpt
+  llm_provider: codex
+  anthropic_api_key: ""
   model: ""
   llm_timeout_minutes: 90
   quota_retry_minutes: 30
@@ -50,8 +52,9 @@ schema:
   schedule_time: match(^([01][0-9]|2[0-3]):[0-5][0-9]$)
   catch_up: bool
   backup_password: password
-  llm_provider: list(chatgpt|api|disabled)
+  llm_provider: list(codex|claude|api|disabled|chatgpt)
   openai_api_key: password?
+  anthropic_api_key: password?
   model: str?
   llm_timeout_minutes: int(5,240)
   quota_retry_minutes: int(5,360)

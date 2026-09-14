@@ -13,7 +13,8 @@ liegt im App-Datenspeicher und wird zusätzlich nach `/share/HausWiki` exportier
 - Vollautomatischer Lauf am Mittwoch und Sonntag um 02:00 Uhr (konfigurierbar)
 - Kein Lauf ohne lesbares Vollbackup; laufende Backups werden abgewartet
 - Lokaler semantischer Abgleich, sodass unveränderte Backups keinen Neuaufbau auslösen
-- ChatGPT-Plus-Anmeldung über den offiziellen Codex-CLI oder alternativ OpenAI API
+- Anmeldung über den offiziellen Codex-CLI oder Claude Code (Claude Pro/Max OAuth), alternativ OpenAI API
+- Providerabhängige Anmeldung und Schaltflächen; optionaler Anthropic-API-Key
 - Keine manuellen LLM-Freigaben oder Prüfstopps
 - Bereinigte, auf geänderte Automationen begrenzte LLM-Eingaben
 - Home-Assistant-Benachrichtigungen, Versionsaufbewahrung und Rollback

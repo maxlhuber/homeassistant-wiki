@@ -3,6 +3,7 @@ FROM ghcr.io/home-assistant/base-python:3.13-alpine3.24
 ARG BUILD_VERSION=dev
 ARG BUILD_ARCH=amd64
 ARG CODEX_VERSION=0.154.0
+ARG CLAUDE_CODE_VERSION=2.1.270
 
 LABEL \
   io.hass.version="${BUILD_VERSION}" \
@@ -13,6 +14,7 @@ LABEL \
 
 RUN apk add --no-cache nodejs npm git curl libffi libsodium \
   && NPM_CONFIG_CACHE=/tmp/npm-cache npm install -g "@openai/codex@${CODEX_VERSION}" \
+  && NPM_CONFIG_CACHE=/tmp/npm-cache npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
   && rm -rf /tmp/npm-cache
 
 WORKDIR /app
@@ -37,6 +39,7 @@ RUN mkdir -p /app/project/docs/manuell \
 
 ENV PYTHONUNBUFFERED=1 \
     CODEX_HOME=/data/codex-home \
+    CLAUDE_CONFIG_DIR=/data/claude-home \
     PYTHONPATH=/app/homewiki:/app/project/scripts \
     HOMEWIKI_VERSION=${BUILD_VERSION}
 
