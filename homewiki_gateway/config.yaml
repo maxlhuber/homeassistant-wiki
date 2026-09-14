@@ -1,5 +1,5 @@
 name: "Haus-Wiki"
-version: "2.0.0"
+version: "2.0.1"
 slug: "homewiki_gateway"
 description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit optionaler Codex-Unterstützung"
 url: "https://github.com/maxlhuber/homeassistant-wiki"
@@ -36,7 +36,6 @@ options:
   catch_up: true
   backup_password: ""
   llm_provider: chatgpt
-  openai_api_key: ""
   model: ""
   llm_timeout_minutes: 90
   quota_retry_minutes: 30
@@ -51,7 +50,7 @@ schema:
   catch_up: bool
   backup_password: password
   llm_provider: list(chatgpt|api|disabled)
-  openai_api_key: password
+  openai_api_key: password?
   model: str?
   llm_timeout_minutes: int(5,240)
   quota_retry_minutes: int(5,360)
