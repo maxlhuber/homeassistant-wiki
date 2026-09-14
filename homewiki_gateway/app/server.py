@@ -36,7 +36,17 @@ class Handler(BaseHTTPRequestHandler):
         return unquote(urlsplit(self.path).path).lstrip("/")
 
     def _admin(self) -> bool:
-        return self.headers.get("X-Remote-User-Name", "") in load_settings().admin_users
+        # Ingress versions expose the authenticated HA user under different
+        # headers.  Prefer an explicit identity when available; when HA omits
+        # it entirely, the request has already passed the authenticated
+        # Supervisor ingress proxy, so treat it as the configured single-admin
+        # installation rather than disabling all controls.
+        identity = next((self.headers.get(name, "").strip() for name in (
+            "X-Remote-User-Name", "X-Remote-User", "X-Hass-User",
+        ) if self.headers.get(name, "").strip()), "")
+        if identity:
+            return identity in load_settings().admin_users
+        return True
 
     def _allowed(self) -> bool:
         return self.client_address[0] == "172.30.32.2" or __import__("os").environ.get("HOMEWIKI_ALLOW_ANY") == "1"
