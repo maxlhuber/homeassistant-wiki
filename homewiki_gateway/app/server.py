@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from wiki_snapshot import SECRET_VALUE_PATTERNS
+from .wiki_snapshot import SECRET_VALUE_PATTERNS
 
 from .engine import DATA, MANUAL, MANUAL_DIRTY, PROJECT, WikiEngine, scheduler
 from .settings import load_settings
