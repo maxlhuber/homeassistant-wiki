@@ -1,5 +1,5 @@
 name: "Haus-Wiki"
-version: "2.0.17"
+version: "2.0.18"
 slug: "homewiki_gateway"
 description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit optionaler Codex-Unterstützung"
 url: "https://github.com/maxlhuber/homeassistant-wiki"
