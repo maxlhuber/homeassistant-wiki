@@ -358,13 +358,21 @@ def _replace_docs(repo: Path, staged_docs: Path) -> None:
     shutil.rmtree(incoming, ignore_errors=True)
     shutil.rmtree(previous, ignore_errors=True)
     shutil.copytree(staged_docs, incoming)
-    destination.replace(previous)
+    # The packaged docs initially live in the image's lower OverlayFS layer.
+    # Renaming that directory can fail with EXDEV even though both paths look
+    # like they share a parent. Copy the rollback tree and remove the lower
+    # directory first; the validated incoming tree is already in the writable
+    # layer and can then be renamed safely.
+    if destination.exists():
+        shutil.copytree(destination, previous)
+        shutil.rmtree(destination)
     try:
         incoming.replace(destination)
     except Exception:
-        previous.replace(destination)
+        if previous.exists():
+            shutil.copytree(previous, destination)
         raise
-    shutil.rmtree(previous)
+    shutil.rmtree(previous, ignore_errors=True)
 
 
 def _replace_publish_site(state_dir: Path, staged_site: Path) -> None:

@@ -23,7 +23,7 @@ from generate_docs import (  # noqa: E402
     merge_documentation_overrides,
     safe_source_text,
 )
-from weekly_update import merge_ai_overrides  # noqa: E402
+from weekly_update import _replace_docs, merge_ai_overrides  # noqa: E402
 from wiki_backup import (  # noqa: E402
     ALLOWED_MEMBERS,
     BackupExtractionError,
@@ -44,6 +44,27 @@ from wiki_dashboards import (  # noqa: E402
     build_dashboard_snapshot,
     write_dashboard_inventory,
 )
+
+
+class PublishSwapTests(unittest.TestCase):
+    def test_replace_docs_copies_existing_tree_before_swap(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "repo"
+            staged = root / "staged"
+            (repo / "docs").mkdir(parents=True)
+            staged.mkdir()
+            (repo / "docs" / "old.md").write_text("old", encoding="utf-8")
+            (staged / "new.md").write_text("new", encoding="utf-8")
+
+            _replace_docs(repo, staged)
+
+            self.assertEqual(
+                (repo / "docs" / "new.md").read_text(encoding="utf-8"), "new"
+            )
+            self.assertFalse((repo / "docs" / "old.md").exists())
+            self.assertFalse((repo / ".docs-weekly-old").exists())
+            self.assertFalse((repo / ".docs-weekly-new").exists())
 
 
 def _registry(items_key: str, items: list[dict]) -> str:
