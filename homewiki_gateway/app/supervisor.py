@@ -4,6 +4,7 @@ import json
 import os
 import time
 import datetime as dt
+import re
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -99,6 +100,29 @@ def latest_full_backup() -> dict[str, Any]:
         return timestamp, raw
 
     return max(full, key=sort_key)
+
+
+def latest_automatic_backup_file() -> Path | None:
+    """Find the newest automatic full archive on an HA network share.
+
+    The Supervisor backup catalogue can lag behind a mounted NAS agent.  HA's
+    automatic archives have a stable, date-bearing filename, so this fallback
+    prevents an old manual archive from ever being selected in that situation.
+    """
+    root = Path("/share")
+    candidates: list[tuple[float, Path]] = []
+    pattern = re.compile(r"automatic_backup_.*_(\d{4})[-_](\d{1,2})[-_](\d{1,2})[._-](\d{2})[._-](\d{2})")
+    try:
+        for path in root.glob("*/automatic_backup_*.tar"):
+            match = pattern.search(path.name)
+            if not match:
+                continue
+            year, month, day, hour, minute = (int(value) for value in match.groups())
+            stamp = dt.datetime(year, month, day, hour, minute, tzinfo=dt.timezone.utc).timestamp()
+            candidates.append((stamp, path))
+    except OSError:
+        return None
+    return max(candidates, key=lambda item: item[0])[1] if candidates else None
 
 
 def ensure_share_mount(export_path: Path) -> None:

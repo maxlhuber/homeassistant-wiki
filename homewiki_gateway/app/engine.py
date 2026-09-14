@@ -16,7 +16,7 @@ from wiki_openai import OpenAIResult
 
 from .codex_client import request_automation_wording_codex
 from .settings import load_settings
-from .supervisor import download_backup, ensure_share_mount, homeassistant_timezone, latest_full_backup, notify, wait_for_backup_jobs
+from .supervisor import download_backup, ensure_share_mount, homeassistant_timezone, latest_automatic_backup_file, latest_full_backup, notify, wait_for_backup_jobs
 
 
 DATA = Path("/data")
@@ -186,12 +186,18 @@ class WikiEngine:
         try:
             ensure_share_mount(settings.export_path)
             wait_for_backup_jobs(settings.llm_timeout_minutes * 60)
-            backup = latest_full_backup()
-            self._set_app_status(state="running", message="Vollbackup wird sicher eingelesen.", backup=backup.get("name"), backup_date=backup.get("date"))
-            backup_id = backup.get("slug") or backup.get("backup_id") or backup.get("id")
-            if not backup_id:
-                raise RuntimeError("Das ausgewählte Backup besitzt keine gültige Supervisor-ID.")
-            download_backup(str(backup_id), backup_path)
+            local_backup = latest_automatic_backup_file()
+            if local_backup is not None:
+                backup = {"name": local_backup.name, "date": local_backup.name, "source": "network_share"}
+                self._set_app_status(state="running", message="Neuestes automatisches NAS-Vollbackup wird sicher eingelesen.", backup=backup["name"], backup_date=backup["date"])
+                shutil.copyfile(local_backup, backup_path)
+            else:
+                backup = latest_full_backup()
+                self._set_app_status(state="running", message="Vollbackup wird sicher eingelesen.", backup=backup.get("name"), backup_date=backup.get("date"))
+                backup_id = backup.get("slug") or backup.get("backup_id") or backup.get("id")
+                if not backup_id:
+                    raise RuntimeError("Das ausgewählte Backup besitzt keine gültige Supervisor-ID.")
+                download_backup(str(backup_id), backup_path)
             previous = self._backup_current()
             secret_file = WORK / ".backup-password"
             secret_file.write_text(settings.backup_password, encoding="utf-8")
