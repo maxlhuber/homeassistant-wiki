@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import datetime as dt
-import tarfile
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
-from wiki_backup import BackupExtractionError, discover_latest_backup
 
 
 BASE = "http://supervisor"
@@ -105,44 +104,42 @@ def latest_full_backup() -> dict[str, Any]:
 
 
 def latest_automatic_backup_file(export_path: Path) -> Path | None:
-    """Select a validated automatic full backup only from the configured share.
+    """Select the newest automatic archive from the configured share.
 
-    Dates and completeness come from backup.json, never from a filename. The
-    existing archive validator only inspects outer headers, without decrypting
-    or extracting the large Home Assistant payload.
+    The filename is used only for ordering.  ``weekly_update`` performs the
+    authoritative structural and encryption validation on the selected file;
+    an incomplete newest archive therefore blocks the run instead of silently
+    falling back to an older snapshot.
     """
     root = _export_mount(export_path)
-    candidates: list[tuple[float, Path]] = []
+    candidates: list[tuple[float, float, Path]] = []
+    pattern = re.compile(
+        r"automatic_backup_.*?(\d{4})[-_](\d{1,2})[-_](\d{1,2})[._-](\d{2})[._-](\d{2})",
+        re.IGNORECASE,
+    )
     try:
         # Automatic archives may be stored directly in the share or below a
         # ``Backup``/date directory.  Search recursively, but only accept
         # structurally validated full archives and never arbitrary tar files.
         files = list(root.rglob("automatic_backup_*.tar"))
         for path in files:
+            match = pattern.search(path.name)
+            if match:
+                year, month, day, hour, minute = (int(value) for value in match.groups())
+                try:
+                    stamp = dt.datetime(year, month, day, hour, minute, tzinfo=dt.timezone.utc).timestamp()
+                except ValueError:
+                    stamp = float("-inf")
+            else:
+                stamp = float("-inf")
             try:
-                validated = discover_latest_backup(path, min_age_seconds=0)
-                with tarfile.open(validated, mode="r:") as archive:
-                    metadata_member = next(member for member in archive if member.name.removeprefix("./") == "backup.json")
-                    if metadata_member.size > 1_000_000:
-                        continue
-                    document = json.loads(archive.extractfile(metadata_member).read())
-                backup_type = document.get("type")
-                if backup_type not in (None, "full"):
-                    continue
-                # Some Supervisor releases omit ``type`` in the archive
-                # metadata.  The presence of Home Assistant content is the
-                # compatible full-backup indicator in that case.
-                if backup_type is None and document.get("homeassistant_included") is not True:
-                    continue
-                stamp = dt.datetime.fromisoformat(document["date"].replace("Z", "+00:00")).timestamp()
-                candidates.append((stamp, validated))
-            except (BackupExtractionError, OSError, tarfile.TarError, ValueError, KeyError, StopIteration):
+                modified = path.stat().st_mtime
+            except OSError:
                 continue
+            candidates.append((stamp, modified, path))
     except OSError as error:
         raise SupervisorError("Der konfigurierte NAS-Backupordner konnte nicht gelesen werden.") from error
-    if files and not candidates:
-        raise SupervisorError("Die automatischen NAS-Backups sind noch nicht vollständig oder ungültig. Es wird kein alter Ersatzstand verwendet.")
-    return max(candidates, key=lambda item: item[0])[1] if candidates else None
+    return max(candidates, key=lambda item: (item[0], item[1]))[2] if candidates else None
 
 
 def _export_mount(export_path: Path) -> Path:

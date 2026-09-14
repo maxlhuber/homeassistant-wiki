@@ -1,3 +1,7 @@
+# 3.0.2
+
+- Die neueste automatische NAS-Datei wird nach dem Dateinamen ausgewählt; die vollständige Backup-Prüfung bleibt im Generator und verhindert weiterhin unsichere Ersatzstände.
+
 # 3.0.1
 
 - Automatische NAS-Backups werden auch in Unterordnern gefunden; ältere Supervisor-Metadaten ohne `type` bleiben kompatibel.
