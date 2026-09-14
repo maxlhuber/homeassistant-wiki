@@ -27,6 +27,7 @@ from weekly_update import merge_ai_overrides  # noqa: E402
 from wiki_backup import (  # noqa: E402
     ALLOWED_MEMBERS,
     BackupExtractionError,
+    OPTIONAL_EMPTY_REGISTRIES,
     REQUIRED_MEMBER_NAMES,
     discover_latest_backup,
     extract_home_assistant_backup,
@@ -200,7 +201,15 @@ class BackupExtractionTests(unittest.TestCase):
                 for path in destination.rglob("*")
                 if path.is_file() and path.name != ".wiki_backup_metadata.json"
             }
-            self.assertEqual(extracted, set(REQUIRED_MEMBER_NAMES))
+            self.assertEqual(
+                extracted,
+                set(REQUIRED_MEMBER_NAMES) | set(OPTIONAL_EMPTY_REGISTRIES),
+            )
+            for member, key in OPTIONAL_EMPTY_REGISTRIES.items():
+                self.assertEqual(
+                    json.loads((destination / member).read_text(encoding="utf-8")),
+                    {"data": {key: []}},
+                )
             self.assertFalse((root / "outside.txt").exists())
             self.assertFalse((destination / "secrets.yaml").exists())
 

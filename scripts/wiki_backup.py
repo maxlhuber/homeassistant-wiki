@@ -19,13 +19,13 @@ from typing import BinaryIO, IO, Any
 REQUIRED_MEMBER_NAMES = (
     "automations.yaml",
     "scenes.yaml",
-    ".storage/core.floor_registry",
     ".storage/core.area_registry",
-    ".storage/core.label_registry",
     ".storage/core.device_registry",
     ".storage/core.entity_registry",
 )
 OPTIONAL_MEMBER_NAMES = (
+    ".storage/core.floor_registry",
+    ".storage/core.label_registry",
     ".storage/lovelace_dashboards",
     ".storage/lovelace.lovelace",
     ".storage/lovelace.dashboard_test",
@@ -34,6 +34,10 @@ OPTIONAL_MEMBER_NAMES = (
     ".storage/lovelace.system_status",
     "dashboards/cupra_laden.yaml",
 )
+OPTIONAL_EMPTY_REGISTRIES = {
+    ".storage/core.floor_registry": "floors",
+    ".storage/core.label_registry": "labels",
+}
 ALLOWED_MEMBERS = REQUIRED_MEMBER_NAMES + OPTIONAL_MEMBER_NAMES
 ALLOWED_MEMBER_SET = frozenset(ALLOWED_MEMBERS)
 REQUIRED_MEMBERS = frozenset(REQUIRED_MEMBER_NAMES)
@@ -661,6 +665,15 @@ def extract_home_assistant_backup(
             raise BackupExtractionError(
                 "required_member_missing",
                 "Benötigte Dateien fehlen: " + ", ".join(sorted(missing)),
+            )
+        for member, key in OPTIONAL_EMPTY_REGISTRIES.items():
+            if member in written:
+                continue
+            target = staging / member
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                json.dumps({"data": {key: []}}, ensure_ascii=False) + "\n",
+                encoding="utf-8",
             )
         metadata_document = {
             "source_name": backup.name,
