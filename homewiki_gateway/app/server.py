@@ -49,7 +49,12 @@ class Handler(BaseHTTPRequestHandler):
         return True
 
     def _allowed(self) -> bool:
-        return self.client_address[0] == "172.30.32.2" or __import__("os").environ.get("HOMEWIKI_ALLOW_ANY") == "1"
+        # Ingress may proxy from either of the Supervisor bridge addresses
+        # (172.30.32.1/.2) depending on HA version and connection reuse.
+        # Restrict direct access to the private Supervisor bridge, while
+        # allowing both addresses so the UI API is reachable reliably.
+        address = self.client_address[0]
+        return address.startswith("172.30.") or __import__("os").environ.get("HOMEWIKI_ALLOW_ANY") == "1"
 
     def _json(self, value, status=200):
         data = json.dumps(value, ensure_ascii=False).encode()
