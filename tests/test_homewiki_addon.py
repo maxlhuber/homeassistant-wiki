@@ -56,6 +56,15 @@ class SupervisorTests(unittest.TestCase):
             selected = supervisor.latest_full_backup()
         self.assertEqual(selected["slug"], "nas")
 
+    def test_latest_backup_accepts_supervisor_backup_id_and_missing_type(self):
+        backups = {"backups": [
+            {"backup_id": "old", "date": "2024-06-27T10:00:00Z", "homeassistant_included": True},
+            {"backup_id": "new", "date": "2026-09-14T03:45:00+02:00", "homeassistant_included": True},
+        ]}
+        with patch("app.supervisor.json_request", return_value=backups):
+            selected = supervisor.latest_full_backup()
+        self.assertEqual(selected["backup_id"], "new")
+
     def test_export_requires_active_named_share_mount(self):
         with patch("pathlib.Path.is_dir", return_value=True), patch("pathlib.Path.is_mount", return_value=True):
             supervisor.ensure_share_mount(Path("/share/HausWiki"))

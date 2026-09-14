@@ -117,6 +117,8 @@ class WikiEngine:
             "running": bool(self.thread and self.thread.is_alive()),
             "updated_at": app.get("updated_at"),
             "completed_at": app.get("completed_at"),
+            "backup": app.get("backup"),
+            "backup_date": app.get("backup_date"),
             "version": runtime_version(),
         }
 
@@ -186,7 +188,10 @@ class WikiEngine:
             wait_for_backup_jobs(settings.llm_timeout_minutes * 60)
             backup = latest_full_backup()
             self._set_app_status(state="running", message="Vollbackup wird sicher eingelesen.", backup=backup.get("name"), backup_date=backup.get("date"))
-            download_backup(str(backup["slug"]), backup_path)
+            backup_id = backup.get("slug") or backup.get("backup_id") or backup.get("id")
+            if not backup_id:
+                raise RuntimeError("Das ausgewählte Backup besitzt keine gültige Supervisor-ID.")
+            download_backup(str(backup_id), backup_path)
             previous = self._backup_current()
             secret_file = WORK / ".backup-password"
             secret_file.write_text(settings.backup_password, encoding="utf-8")

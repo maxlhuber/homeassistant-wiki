@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+import datetime as dt
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -73,10 +74,25 @@ def wait_for_backup_jobs(timeout_seconds: int) -> None:
 def latest_full_backup() -> dict[str, Any]:
     data = json_request("/backups") or {}
     backups = data.get("backups", []) if isinstance(data, dict) else []
-    full = [item for item in backups if isinstance(item, dict) and item.get("type") == "full"]
+    # Supervisor versions differ slightly: some expose ``type=full`` while
+    # older ones only expose that Home Assistant is included.  Never fall
+    # back to an arbitrary old archive when the explicit type is absent.
+    full = [
+        item for item in backups
+        if isinstance(item, dict)
+        and (item.get("type") == "full" or ("type" not in item and item.get("homeassistant_included") is True))
+    ]
     if not full:
         raise SupervisorError("Es wurde kein vollständiges Home-Assistant-Backup gefunden.")
-    return max(full, key=lambda item: str(item.get("date") or ""))
+    def sort_key(item: dict[str, Any]) -> tuple[float, str]:
+        raw = str(item.get("date") or "")
+        try:
+            timestamp = dt.datetime.fromisoformat(raw.replace("Z", "+00:00")).timestamp()
+        except (TypeError, ValueError, OverflowError):
+            timestamp = float("-inf")
+        return timestamp, raw
+
+    return max(full, key=sort_key)
 
 
 def ensure_share_mount(export_path: Path) -> None:
