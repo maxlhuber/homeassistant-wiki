@@ -1,3 +1,10 @@
+# 3.2.0
+
+- Provider-Auswahl verständlich benannt: OpenAI Abo, OpenAI API, Claude Abo,
+  Claude API und Ohne KI.
+- Veraltete ChatGPT-Auswahl entfernt; bestehende Werte werden weiterhin migriert.
+- Claude-Abo- und Claude-API-Anmeldung getrennt und die Oberfläche providerabhängig angepasst.
+
 # 3.1.1
 
 - Kurze Erläuterungen für alle Add-on-Konfigurationsoptionen ergänzt.

@@ -12,14 +12,14 @@ configuration:
     name: Backup encryption password
     description: Password used to decrypt the selected Home Assistant full backup.
   llm_provider:
-    name: LLM authentication
-    description: Choose Codex or Claude subscription, optional API key, or disabled.
+    name: AI provider and billing
+    description: Choose OpenAI or Claude through a subscription, the respective API, or disabled.
   openai_api_key:
     name: OpenAI API key
-    description: Optional key for OpenAI API mode; not needed for Codex login.
+    description: Required for OpenAI API; not needed for an OpenAI subscription.
   anthropic_api_key:
     name: Anthropic API key
-    description: Optional for Claude API mode; leave empty to use Claude account login.
+    description: Required for Claude API; use Claude account login for Claude subscription.
   model:
     name: LLM model
     description: Model name for the selected provider; leave empty to use its current default.

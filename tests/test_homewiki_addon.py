@@ -29,13 +29,20 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(value.backup_password, "private")
         self.assertEqual(value.admin_users, frozenset({"Max"}))
 
-    def test_legacy_chatgpt_option_migrates_to_codex_and_claude_key_is_loaded(self):
+    def test_legacy_chatgpt_option_migrates_to_openai_subscription_and_claude_key_is_loaded(self):
         with tempfile.TemporaryDirectory() as temporary:
             options = Path(temporary) / "options.json"
             options.write_text(json.dumps({"llm_provider": "chatgpt", "anthropic_api_key": "secret"}), encoding="utf-8")
             value = settings.load_settings(options)
-        self.assertEqual(value.llm_provider, "codex")
+        self.assertEqual(value.llm_provider, "openai_subscription")
         self.assertEqual(value.anthropic_api_key, "secret")
+
+    def test_provider_labels_select_subscription_or_api_mode(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            options = Path(temporary) / "options.json"
+            options.write_text(json.dumps({"llm_provider": "Claude API"}), encoding="utf-8")
+            value = settings.load_settings(options)
+        self.assertEqual(value.llm_provider, "claude_api")
 
     def test_runtime_version_comes_from_packaged_config(self):
         with tempfile.TemporaryDirectory() as temporary:

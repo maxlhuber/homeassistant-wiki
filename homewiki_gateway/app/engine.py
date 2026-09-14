@@ -191,7 +191,7 @@ class WikiEngine:
     def _configure_llm(self, settings) -> bool:
         weekly_update.request_automation_wording = ORIGINAL_REQUEST_AUTOMATION_WORDING
         weekly_update.probe_api_credit = ORIGINAL_PROBE_API_CREDIT
-        if settings.llm_provider == "codex":
+        if settings.llm_provider == "openai_subscription":
             weekly_update.request_automation_wording = lambda candidates, **kwargs: request_automation_wording_codex(
                 candidates,
                 prompt_path=kwargs["prompt_path"],
@@ -200,13 +200,13 @@ class WikiEngine:
             )
             weekly_update.probe_api_credit = lambda **kwargs: OpenAIResult({}, False, None, {}, None)
             return False
-        if settings.llm_provider == "claude":
+        if settings.llm_provider in {"claude_subscription", "claude_api"}:
             weekly_update.request_automation_wording = lambda candidates, **kwargs: request_automation_wording_claude(
                 candidates,
                 prompt_path=kwargs["prompt_path"],
                 model=settings.model or "sonnet",
                 timeout_seconds=settings.llm_timeout_minutes * 60,
-                api_key=settings.anthropic_api_key,
+                api_key=settings.anthropic_api_key if settings.llm_provider == "claude_api" else "",
             )
             weekly_update.probe_api_credit = lambda **kwargs: OpenAIResult({}, False, None, {}, None)
             return False
@@ -273,7 +273,7 @@ class WikiEngine:
             if code != 0:
                 if result.get("reason_kind") == "quota_exhausted":
                     retry = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=settings.quota_retry_minutes)
-                    provider_name = "Claude" if settings.llm_provider == "claude" else "Codex"
+                    provider_name = "Claude" if settings.llm_provider.startswith("claude") else "OpenAI"
                     self._set_app_status(state="waiting_quota", phase="waiting_quota", message=f"{provider_name}-Kontingent erschöpft; der Lauf wird automatisch fortgesetzt.", retry_at=retry.isoformat(timespec="seconds"))
                     notify("Haus-Wiki wartet", f"Das {provider_name}-Kontingent ist erschöpft. Die bestehende Wiki-Version bleibt aktiv; der Lauf wird automatisch wiederholt.")
                 else:
@@ -357,19 +357,20 @@ class WikiEngine:
         if time.monotonic() - self.auth_cache[0] < 15:
             return dict(self.auth_cache[1])
         settings = load_settings()
-        if settings.llm_provider in {"disabled", "api"}:
-            status = {"logged_in": settings.llm_provider == "api" and bool(settings.openai_api_key), "message": "API-Key konfiguriert" if settings.openai_api_key else "Keine Anmeldung erforderlich"}
+        if settings.llm_provider in {"disabled", "openai_api", "claude_api"}:
+            key = settings.openai_api_key if settings.llm_provider == "openai_api" else settings.anthropic_api_key
+            status = {
+                "logged_in": bool(key),
+                "message": "API-Key konfiguriert" if key else "API-Key fehlt",
+            } if settings.llm_provider != "disabled" else {"logged_in": False, "message": "Keine Anmeldung erforderlich"}
             self.auth_cache = (time.monotonic(), status)
             return dict(status)
         try:
-            if settings.llm_provider == "claude":
-                if settings.anthropic_api_key:
-                    status = {"logged_in": True, "message": "Anthropic-API-Key konfiguriert"}
-                else:
-                    result = subprocess.run(["claude", "auth", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home")})
-                    output = (result.stdout + "\n" + result.stderr).lower()
-                    logged_in = result.returncode == 0 and not any(word in output for word in ("not logged", "not authenticated", "login required", "unauthorized"))
-                    status = {"logged_in": logged_in, "message": "Angemeldet" if logged_in else "Nicht angemeldet"}
+            if settings.llm_provider == "claude_subscription":
+                result = subprocess.run(["claude", "auth", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home")})
+                output = (result.stdout + "\n" + result.stderr).lower()
+                logged_in = result.returncode == 0 and not any(word in output for word in ("not logged", "not authenticated", "login required", "unauthorized"))
+                status = {"logged_in": logged_in, "message": "Angemeldet" if logged_in else "Nicht angemeldet"}
             else:
                 result = subprocess.run(["codex", "login", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
                 status = {"logged_in": result.returncode == 0, "message": "Angemeldet" if result.returncode == 0 else "Nicht angemeldet"}
@@ -379,6 +380,9 @@ class WikiEngine:
         return dict(status)
 
     def start_device_login(self) -> bool:
+        provider = load_settings().llm_provider
+        if provider not in {"openai_subscription", "claude_subscription"}:
+            raise ValueError("Für diesen Anbieter ist keine Kontoanmeldung erforderlich.")
         with self.login_lock:
             if self.login_state["state"] in {"starting", "pending", "retrying"}:
                 return False
@@ -388,7 +392,7 @@ class WikiEngine:
             self.login_output = []
             self.login_state = {"state": "starting", "code": None, "url": None, "expires_at": None, "retry_at": None, "attempts": 0}
             threading.Thread(target=self._login_flow, args=(generation, self.login_cancel), daemon=True).start()
-        provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+        provider = "Claude" if provider == "claude_subscription" else "OpenAI"
         self.operation_log.emit("login_started", f"{provider}-Anmeldung gestartet.")
         return True
 
@@ -403,7 +407,7 @@ class WikiEngine:
             self.auth_cache = (0, {})
         if process and process.poll() is None:
             process.terminate()
-        provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+        provider = "Claude" if load_settings().llm_provider == "claude_subscription" else "OpenAI"
         self.operation_log.emit("login_cancelled", f"{provider}-Anmeldung abgebrochen.")
 
     def _collect_login(self, process, generation: int) -> None:
@@ -436,7 +440,7 @@ class WikiEngine:
                 self.login_output = []
                 try:
                     settings = load_settings()
-                    if settings.llm_provider == "claude":
+                    if settings.llm_provider == "claude_subscription":
                         command = ["claude", "auth", "login"]
                         environment = {**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home"), "NO_COLOR": "1", "TERM": "dumb"}
                     else:
@@ -480,7 +484,7 @@ class WikiEngine:
                 self.login_output = []
                 if authenticated:
                     self.login_state.update(state="authenticated", retry_at=None)
-                    provider = "Claude" if load_settings().llm_provider == "claude" else "Codex"
+                    provider = "Claude" if load_settings().llm_provider == "claude_subscription" else "OpenAI"
                     self.operation_log.emit("login_completed", f"{provider}-Anmeldung erfolgreich.")
                     return
                 failures = 0 if expired else failures + 1
@@ -507,7 +511,7 @@ class WikiEngine:
             raise ValueError("Ungültiger Anmeldecode.")
         with self.login_lock:
             process = self.login_process
-            if not process or process.poll() is not None or load_settings().llm_provider != "claude":
+            if not process or process.poll() is not None or load_settings().llm_provider != "claude_subscription":
                 raise ValueError("Es läuft keine Claude-Anmeldung, die einen Code erwartet.")
             if process.stdin is None:
                 raise ValueError("Die Claude-Anmeldung akzeptiert derzeit keine Eingabe.")

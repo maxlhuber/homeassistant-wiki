@@ -226,7 +226,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "api/auth/logout":
                 self.engine.stop_device_login()
                 settings = load_settings()
-                if settings.llm_provider == "claude":
+                if settings.llm_provider.startswith("claude"):
                     subprocess.run(["claude", "auth", "logout"], timeout=20, capture_output=True, env={**os.environ, "CLAUDE_CONFIG_DIR": str(DATA / "claude-home")})
                 else:
                     subprocess.run(["codex", "logout"], timeout=20, capture_output=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
