@@ -319,6 +319,18 @@ def _validate_and_stage_docs(
     try:
         docs = project / "docs"
         shutil.copytree(repo / "docs", docs)
+        manual_setting = os.environ.get("WIKI_MANUAL_DOCS_DIR")
+        manual_root = Path(manual_setting) if manual_setting else None
+        if manual_root is not None and manual_root.is_dir():
+            manual_destination = docs / "manuell"
+            manual_destination.mkdir(parents=True, exist_ok=True)
+            for manual_page in sorted(manual_root.glob("*.md")):
+                if manual_page.is_file() and not manual_page.is_symlink():
+                    shutil.copy2(manual_page, manual_destination / manual_page.name)
+            pages = [path for path in manual_destination.glob("*.md") if path.name != "index.md"]
+            index = ["# Manuelle Seiten\n\n", "Diese Seiten werden ausschließlich von einem Wiki-Administrator gepflegt.\n\n"]
+            index.extend(f"- [{path.stem.replace('-', ' ').title()}]({path.name})\n" for path in pages)
+            (manual_destination / "index.md").write_text("".join(index), encoding="utf-8")
         shutil.copy2(repo / "mkdocs.yml", project / "mkdocs.yml")
         summary = _run_generator(
             repo, source, docs, manual_overrides, ai_overrides, source_date
@@ -399,6 +411,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--backup-key-file", type=Path)
     parser.add_argument("--openai-key-file", type=Path)
     parser.add_argument("--no-ai", action="store_true")
+    parser.add_argument("--force-rebuild", action="store_true")
     return parser.parse_args()
 
 
@@ -441,6 +454,21 @@ def run(args: argparse.Namespace) -> int:
         new_snapshot = build_snapshot(extracted.destination)
         old_snapshot = load_snapshot(snapshot_path)
         delta = calculate_delta(old_snapshot, new_snapshot)
+        if old_snapshot is not None and not delta.has_changes and not getattr(args, "force_rebuild", False):
+            write_snapshot(snapshot_path, new_snapshot)
+            _write_json_atomic(
+                last_backup_path,
+                {"backup_time": backup_time.isoformat(), "backup_name": backup.name},
+            )
+            _write_status(
+                status_path,
+                outcome="ready_unchanged",
+                backup=backup.name,
+                backup_date=source_date,
+                delta=delta.summary(),
+                openai_called=False,
+            )
+            return 0
         manual = _load_yaml_mapping(manual_overrides_path)
         manual_automations = manual.get("automation_overrides", {})
         manual_aliases = set(manual_automations) if isinstance(manual_automations, dict) else set()
@@ -469,6 +497,8 @@ def run(args: argparse.Namespace) -> int:
                     endpoint=args.endpoint,
                 )
             except OpenAIClientError as error:
+                if error.kind == "quota_exhausted":
+                    raise
                 warning = error
         elif not args.no_ai:
             credit_probe_attempted = True

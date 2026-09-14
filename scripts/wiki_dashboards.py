@@ -69,9 +69,9 @@ DASHBOARD_MEMBER_NAMES = (REGISTRY_MEMBER, *DASHBOARD_SOURCES)
 PURPOSES = {
     "uebersicht": "Alltag, Räume, Wetter, Hausgeräte, Strom und Wallbox",
     "cupra-laden": "Ladevorgänge, Energieanteile und Ladekosten des Cupra",
-    "karte": "Standorte von Max und Meike",
+    "karte": "Standorte der freigegebenen Personen",
     "karte-alt": "Frühere Kartenvariante; Prüfung und Entfernung empfohlen",
-    "systemstatus": "Technischer Zustand und Diagnose für Max",
+    "systemstatus": "Technischer Zustand und Diagnose",
     "dashboard-test": "Versteckte Testfläche; nicht für den Alltag",
 }
 
@@ -319,7 +319,7 @@ def write_dashboard_inventory(
         "---\n\n",
         "<!-- Automatisch erzeugt. Änderungen werden beim nächsten Wochenlauf ersetzt. -->\n\n",
         "# Automatisch erkannte Dashboard-Struktur\n\n",
-        "Diese technische Kontrollseite für Max zeigt nur den groben Aufbau und den "
+        "Diese technische Kontrollseite zeigt nur den groben Aufbau und den "
         "bekannten Zweck. Inhalte, technische Kennungen und interne Pfade werden "
         "nicht veröffentlicht.\n\n",
     ]

@@ -1,0 +1,61 @@
+name: "Haus-Wiki"
+version: "2.0.0"
+slug: "homewiki_gateway"
+description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit optionaler Codex-Unterstützung"
+url: "https://github.com/maxlhuber/homeassistant-wiki"
+image: "ghcr.io/maxlhuber/homeassistant-wiki"
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+ingress: true
+ingress_port: 8099
+ingress_stream: true
+panel_icon: "mdi:book-open-page-variant"
+panel_title: "Haus-Wiki"
+panel_admin: false
+watchdog: "http://[HOST]:[PORT:8099]/_gateway_health"
+init: false
+homeassistant_api: true
+hassio_api: true
+hassio_role: backup
+backup: hot
+backup_exclude:
+  - "work/**"
+  - "codex-home/**"
+  - "logs/**"
+map:
+  - type: share
+    read_only: false
+options:
+  schedule_days:
+    - wed
+    - sun
+  schedule_time: "02:00"
+  catch_up: true
+  backup_password: ""
+  llm_provider: chatgpt
+  openai_api_key: ""
+  model: ""
+  llm_timeout_minutes: 90
+  quota_retry_minutes: 30
+  release_retention: 3
+  export_path: "/share/HausWiki"
+  admin_users:
+    - Max
+schema:
+  schedule_days:
+    - list(wed|sun|mon|tue|thu|fri|sat)
+  schedule_time: match(^([01][0-9]|2[0-3]):[0-5][0-9]$)
+  catch_up: bool
+  backup_password: password
+  llm_provider: list(chatgpt|api|disabled)
+  openai_api_key: password
+  model: str?
+  llm_timeout_minutes: int(5,240)
+  quota_retry_minutes: int(5,360)
+  release_retention: int(1,20)
+  export_path: str
+  admin_users:
+    - str

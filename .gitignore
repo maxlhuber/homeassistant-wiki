@@ -18,3 +18,5 @@ scripts/wiki_ai_overrides.yaml
 
 # Projektweite Zugangsdaten werden lokal mit Windows DPAPI verschlüsselt.
 /.project-secrets/
+/homewiki_gateway/project/
+/homewiki_gateway/runtime/.build-homewiki-site/

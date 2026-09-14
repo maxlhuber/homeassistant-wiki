@@ -350,8 +350,6 @@ def main() -> None:
             return "Tibber-Stromtarif"
         if "wallbox" in combined or "go-echarger" in combined:
             return "Wallbox (go-e)"
-        if raw == "Max' Fire":
-            return "Dashboard-Tablet"
         return raw
 
     def shown_device_name(device: dict[str, Any]) -> str:
@@ -418,8 +416,6 @@ def main() -> None:
         if name in {"Nuki Web API", "Withings", "Robotic Vacuum Cleaner"}:
             return True
         if maker == "amazon" and model == "sonos":
-            return True
-        if name == "Max' Echo Dot" and device.get("area_id") == "wohnzimmer" and model == "echo dot with clock":
             return True
         if device.get("via_device_id") and any(word in name.casefold() for word in ("output", "ams", "spool")):
             return True
@@ -632,7 +628,6 @@ def main() -> None:
             service = str(service)
             if service.startswith("notify.mobile_app_"):
                 recipient = service.removeprefix("notify.mobile_app_").replace("_", " ")
-                recipient = {"max iphone": "Max' iPhone", "meikes iphone": "Meikes iPhone"}.get(recipient, recipient)
                 shown_recipient = safe_source_text(recipient, "Empfängerbezeichnung")
                 return f"Push-Nachricht an {shown_recipient} senden"
             exact = {
@@ -720,7 +715,7 @@ def main() -> None:
             return str(override["manual"])
         alias_lower = alias.casefold()
         if "licht" in alias_lower:
-            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren."
+            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern die Administration informieren."
         if "batterie" in alias_lower:
             return "Das genannte Gerät aufsuchen und Batterie beziehungsweise Ladezustand direkt prüfen."
         if "müll" in alias_lower:
@@ -728,7 +723,7 @@ def main() -> None:
         if "pflanzenerinnerung" in alias_lower:
             return "Die Pflanzen bei Bedarf gießen und die Erinnerung in der Handy-Meldung als erledigt bestätigen."
         if group == "Licht & Präsenz":
-            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern Max informieren."
+            return "Das betroffene Licht in Home Assistant oder am vorhandenen Wandschalter direkt bedienen. Reagiert es unerwartet, nicht zurücksetzen, sondern die Administration informieren."
         if group == "Sicherheit & Zugang":
             return "Zuerst die reale Situation vor Ort prüfen. Türen und Fenster von Hand sichern; eine App-Meldung ersetzt keine unmittelbare Sicherheitsmaßnahme."
         if group == "Garten & Wasser":
@@ -738,7 +733,7 @@ def main() -> None:
         if group == "Energie & Auto":
             return "Ladezustand und Freigabe zusätzlich am Fahrzeug beziehungsweise an der Wallbox kontrollieren."
         if group == "System":
-            return "Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technische Wartung durch Max gedacht."
+            return "Keine Bedienung im Alltag. Diese Funktion ist ausschließlich für die technische Wartung gedacht."
         return "Die betroffene Funktion direkt am Gerät oder in Home Assistant prüfen. Nichts löschen oder auf Werkseinstellungen zurücksetzen."
 
     auto_dir = docs / "automationen" / "generated"
@@ -834,7 +829,7 @@ def main() -> None:
         page.append("\n## So kannst du reagieren\n\n")
         page.append(automation_manual(alias, group, override) + "\n\n")
         page.append("<div data-search-exclude markdown>\n\n")
-        page.append("??? info \"Technik für Max\"\n\n")
+        page.append("??? info \"Technische Details\"\n\n")
         page.append("    | Feld | Wert |\n    |---|---|\n")
         page.append(f"    | Ursprünglicher Name | {esc(shown_alias)} |\n")
         page.append(
@@ -984,7 +979,7 @@ def main() -> None:
             page.append("- Sensoren brauchen normalerweise keine Bedienung. Bei einem Ausfall können automatische Meldungen oder Schaltungen fehlen.\n")
         if "Smarte Steckdose" in kinds:
             page.append("- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.\n")
-        page.append("- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und Max informieren.\n")
+        page.append("- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und die Administration informieren.\n")
         page.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
         (room_dir / f"{room_slug[area_id]}.md").write_text("".join(page), encoding="utf-8")
 

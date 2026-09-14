@@ -1,0 +1,52 @@
+name: Publish Haus-Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "homewiki_gateway/**"
+      - ".github/workflows/publish-homewiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m mkdocs build --clean --strict
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: version
+        shell: bash
+        run: echo "value=$(awk -F'\"' '/^version:/ {print $2}' homewiki_gateway/config.yaml)" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: homewiki_gateway/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/maxlhuber/homeassistant-wiki:${{ steps.version.outputs.value }}
+            ghcr.io/maxlhuber/homeassistant-wiki:latest
+          build-args: |
+            BUILD_VERSION=${{ steps.version.outputs.value }}

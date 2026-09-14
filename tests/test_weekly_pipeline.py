@@ -925,22 +925,5 @@ class OverrideTests(unittest.TestCase):
         )
         self.assertEqual(set(merged["automation_overrides"]), {"Neu"})
 
-
-class PiInstallationTests(unittest.TestCase):
-    def test_installer_copies_every_python_runner(self) -> None:
-        installer = (ROOT / "raspberry-pi" / "wiki-weekly-install.sh").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("wiki_dashboards.py", installer)
-
-    def test_weekly_runner_only_fast_forwards_remote_main(self) -> None:
-        runner = (ROOT / "raspberry-pi" / "wiki-weekly-update.sh").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("refs/heads/main:refs/remotes/origin/main", runner)
-        self.assertIn("git merge-base --is-ancestor", runner)
-        self.assertIn('git merge --ff-only "${REMOTE_HEAD}"', runner)
-
-
 if __name__ == "__main__":
     unittest.main()

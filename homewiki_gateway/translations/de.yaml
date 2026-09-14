@@ -1,0 +1,31 @@
+configuration:
+  schedule_days:
+    name: Wochentage
+    description: Wochentage für automatische Aktualisierungen.
+  schedule_time:
+    name: Uhrzeit
+    description: Startzeit in der Home-Assistant-Zeitzone.
+  catch_up:
+    name: Verpassten Lauf nachholen
+  backup_password:
+    name: Backup-Verschlüsselungscode
+  llm_provider:
+    name: LLM-Anmeldung
+    description: ChatGPT-Abo, API-Key oder deaktiviert.
+  openai_api_key:
+    name: OpenAI API-Key
+    description: Nur im API-Modus erforderlich.
+  model:
+    name: Codex-Modell
+    description: Leer lassen, um das aktuelle Standardmodell zu verwenden.
+  llm_timeout_minutes:
+    name: Maximale Laufzeit in Minuten
+  quota_retry_minutes:
+    name: Wartezeit bei ausgeschöpftem Kontingent
+  release_retention:
+    name: Aufbewahrte Wiki-Versionen
+  export_path:
+    name: NAS-Exportpfad
+  admin_users:
+    name: Wiki-Administratoren
+    description: Exakte Home-Assistant-Benutzernamen mit Schreibrechten.

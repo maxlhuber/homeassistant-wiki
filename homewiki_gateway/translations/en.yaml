@@ -1,0 +1,25 @@
+configuration:
+  schedule_days:
+    name: Schedule days
+  schedule_time:
+    name: Schedule time
+  catch_up:
+    name: Catch up missed run
+  backup_password:
+    name: Backup encryption password
+  llm_provider:
+    name: LLM authentication
+  openai_api_key:
+    name: OpenAI API key
+  model:
+    name: Codex model
+  llm_timeout_minutes:
+    name: Maximum run time in minutes
+  quota_retry_minutes:
+    name: Quota retry delay
+  release_retention:
+    name: Retained wiki versions
+  export_path:
+    name: NAS export path
+  admin_users:
+    name: Wiki administrators

@@ -1,0 +1,9 @@
+.git
+.project-secrets
+.sdcard-build
+.wiki-state
+site
+**/__pycache__
+**/*.pyc
+homewiki_gateway/project
+homewiki_gateway/runtime/.build-homewiki-site
