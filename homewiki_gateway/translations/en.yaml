@@ -1,32 +1,43 @@
 configuration:
   schedule_days:
     name: Schedule days
+    description: Weekdays on which the wiki is updated automatically.
   schedule_time:
     name: Schedule time
+    description: Time at which the automatic run starts (Home Assistant time zone).
   catch_up:
     name: Catch up missed run
+    description: Run a missed scheduled update after the add-on starts again.
   backup_password:
     name: Backup encryption password
+    description: Password used to decrypt the selected Home Assistant full backup.
   llm_provider:
     name: LLM authentication
     description: Choose Codex or Claude subscription, optional API key, or disabled.
   openai_api_key:
     name: OpenAI API key
+    description: Optional key for OpenAI API mode; not needed for Codex login.
   anthropic_api_key:
     name: Anthropic API key
     description: Optional for Claude API mode; leave empty to use Claude account login.
   model:
     name: LLM model
+    description: Model name for the selected provider; leave empty to use its current default.
   llm_timeout_minutes:
     name: Maximum run time in minutes
+    description: Maximum duration of one wiki run, including backup, build, and AI.
   quota_retry_minutes:
     name: Quota retry delay
+    description: Delay before retrying a run after the AI quota is exhausted.
   release_retention:
     name: Retained wiki versions
+    description: Number of older wiki versions kept for rollback.
   export_path:
     name: NAS export path
+    description: Destination folder on the mounted NAS share for the published wiki.
   admin_users:
     name: Wiki administrators
+    description: Home Assistant usernames, display names, or user IDs allowed to edit and manage the wiki.
   admin_password:
     name: Administration password
     description: Optional. Unlock management actions with this password; leave empty to use the configured Home Assistant users.

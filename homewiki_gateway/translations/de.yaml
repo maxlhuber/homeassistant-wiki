@@ -1,20 +1,22 @@
 configuration:
   schedule_days:
     name: Wochentage
-    description: Wochentage für automatische Aktualisierungen.
+    description: Wochentage, an denen das Wiki automatisch aktualisiert wird.
   schedule_time:
     name: Uhrzeit
-    description: Startzeit in der Home-Assistant-Zeitzone.
+    description: Uhrzeit für den automatischen Start (Home-Assistant-Zeitzone).
   catch_up:
     name: Verpassten Lauf nachholen
+    description: Startet einen verpassten Lauf beim nächsten Add-on-Start nach.
   backup_password:
     name: Backup-Verschlüsselungscode
+    description: Code zum Entschlüsseln des ausgewählten Home-Assistant-Vollbackups.
   llm_provider:
     name: LLM-Anmeldung
     description: Codex oder Claude per Abo, optional API-Key, oder deaktiviert.
   openai_api_key:
     name: OpenAI API-Key
-    description: Nur im API-Modus erforderlich.
+    description: Optionaler Schlüssel für den OpenAI-API-Modus; bei Codex nicht erforderlich.
   anthropic_api_key:
     name: Anthropic API-Key
     description: Optional für Claude im API-Modus; leer verwendet die Claude-Kontoanmeldung.
@@ -23,12 +25,16 @@ configuration:
     description: "Leer lassen, um das aktuelle Standardmodell des gewählten Anbieters zu verwenden (Claude: sonnet)."
   llm_timeout_minutes:
     name: Maximale Laufzeit in Minuten
+    description: Maximale Dauer eines Wiki-Laufs inklusive Backup, Build und KI.
   quota_retry_minutes:
     name: Wartezeit bei ausgeschöpftem Kontingent
+    description: Wartezeit, bevor ein Lauf nach erschöpftem KI-Kontingent wiederholt wird.
   release_retention:
     name: Aufbewahrte Wiki-Versionen
+    description: Anzahl älterer Wiki-Stände, die für ein Rollback aufbewahrt werden.
   export_path:
     name: NAS-Exportpfad
+    description: Zielordner auf der eingebundenen NAS-Freigabe für den veröffentlichten Wiki-Stand.
   admin_users:
     name: Wiki-Administratoren
     description: Home-Assistant-Benutzername, Anzeigename oder Benutzer-ID mit Schreibrechten. Wird ohne Verwaltungspasswort verwendet.

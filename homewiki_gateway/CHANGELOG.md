@@ -1,3 +1,7 @@
+# 3.1.1
+
+- Kurze Erläuterungen für alle Add-on-Konfigurationsoptionen ergänzt.
+
 # 3.1.0
 
 - Claude Code ist als gleichwertige Alternative zum Codex-CLI auswählbar.
