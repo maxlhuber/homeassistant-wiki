@@ -84,6 +84,12 @@ def latest_full_backup() -> dict[str, Any]:
     ]
     if not full:
         raise SupervisorError("Es wurde kein vollständiges Home-Assistant-Backup gefunden.")
+    # Automatic NAS snapshots are the authoritative source for the wiki.
+    # Supervisor also exposes legacy/manual full archives (including old
+    # 2024 snapshots); never let those win while an automatic snapshot exists.
+    automatic = [item for item in full if item.get("with_automatic_settings") is True]
+    if automatic:
+        full = automatic
     def sort_key(item: dict[str, Any]) -> tuple[float, str]:
         raw = str(item.get("date") or "")
         try:
