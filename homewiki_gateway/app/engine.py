@@ -95,6 +95,19 @@ class WikiEngine:
         app["auth"] = self.auth_status()
         return app
 
+    def health_status(self) -> dict[str, Any]:
+        """Return a cheap, secret-free status for Supervisor health checks."""
+        app = _read_json(APP_STATUS, {})
+        return {
+            "status": "ok",
+            "state": app.get("state", "unknown"),
+            "message": app.get("message", ""),
+            "running": bool(self.thread and self.thread.is_alive()),
+            "updated_at": app.get("updated_at"),
+            "completed_at": app.get("completed_at"),
+            "version": os.environ.get("HOMEWIKI_VERSION", "dev"),
+        }
+
     def history(self) -> list[dict[str, Any]]:
         value = _read_json(HISTORY, [])
         return value[-100:] if isinstance(value, list) else []

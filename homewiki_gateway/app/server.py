@@ -13,7 +13,7 @@ from urllib.parse import unquote, urlsplit
 
 from .wiki_snapshot import SECRET_VALUE_PATTERNS
 
-from .engine import DATA, MANUAL, MANUAL_DIRTY, PROJECT, WikiEngine, scheduler
+from .engine import BUILT_VERSION, DATA, MANUAL, MANUAL_DIRTY, PROJECT, WikiEngine, scheduler
 from .settings import load_settings
 
 
@@ -62,12 +62,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200); self.send_header("Content-Type", mime); self.send_header("Content-Length", str(len(data))); self.send_header("Cache-Control", "no-cache, must-revalidate"); self.send_header("X-Content-Type-Options", "nosniff"); self.end_headers(); self.wfile.write(data)
 
     def do_GET(self):
-        if not self._allowed(): return self._error("Zugriff nur über Home Assistant Ingress.",403)
         path = self.path_only
+        # This endpoint is only exposed on the Supervisor's private app network.
+        # Keep it available to the watchdog and HA MCP without requiring an
+        # Ingress user header; it deliberately contains no backup names,
+        # configuration values, authentication output, or other private data.
+        if path == "_gateway_health": return self._json(self.engine.health_status())
+        if not self._allowed(): return self._error("Zugriff nur über Home Assistant Ingress.",403)
         if path in {"", "index.html"}:
             base=self.headers.get("X-Ingress-Path","/").rstrip("/")+"/"
             data=UI.replace("__BASE__",base).encode(); self.send_response(200); self.send_header("Content-Type","text/html; charset=utf-8"); self.send_header("Content-Length",str(len(data))); self.send_header("Cache-Control","no-store"); self.end_headers(); self.wfile.write(data); return
-        if path == "_gateway_health": return self._json({"status":"ok"})
         if path == "api/status":
             value=self.engine.status(); value["admin"]=self._admin(); return self._json(value)
         if path == "api/history": return self._json(self.engine.history())
@@ -123,5 +127,8 @@ def main() -> None:
         bootstrap=Path("/app/bootstrap-site")
         if bootstrap.is_dir(): shutil.copytree(bootstrap,DATA/"publish-site")
     threading.Thread(target=scheduler,args=(engine,),daemon=True).start()
+    built_version = BUILT_VERSION.read_text(encoding="utf-8").strip() if BUILT_VERSION.exists() else ""
+    if built_version != __import__("os").environ.get("HOMEWIKI_VERSION", "dev"):
+        engine.trigger("version_update")
     print("[haus-wiki] Dienst bereit auf Port 8099")
     ThreadingHTTPServer(("0.0.0.0",8099),Handler).serve_forever()
