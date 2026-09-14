@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import threading
 import time
@@ -307,6 +308,7 @@ class WikiEngine:
                 text=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")}, bufsize=1,
             )
             threading.Thread(target=self._collect_login, daemon=True).start()
+            threading.Thread(target=self._watch_login, daemon=True).start()
             return True
 
     def _collect_login(self) -> None:
@@ -314,7 +316,22 @@ class WikiEngine:
         if process and process.stdout:
             for line in process.stdout:
                 with self.login_lock:
-                    self.login_output.append(line.rstrip())
+                    # Codex uses terminal colour/control sequences. Strip
+                    # them before exposing the text in the web UI.
+                    clean = re.sub(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))", "", line).rstrip()
+                    self.login_output.append(clean)
+
+    def _watch_login(self) -> None:
+        process = self.login_process
+        if process is None:
+            return
+        process.wait()
+        if process.returncode == 0 or self.auth_status().get("logged_in"):
+            return
+        # Device codes expire after a short window. Start a fresh flow so the
+        # UI always presents a usable code without manual intervention.
+        time.sleep(1)
+        self.start_device_login()
 
     def device_login_status(self) -> dict[str, Any]:
         with self.login_lock:
