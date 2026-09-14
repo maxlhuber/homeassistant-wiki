@@ -22,6 +22,7 @@ class Settings:
     release_retention: int
     export_path: Path
     admin_users: frozenset[str]
+    admin_password: str = ""
 
 
 def load_settings(path: Path = OPTIONS) -> Settings:
@@ -48,4 +49,5 @@ def load_settings(path: Path = OPTIONS) -> Settings:
         release_retention=max(1, min(20, int(raw.get("release_retention", 3)))),
         export_path=Path(str(raw.get("export_path") or "/share/HausWiki")),
         admin_users=frozenset(str(item) for item in admins if str(item).strip()),
+        admin_password=str(raw.get("admin_password") or ""),
     )

@@ -1,36 +1,45 @@
-# Haus-Wiki
+# Haus-Wiki 3.0
 
-Haus-Wiki erzeugt aus dem neuesten vollständigen Home-Assistant-Backup eine verständliche, lokal gehostete Dokumentation. Das Wiki ist ausschließlich über Home Assistant Ingress erreichbar.
+Das Wiki erklärt das Zuhause aus dem zuletzt verarbeiteten Home-Assistant-Backup. Es zeigt keine Live-Zustände und schaltet keine Geräte. Bewohner finden Räume, Geräte, Abläufe und Hilfe; die Verwaltung enthält Aktualisierung, Anmeldung, Verlauf, Betriebsprotokoll und eigene Seiten.
 
-## Ersteinrichtung
+## Einrichtung und Zugriff
 
-1. Binde das NAS in Home Assistant zusätzlich als Netzwerkfreigabe mit dem Namen `HausWiki` ein.
-2. Hinterlege unter **Konfiguration** den Verschlüsselungscode deiner Home-Assistant-Backups.
-3. Starte die App und öffne **Haus-Wiki** in der Seitenleiste.
-4. Wähle **ChatGPT anmelden** und schließe die Device-Code-Anmeldung mit dem ChatGPT-Konto ab.
-5. Starte einmal **Jetzt aktualisieren**. Danach laufen Aktualisierungen automatisch.
+1. NAS unter Home Assistant → Einstellungen → System → Speicher als **Share** einbinden. Backup-Netzwerkspeicher sind nicht automatisch unter /share im Wiki verfügbar.
+2. `export_path` auf einen eigenen Unterordner setzen, etwa `/share/NASWiki/HausWiki`. Das Wiki verwaltet diesen Unterordner vollständig. Nicht das Stammverzeichnis mit den HA-Backups als Exportziel verwenden.
+3. `backup_password` mit dem Verschlüsselungscode aus dem Home-Assistant-Notfallpaket befüllen.
+4. Über die HA-Seitenleiste öffnen. Ohne `admin_password` erhalten die in `admin_users` eingetragenen HA-Benutzernamen, Anzeigenamen oder Benutzer-IDs Verwaltungsrechte. Die Prüfung berücksichtigt den Anzeigenamen „Max“ unabhängig vom technischen Benutzernamen.
+5. Alternativ `admin_password` konfigurieren. Dann werden Verwaltungsaktionen nach Eingabe dieses Passworts im Wiki freigeschaltet. Die Freischaltung gilt eine Stunde, ist an den HA-Benutzer gebunden und endet bei App-Neustart oder Passwortwechsel. Das Passwort wird nicht im Browser gespeichert.
 
-## Verhalten
+Lesende Zugriffe funktionieren über Home Assistant Ingress. Direkte Zugriffe aus anderen Containern sind gesperrt; der reduzierte Health-Endpunkt bleibt für Betriebsprüfungen erreichbar.
 
-- Standardplan: Mittwoch und Sonntag um 02:00 Uhr in der Home-Assistant-Zeitzone.
-- Das neueste Vollbackup wird über die Supervisor-API ausgewählt, auch wenn es auf einem Netzwerkspeicher liegt.
-- Während eines laufenden Backups wartet Haus-Wiki.
-- Ohne lesbares Vollbackup wird die aktive Wiki-Version nicht verändert.
-- Ohne wiki-relevante Änderungen wird nicht neu gebaut; Home Assistant erhält trotzdem eine Meldung.
-- Codex benötigt keine Freigaben. Das LLM sieht ausschließlich eine bereinigte, auf Wiki-Fakten begrenzte Struktur.
-- Bei LLM-Fehlern wird die deterministische Dokumentation veröffentlicht. Bei ausgeschöpftem ChatGPT-Kontingent bleibt die alte Version aktiv und der Lauf wartet auf einen späteren Neuversuch.
-- Erfolgreiche Versionen werden nach `/share/HausWiki` exportiert und können in der Oberfläche zurückgerollt werden.
+## Aktualisierung
 
-## Authentifizierung
+Standard: Mittwoch und Sonntag um 02:00 Uhr in der Home-Assistant-Zeitzone. `schedule_days`, `schedule_time` und `catch_up` steuern den Rhythmus. Ein manueller Klick meldet, ob der Lauf gestartet wurde oder bereits läuft.
 
-`llm_provider: chatgpt` verwendet den im Container installierten offiziellen Codex-CLI und eine Device-Code-Anmeldung. `llm_provider: api` verwendet den optional hinterlegten API-Key. `disabled` schaltet LLM-Ergänzungen ab.
+Die App wartet auf laufende Supervisor-Backup-Jobs. Automatische NAS-Archive werden auf eingebundenen Share-Freigaben erkannt; andernfalls wird der Supervisor-Katalog verwendet. Nur ein lesbares und validiertes HA-Archiv kann veröffentlicht werden. Das verwendete Backup wird im Status ausgewiesen. Bei unverändertem Inhalt wird Home Assistant benachrichtigt.
 
-Codex-Anmeldedaten liegen unter `/data/codex-home`, werden nicht protokolliert und bewusst nicht in Home-Assistant-Backups aufgenommen. Nach einer Wiederherstellung ist eine erneute Anmeldung erforderlich.
+Die Website wird lokal bereitgestellt und nach `export_path` exportiert. `release_retention` bestimmt die Anzahl früherer Wiki-Stände (Standard: 3). Eine Wiederherstellung ersetzt ausschließlich das Wiki. Während einer Aktualisierung ist sie gesperrt.
 
-## Manuelle Seiten
+## ChatGPT und LLM
 
-Nur die in `admin_users` eingetragenen Home-Assistant-Benutzernamen dürfen Läufe starten, Rollbacks ausführen, die ChatGPT-Anmeldung verwalten oder manuelle Seiten bearbeiten. Manuelle Seiten liegen getrennt unter `/data/manual` und werden vom Generator sowie vom LLM niemals verändert.
+`llm_provider` wählt `chatgpt`, `api` oder `disabled`. „ChatGPT anmelden“ startet die Device-Anmeldung des mitgelieferten Codex-CLI. Link, Code und Ablauf werden separat angezeigt. Die Bestätigung im ChatGPT-Konto erfolgt durch den Benutzer. Nach erfolgreicher Anmeldung ist keine Bestätigung einzelner Wiki-Läufe nötig.
 
-## Updates
+Abgelaufene Codes werden während einer aktiven Anmeldung erneuert. Wiederholte technische Fehler führen zu einem sichtbaren Fehler statt einer endlosen Anmeldeschleife. Die Anmeldung kann abgebrochen werden.
 
-Neue Versionen werden als `amd64`- und `aarch64`-Container über GitHub Container Registry veröffentlicht. Aktiviere in Home Assistant **Automatisch aktualisieren**, damit beim nächsten Wiki-Lauf bereits die aktuelle App-Version verwendet wird.
+Ein fertig erzeugtes Wiki bedeutet nicht automatisch einen erfolgreichen LLM-Aufruf; fehlende Ergänzungen bleiben sichtbar. Geheimnisse werden vor LLM-Anfragen entfernt. Bei erschöpftem Kontingent wird mit `quota_retry_minutes` erneut versucht; es gibt keinen automatischen kostenpflichtigen API-Fallback. `model` ist optional; `openai_api_key` wird nur für den ausdrücklich gewählten API-Modus benötigt.
+
+Codex-Zugangsdaten liegen unter /data/codex-home und sind von HA-App-Backups ausgeschlossen. Nach Wiederherstellung kann eine erneute Anmeldung nötig sein.
+
+## Eigene Seiten
+
+Eigene Anleitungen liegen getrennt unter /data/manual und werden weder vom Generator noch vom LLM überschrieben. Der Editor speichert Markdown; die Veröffentlichung erfolgt mit einem erfolgreichen Backup-basierten Lauf. Keine Passwörter oder Zugangscodes in Wiki-Seiten eintragen.
+
+## Betriebsprotokoll
+
+Die Verwaltung zeigt Ereignisse mit Zeitpunkt, Schweregrad, Laufbezug und Verarbeitungsschritt. Dieselben Ereignisse erscheinen in den Container-Logs. Die lokalen rotierenden Dateien unter /data/logs belegen höchstens etwa 1 MB. Zugangsdaten, Device-Codes und rohe LLM-Antworten werden nicht protokolliert. Alte Läufe aus Version 2 bleiben im Verlauf erhalten; detaillierte Ereignisse werden ab Version 3 aufgezeichnet.
+
+## Updates und interne API
+
+Updates werden über das öffentliche GitHub-Repository und GHCR angeboten. Private Wiki-Inhalte werden nicht nach GitHub übertragen. Bestehende Optionen, eigene Seiten, Zugangsdaten und Wiki-Stände bleiben unter /data erhalten.
+
+Die interne Oberfläche verwendet api/status, api/history, api/logs, api/manual, api/auth/device/status. Schreibzugriffe benötigen Ingress, Verwaltungsrechte und den Header `X-Haus-Wiki: 1`. Dies ist keine öffentlich freizugebende API.

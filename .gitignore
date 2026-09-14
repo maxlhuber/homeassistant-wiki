@@ -21,3 +21,4 @@ scripts/wiki_ai_overrides.yaml
 /homewiki_gateway/project/
 /homewiki_gateway/runtime/.build-homewiki-site/
 /homewiki_gateway/runtime/.tmp-site/
+/homewiki_gateway/runtime/.tmp-v3-site/

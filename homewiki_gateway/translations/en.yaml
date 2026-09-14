@@ -23,3 +23,6 @@ configuration:
     name: NAS export path
   admin_users:
     name: Wiki administrators
+  admin_password:
+    name: Administration password
+    description: Optional. Unlock management actions with this password; leave empty to use the configured Home Assistant users.

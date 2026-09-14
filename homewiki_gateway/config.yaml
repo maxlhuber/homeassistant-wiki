@@ -1,5 +1,5 @@
 name: "Haus-Wiki"
-version: "2.0.19"
+version: "3.0.0"
 slug: "homewiki_gateway"
 description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit optionaler Codex-Unterstützung"
 url: "https://github.com/maxlhuber/homeassistant-wiki"
@@ -43,6 +43,7 @@ options:
   export_path: "/share/HausWiki"
   admin_users:
     - Max
+  admin_password: ""
 schema:
   schedule_days:
     - list(wed|sun|mon|tue|thu|fri|sat)
@@ -58,3 +59,4 @@ schema:
   export_path: str
   admin_users:
     - str
+  admin_password: password?

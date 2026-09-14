@@ -28,4 +28,7 @@ configuration:
     name: NAS-Exportpfad
   admin_users:
     name: Wiki-Administratoren
-    description: Exakte Home-Assistant-Benutzernamen mit Schreibrechten.
+    description: Home-Assistant-Benutzername, Anzeigename oder Benutzer-ID mit Schreibrechten. Wird ohne Verwaltungspasswort verwendet.
+  admin_password:
+    name: Verwaltungspasswort
+    description: Optional. Wenn gesetzt, müssen Verwaltungsaktionen in der Wiki-Oberfläche mit diesem Passwort freigeschaltet werden. Leer verwendet die Wiki-Administratoren.

@@ -1,13 +1,29 @@
 site_name: Haus-Wiki
-site_description: Automatisch erzeugte Home-Assistant-Dokumentation
+site_description: Das Zuhause verstehen – Geräte, Räume und Abläufe verständlich erklärt
 theme:
   name: material
   language: de
+  font: false
+  palette:
+    - scheme: default
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Dunkle Ansicht
+    - scheme: slate
+      primary: custom
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Helle Ansicht
   features:
     - navigation.tabs
     - navigation.sections
     - navigation.top
     - search.suggest
+    - search.highlight
+    - navigation.tracking
 plugins:
   - search:
       lang: de
@@ -24,8 +40,12 @@ extra_css:
   - stylesheets/extra.css
 nav:
   - Start: index.md
-  - Räume: raeume/index.md
-  - Geräte: geraete/index.md
-  - Automationen: automationen/index.md
-  - Dashboards: dashboards/automatisch.md
-  - Manuelle Seiten: manuell/index.md
+  - Im Alltag:
+    - Einstieg: einstieg/index.md
+    - Räume: raeume/index.md
+    - Geräte: geraete/index.md
+    - Automatische Abläufe: automationen/index.md
+    - Dashboards: dashboards/automatisch.md
+  - Hilfe: hilfe/index.md
+  - Administration: admin/index.md
+  - Ergänzungen: manuell/index.md

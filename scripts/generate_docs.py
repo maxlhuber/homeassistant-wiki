@@ -232,6 +232,74 @@ def sentence_case(value: Any) -> str:
     return text[:1].upper() + text[1:] if text else text
 
 
+def write_overview_pages(docs: Path, summary: dict[str, Any], automations: list[dict[str, Any]]) -> None:
+    """Refresh reader entry points and admin facts with every backup build."""
+    date = html.escape(str(summary["source_date"]))
+    landing = GENERATED_NOTICE + f'''# Dein Zuhause verstehen
+
+<div class="wiki-hero" markdown>
+
+## Was macht das Haus eigentlich von selbst?
+
+Hier findest du Geräte, Räume und automatische Abläufe verständlich erklärt. Beginne beim Raum oder bei der Funktion, die dich interessiert.
+
+**Backup-Stand: {date}** · Diese Dokumentation zeigt gespeicherte Einstellungen, keine aktuellen Gerätewerte.
+
+</div>
+
+<div class="grid cards" markdown>
+
+-   **Einen Raum entdecken**
+
+    Welche Geräte gehören hierhin, und was passiert automatisch?
+
+    [Zu den {summary['areas']} Räumen](raeume/index.md)
+
+-   **Automatische Abläufe verstehen**
+
+    Was löst eine Funktion aus, welche Voraussetzungen gelten und was passiert dann?
+
+    [Die {summary['automations']} Abläufe ansehen](automationen/index.md)
+
+-   **Ein Gerät finden**
+
+    Geräte nach Standort und Aufgabe nachschlagen.
+
+    [Zu den {summary['shown_devices']} Geräten der Alltagsansicht](geraete/index.md)
+
+-   **Etwas funktioniert nicht**
+
+    Beobachtung einordnen und die passenden Informationen für die Administration sammeln.
+
+    [Hilfe bei Störungen](hilfe/index.md)
+
+</div>
+
+## Zum ersten Mal hier?
+
+[Der kurze Einstieg](einstieg/index.md) erklärt die Begriffe und zeigt dir, wie du etwas findest. Die Suche oben funktioniert mit Raum-, Geräte- und Funktionsnamen.
+
+Du möchtest etwas schalten? Öffne Home Assistant. Links in diesem Wiki öffnen Erklärungen; sie steuern keine Geräte.
+
+## Für die Administration
+
+[Inventar und Datenqualität](admin/index.md) zeigen technische Kennzahlen, Grenzen der Auswertung und Wartungshinweise. Eigene Anleitungen findest du unter [Ergänzungen](manuell/index.md).
+'''
+    (docs / "index.md").write_text(landing, encoding="utf-8")
+    admin = [GENERATED_NOTICE, "# Administration\n\n",
+             f"**Backup-Stand: {date}** · Die Werte stammen aus der Sicherung, nicht aus einer Live-Abfrage.\n\n",
+             "## Inventar und Datenqualität\n\n| Bereich | Einträge im Backup |\n|---|---:|\n"]
+    for label, key in (("Etagen", "floors"), ("Räume", "areas"), ("Geräteregister (einschließlich virtueller Geräte)", "registry_devices"), ("Alltagsansicht: Geräte mit Raum", "shown_devices"), ("Entitäten insgesamt", "registry_entities"), ("Alltagsrelevante Entitäten", "everyday_entities"), ("Automationsdefinitionen", "automations"), ("Dokumentierte Szenen", "scenes"), ("Dashboards", "dashboards")):
+        admin.append(f"| {label} | {summary[key]} |\n")
+    admin.append("\nDie Alltagsansicht filtert technische Dienste und Diagnoseeinträge. Unterschiedliche Zählwerte sind deshalb erwartbar. Fehlende Raumzuordnungen stehen in der [Geräteübersicht](../geraete/index.md); sie beweisen keinen Geräteausfall.\n\n")
+    admin.append("## Automationen nachschlagen\n\nAlle Definitionen, einschließlich technischer oder als ausgeschaltet dokumentierter Abläufe. Die einzelnen Seiten enthalten eingeklappte technische Details. Der Einschaltzustand ist hier nicht live bekannt.\n\n")
+    for item in sorted(automations, key=lambda item: item["title"].casefold()):
+        admin.append(f"- [{item['title']}](../automationen/generated/{item['slug']}.md)\n")
+    admin.append("\n## Was die Auswertung aussagen kann\n\n- Automationen werden aus ihren gespeicherten Definitionen erklärt. Templates, Blueprint-Interna und komplexe Verzweigungen sind teilweise nur zusammengefasst.\n- Raumbezüge entstehen aus den in der Definition und im Register vorhandenen Zuordnungen. Ohne Bezug wird kein Standort angenommen.\n- Technische Details sind eine Lesehilfe; für Fehlersuche immer die tatsächliche Definition und Ausführungsspuren in Home Assistant prüfen.\n- Der Backup-Zeitpunkt ist kein Nachweis eines Funktionstests.\n\n## Wiki betreiben\n\nDie Steuerung, ChatGPT-Anmeldung und Laufmeldungen findest du in der Haus-Wiki-Oberfläche. Den Zeitplan, Backup-Zugang und Exportpfad verwaltest du in der Add-on-Konfiguration.\n\nBei einem fehlgeschlagenen Lauf zuerst Zeitpunkt und Fehlermeldung in der Oberfläche beziehungsweise den Add-on-Logs prüfen. Danach Backup-Zugriff, Entschlüsselung, Speicherplatz und LLM-Anmeldung kontrollieren. Geheimnisse oder komplette Backup-Inhalte nicht in Supportmeldungen kopieren.\n\n## Eigene Hinweise pflegen\n\nPersönliche Bedienhinweise gehören in [Ergänzungen](../manuell/index.md). Automatisch erzeugte Seiten werden bei der nächsten Aktualisierung ersetzt. Änderungen an Geräten und Abläufen zuerst in Home Assistant durchführen; das nächste ausgewertete Backup liefert den neuen Dokumentationsstand.\n")
+    (docs / "admin").mkdir(exist_ok=True)
+    (docs / "admin" / "index.md").write_text("".join(admin), encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
@@ -275,7 +343,8 @@ def main() -> None:
         or metadata.get("inventory_source_date")
         or "nicht dokumentiert"
     )
-    checked_on = str(metadata.get("live_checked_date") or source_date)
+    checked_on = str(metadata.get("live_checked_date") or "nicht live geprüft")
+    source_note = html.escape(source_date)
 
     storage = source / ".storage"
     floors = read_json(storage / "core.floor_registry").get("floors", [])
@@ -777,14 +846,14 @@ def main() -> None:
                 if str(area_id) in area_by_id
             }
         locations = [area_location(x) for x in sorted(area_ids, key=lambda x: area_location(x).casefold())]
-        location_text = ", ".join(locations) if locations else "kein fester Raum – betrifft das ganze Haus"
+        location_text = ", ".join(locations) if locations else "kein Raum eindeutig zugeordnet"
         blueprint = automation.get("use_blueprint")
         trigger_lines = [trigger_summary(x) for x in triggers if isinstance(x, dict)]
         condition_lines = [condition_summary(x) for x in conditions if isinstance(x, dict)]
         action_lines = [action_summary(x) for x in actions if isinstance(x, dict)]
         if blueprint:
-            trigger_lines = ["Home Assistant erkennt anhand des Stromverbrauchs oder Gerätezustands, dass der Ablauf beendet ist"]
-            action_lines = ["die im Namen und in der Kurzbeschreibung genannte Meldung oder Aktion ausführen"]
+            trigger_lines = ["der verwendete Blueprint seinen hinterlegten Auslöser erkennt; die genaue Logik ist hier nicht aufgelöst"]
+            action_lines = ["die im Blueprint hinterlegten Schritte ausführen; Details bitte in Home Assistant prüfen"]
         if "trigger_steps" in override:
             trigger_lines = [str(x) for x in override.get("trigger_steps", [])]
         if "condition_steps" in override:
@@ -808,17 +877,17 @@ def main() -> None:
             page.append("---\nsearch:\n  exclude: true\n---\n\n")
         page.extend([GENERATED_NOTICE, f"# {title}\n\n"])
         if not enabled:
-            reason = override.get("status_reason") or "Diese Automation ist derzeit ausgeschaltet."
-            page.append(f"!!! info \"Status: ausgeschaltet\"\n    {reason}\n\n")
+            reason = override.get("status_reason") or "In den manuellen Ergänzungen als ausgeschaltet gekennzeichnet."
+            page.append(f"!!! info \"Als ausgeschaltet dokumentiert\"\n    {reason} Der aktuelle Zustand wird hier nicht live geprüft.\n\n")
         else:
-            page.append("!!! success \"Status: aktiv\"\n    Diese Automation ist in Home Assistant eingeschaltet.\n\n")
+            page.append("!!! info \"Im Backup hinterlegt\"\n    Diese Seite erklärt die gespeicherte Definition. Ob der Ablauf gerade eingeschaltet ist und funktioniert, zeigt Home Assistant.\n\n")
         if override.get("safety_note"):
             page.append(f"!!! warning \"Wichtig\"\n    {override['safety_note']}\n\n")
         page.append(f"**Ort:** {location_text}\n\n")
         page.append("## Das bemerkst du im Alltag\n\n")
         page.append(f"{description}\n\n")
         page.append("## Sie startet, wenn …\n\n")
-        page.extend(f"{i}. {sentence_case(text)}\n" for i, text in enumerate(trigger_lines or ["Home Assistant den hinterlegten Auslöser erkennt"], 1))
+        page.extend(f"- {sentence_case(text)}\n" for text in trigger_lines or ["Home Assistant den hinterlegten Auslöser erkennt"])
         page.append("\n## Sie läuft nur weiter, wenn …\n\n")
         if condition_lines:
             page.extend(f"- {sentence_case(text)}\n" for text in condition_lines)
@@ -850,7 +919,7 @@ def main() -> None:
             )
             page.append(f"    | Blueprint | {esc(blueprint_path)} |\n")
         page.append("\n</div>\n\n")
-        page.append(f"<p class=\"page-status\">Definition aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
+        page.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
         (auto_dir / f"{slug}.md").write_text("".join(page), encoding="utf-8")
         auto_meta.append({
             "alias": alias,
@@ -872,7 +941,7 @@ def main() -> None:
         if item["enabled"] and not item["technical"]:
             categories[item["category"]].append(item)
     auto_index = [GENERATED_NOTICE, "# Was passiert automatisch?\n\n"]
-    auto_index.append("Hier stehen nur Funktionen, die im Alltag sichtbar oder wichtig sind. Dazu gehören automatische Abläufe **und die in Home Assistant hinterlegten Tastenbelegungen**. Interne Wartungsabläufe und ausgeschaltete Tests sind weiter unten getrennt aufgeführt.\n\n")
+    auto_index.append("Hier stehen Funktionen, die im Alltag sichtbar oder wichtig sind, einschließlich hinterlegter Tastenbelegungen. Die Einträge beschreiben den Backup-Stand. Interne Wartungsabläufe und als ausgeschaltet dokumentierte Funktionen sind weiter unten getrennt aufgeführt.\n\n")
     auto_index.append("!!! tip \"So liest du die Seiten\"\n    Jede Seite beginnt mit Status, Ort und einer Alltagserklärung. Technische Namen sind eingeklappt und werden nur für die Wartung benötigt.\n\n")
     order = ["Sicherheit & Zugang", "Licht & Präsenz", "Haushalt", "Garten & Wasser", "Energie & Auto", "Sonstiges"]
     for group in order:
@@ -913,7 +982,7 @@ def main() -> None:
             description = scene_overrides.get("descriptions", {}).get(name, f"Verändert {count} gespeicherte Zustände.")
             auto_index.append(f"- **{shown_name}:** {description}\n")
         auto_index.append("\n")
-    auto_index.append(f"<p class=\"page-status\">Definitionen aus Backup vom {source_date}; Status und dauerhafte Ergänzungen geprüft am {checked_on}</p>\n")
+    auto_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
     (docs / "automationen" / "index.md").write_text("".join(auto_index), encoding="utf-8")
 
     daily_automation_device_ids = {
@@ -954,13 +1023,18 @@ def main() -> None:
 
         page.append("## Geräte an diesem Standort\n\n")
         if room_devices:
-            page.append("| Gerät | Aufgabe | Raumzuordnung | Position / Standortshinweis | Bei Home-Assistant-Ausfall |\n|---|---|---|---|---|\n")
+            page.append("| Gerät | Aufgabe | Position / Standortshinweis |\n|---|---|---|\n")
             for device in room_devices:
-                assignment = "in Home Assistant bestätigt" if device.get("area_id") else "aus Name/Funktion abgeleitet"
                 page.append(
-                    f"| {esc(shown_device_name(device))} | {device_kind(device)} | {assignment} | "
-                    f"{position_hint(device)} | {outage_hint(device)} |\n"
+                    f"| {esc(shown_device_name(device))} | {device_kind(device)} | {position_hint(device)} |\n"
                 )
+            page.append("\n??? info \"Für die Administration: Geräte und Zuordnungen\"\n\n")
+            page.append("    | Gerät | Hersteller / Modell | Raumzuordnung | Allgemeiner Ausfallhinweis |\n    |---|---|---|---|\n")
+            for device in room_devices:
+                assignment = "im Backup hinterlegt" if device.get("area_id") else "aus manueller Ergänzung"
+                maker = safe_source_text(device.get("manufacturer"), "Hersteller")
+                model = safe_source_text(device.get("model"), "Modell")
+                page.append(f"    | {esc(shown_device_name(device))} | {esc(maker)} / {esc(model)} | {assignment} | {outage_hint(device)} |\n")
         else:
             page.append("Für diesen Raum ist derzeit kein eigenständiges physisches Gerät eingetragen.\n")
 
@@ -969,7 +1043,7 @@ def main() -> None:
             for item in sorted(related, key=lambda x: x["title"].casefold()):
                 page.append(f"- [{item['title']}](../../automationen/generated/{item['slug']}.md)\n")
         else:
-            page.append("Für diesen Raum ist keine aktive, alltagsrelevante Automation eindeutig zugeordnet.\n")
+            page.append("Für diesen Raum ist keine alltagsrelevante Automation eindeutig zugeordnet. Der Live-Zustand wird nicht geprüft.\n")
 
         page.append("\n## Bedienung und Störung\n\n")
         kinds = {device_kind(device) for device in room_devices}
@@ -980,7 +1054,7 @@ def main() -> None:
         if "Smarte Steckdose" in kinds:
             page.append("- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.\n")
         page.append("- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und die Administration informieren.\n")
-        page.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
+        page.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
         (room_dir / f"{room_slug[area_id]}.md").write_text("".join(page), encoding="utf-8")
 
     floor_areas: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
@@ -997,7 +1071,11 @@ def main() -> None:
             area_name = safe_source_text(area["name"], "Raumname")
             room_index.append(f"- [{area_name}](generated/{room_slug[area['id']]}.md) – {count} alltagsrelevante Geräte\n")
         room_index.append("\n")
-    room_index.append(f"<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
+    if floor_areas.get(None) or any(key not in floor_by_id and key is not None for key in floor_areas):
+        room_index.append("## Ohne zugeordnete Etage\n\n")
+        for area in sorted((a for a in areas if a.get("floor_id") not in floor_by_id), key=lambda a: a["name"].casefold()):
+            room_index.append(f"- [{safe_source_text(area['name'], 'Raumname')}](generated/{room_slug[area['id']]}.md)\n")
+    room_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
     (docs / "raeume" / "index.md").write_text("".join(room_index), encoding="utf-8")
 
     device_index = [GENERATED_NOTICE, "# Geräte und ihre Standorte\n\n"]
@@ -1041,7 +1119,7 @@ def main() -> None:
                 f"    | {esc(shown_device_name(device))} | {device_kind(device)} | noch offen |\n"
             )
 
-    device_index.append(f"\n<p class=\"page-status\">Inventar aus Backup vom {source_date}; gekennzeichnete Ergänzungen geprüft am {checked_on}</p>\n")
+    device_index.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
     (docs / "geraete" / "index.md").write_text("".join(device_index), encoding="utf-8")
 
     try:
@@ -1065,6 +1143,7 @@ def main() -> None:
         "source_date": source_date,
         "checked_on": checked_on,
     }
+    write_overview_pages(docs, summary, auto_meta)
     print(json.dumps(summary, ensure_ascii=False))
 
 

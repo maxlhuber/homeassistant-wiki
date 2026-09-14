@@ -1,2 +1,36 @@
-:root { --md-primary-fg-color: #0f766e; }
-.page-status { color: var(--md-default-fg-color--light); font-size: .8rem; }
+:root {
+  --md-primary-fg-color: #174d49;
+  --md-accent-fg-color: #08796c;
+  --md-text-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --md-code-font: ui-monospace, Consolas, monospace;
+}
+[data-md-color-scheme="default"] { --md-default-bg-color: #fafbf8; }
+[data-md-color-scheme="slate"] { --md-primary-fg-color: #153c3a; --md-accent-fg-color: #79dac8; }
+.md-typeset { font-size: .84rem; line-height: 1.75; }
+.md-typeset h1 { color: var(--md-default-fg-color); font-weight: 750; letter-spacing: -.035em; line-height: 1.16; }
+.md-typeset h2 { font-weight: 700; letter-spacing: -.025em; }
+.md-typeset a { text-underline-offset: .2em; }
+.md-typeset a:hover { text-decoration: underline; }
+.md-typeset a:focus-visible, .md-nav__link:focus-visible { outline: 3px solid var(--md-accent-fg-color); outline-offset: 4px; border-radius: 3px; }
+.wiki-hero { background: linear-gradient(115deg, #174d49, #246b5b); color: #fff; padding: 1.4rem 1.7rem; border-radius: 1rem; margin: 1.3rem 0; }
+.md-typeset .wiki-hero h2 { color: #fff; margin: 0 0 .6rem; font-size: 1.6rem; }
+.wiki-hero p:last-child { opacity: .9; font-size: .75rem; margin-bottom: 0; }
+.md-typeset .grid.cards { gap: .8rem; }
+.md-typeset .grid.cards > ul > li { border-radius: .8rem; border-color: var(--md-default-fg-color--lightest); padding: 1.1rem; background: var(--md-default-bg-color); }
+.md-typeset .grid.cards > ul > li > p:first-child { font-size: 1rem; }
+.md-typeset .grid.cards > ul > li:hover { box-shadow: 0 4px 18px #174d4912; border-color: var(--md-accent-fg-color); }
+.md-typeset .admonition, .md-typeset details { border-radius: .6rem; font-size: .79rem; }
+.md-typeset table:not([class]) { font-size: .75rem; border-radius: .5rem; }
+.md-typeset table:not([class]) th { background: #174d4910; }
+.md-typeset table:not([class]) td { min-width: 7rem; }
+.md-typeset table:not([class]) tr:nth-child(even) { background: #80808008; }
+.page-status { color: var(--md-default-fg-color--light); font-size: .72rem; border-top: 1px solid var(--md-default-fg-color--lightest); padding-top: 1rem; margin-top: 2rem; }
+@media (max-width: 600px) {
+  .wiki-hero { padding: 1.1rem; }
+  .md-typeset .wiki-hero h2 { font-size: 1.3rem; }
+  .md-typeset .grid.cards { grid-template-columns: 1fr; }
+}
+@media print {
+  .wiki-hero { color: #111; background: none; border: 1px solid #777; }
+  .md-typeset .wiki-hero h2 { color: #111; }
+}

@@ -4,14 +4,16 @@ import json
 import os
 import time
 import datetime as dt
-import re
+import tarfile
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from wiki_backup import BackupExtractionError, discover_latest_backup
 
 
 BASE = "http://supervisor"
+SHARE_ROOT = Path("/share")
 
 
 class SupervisorError(RuntimeError):
@@ -102,38 +104,66 @@ def latest_full_backup() -> dict[str, Any]:
     return max(full, key=sort_key)
 
 
-def latest_automatic_backup_file() -> Path | None:
-    """Find the newest automatic full archive on an HA network share.
+def latest_automatic_backup_file(export_path: Path) -> Path | None:
+    """Select a validated automatic full backup only from the configured share.
 
-    The Supervisor backup catalogue can lag behind a mounted NAS agent.  HA's
-    automatic archives have a stable, date-bearing filename, so this fallback
-    prevents an old manual archive from ever being selected in that situation.
+    Dates and completeness come from backup.json, never from a filename. The
+    existing archive validator only inspects outer headers, without decrypting
+    or extracting the large Home Assistant payload.
     """
-    root = Path("/share")
+    root = _export_mount(export_path)
     candidates: list[tuple[float, Path]] = []
-    pattern = re.compile(r"automatic_backup_.*_(\d{4})[-_](\d{1,2})[-_](\d{1,2})[._-](\d{2})[._-](\d{2})")
     try:
-        for path in root.glob("*/automatic_backup_*.tar"):
-            match = pattern.search(path.name)
-            if not match:
+        # Automatic archives may be stored directly in the share or below a
+        # ``Backup``/date directory.  Search recursively, but only accept
+        # structurally validated full archives and never arbitrary tar files.
+        files = list(root.rglob("automatic_backup_*.tar"))
+        for path in files:
+            try:
+                validated = discover_latest_backup(path, min_age_seconds=0)
+                with tarfile.open(validated, mode="r:") as archive:
+                    metadata_member = next(member for member in archive if member.name.removeprefix("./") == "backup.json")
+                    if metadata_member.size > 1_000_000:
+                        continue
+                    document = json.loads(archive.extractfile(metadata_member).read())
+                if document.get("type") != "full":
+                    continue
+                stamp = dt.datetime.fromisoformat(document["date"].replace("Z", "+00:00")).timestamp()
+                candidates.append((stamp, validated))
+            except (BackupExtractionError, OSError, tarfile.TarError, ValueError, KeyError, StopIteration):
                 continue
-            year, month, day, hour, minute = (int(value) for value in match.groups())
-            stamp = dt.datetime(year, month, day, hour, minute, tzinfo=dt.timezone.utc).timestamp()
-            candidates.append((stamp, path))
-    except OSError:
-        return None
+    except OSError as error:
+        raise SupervisorError("Der konfigurierte NAS-Backupordner konnte nicht gelesen werden.") from error
+    if files and not candidates:
+        raise SupervisorError("Die automatischen NAS-Backups sind noch nicht vollständig oder ungültig. Es wird kein alter Ersatzstand verwendet.")
     return max(candidates, key=lambda item: item[0])[1] if candidates else None
 
 
-def ensure_share_mount(export_path: Path) -> None:
+def _export_mount(export_path: Path) -> Path:
     try:
-        relative = export_path.resolve().relative_to(Path("/share").resolve())
+        relative = export_path.resolve().relative_to(SHARE_ROOT.resolve())
+        # A share itself (``/share/HausWiki``) is supported for backwards
+        # compatibility with existing installations.  For a shared backup
+        # location prefer a child such as ``/share/NASWiki/HausWiki``; the
+        # safety checks below still refuse to replace a directory containing
+        # backup archives.
+        if not relative.parts:
+            raise ValueError("Export requires a named share")
         mount_name = relative.parts[0]
     except (ValueError, IndexError):
-        raise SupervisorError("Der Exportpfad muss auf eine Netzwerkfreigabe unter /share/<Name> zeigen.")
-    mountpoint = Path("/share") / mount_name
+        raise SupervisorError("Der Exportpfad muss unter /share/<Freigabe> liegen.")
+    return SHARE_ROOT / mount_name
+
+
+def ensure_share_mount(export_path: Path) -> None:
+    mountpoint = _export_mount(export_path)
     if not mountpoint.is_dir() or not mountpoint.is_mount():
-        raise SupervisorError(f"Die Home-Assistant-Netzwerkfreigabe {mount_name} ist nicht aktiv.")
+        raise SupervisorError("Die konfigurierte Home-Assistant-Netzwerkfreigabe ist nicht aktiv.")
+    for target in (export_path, export_path.with_name(export_path.name + ".new"), export_path.with_name(export_path.name + ".old")):
+        if target.is_symlink():
+            raise SupervisorError("Der Wiki-Export darf keine symbolischen Links ersetzen.")
+        if target.exists() and any(path.is_file() and path.name.casefold().endswith((".tar", ".tar.gz", ".backup")) for path in target.rglob("*")):
+            raise SupervisorError("Der Exportordner enthält Backup-Archive und darf nicht ersetzt werden. Bitte einen eigenen Wiki-Ordner verwenden.")
 
 
 def download_backup(slug: str, destination: Path) -> None:

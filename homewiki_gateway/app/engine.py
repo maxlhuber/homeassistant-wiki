@@ -7,6 +7,8 @@ import re
 import shutil
 import threading
 import time
+import uuid
+import subprocess
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from types import SimpleNamespace
@@ -17,6 +19,7 @@ from wiki_openai import OpenAIResult
 
 from .codex_client import request_automation_wording_codex
 from .settings import load_settings
+from .operation_log import OperationLog
 from .supervisor import download_backup, ensure_share_mount, homeassistant_timezone, latest_automatic_backup_file, latest_full_backup, notify, wait_for_backup_jobs
 
 
@@ -89,10 +92,18 @@ class WikiEngine:
         self.login_process = None
         self.login_output: list[str] = []
         self.login_lock = threading.Lock()
+        self.login_generation = 0
+        self.login_cancel = threading.Event()
+        self.login_state: dict[str, Any] = {"state": "idle", "code": None, "url": None, "expires_at": None, "retry_at": None, "attempts": 0}
+        self.auth_cache: tuple[float, dict[str, Any]] = (0, {})
         for path in (DATA, MANUAL, RELEASES, WORK, DATA / "codex-home"):
             path.mkdir(parents=True, exist_ok=True)
+        self.operation_log = OperationLog(DATA / "logs")
         if not APP_STATUS.exists():
             self._set_app_status(state="idle", message="Bereit für die erste Aktualisierung.")
+
+    def logs(self, limit: int = 200) -> dict[str, Any]:
+        return self.operation_log.read(limit)
 
     def _set_app_status(self, **values: Any) -> None:
         current = _read_json(APP_STATUS, {})
@@ -121,6 +132,8 @@ class WikiEngine:
             "backup": app.get("backup"),
             "backup_date": app.get("backup_date"),
             "version": runtime_version(),
+            "warning_kind": "llm_incomplete" if app.get("warning_kind") else None,
+            "warning_message": "LLM-Ergänzungen sind noch nicht vollständig." if app.get("warning_kind") else None,
         }
 
     def history(self) -> list[dict[str, Any]]:
@@ -158,6 +171,7 @@ class WikiEngine:
             shutil.rmtree(stale, ignore_errors=True)
 
     def _export(self, export_path: Path) -> None:
+        ensure_share_mount(export_path)
         current = DATA / "publish-site"
         resolved = export_path.resolve()
         share = Path("/share").resolve()
@@ -180,14 +194,18 @@ class WikiEngine:
         return settings.llm_provider == "disabled"
 
     def _run(self, reason: str) -> None:
-        settings = load_settings()
-        self._set_app_status(state="running", message="Backup wird ausgewählt.", started_at=_now(), retry_at=None)
+        started = time.monotonic()
+        run_id = uuid.uuid4().hex[:12]
+        self.operation_log.emit("run_started", "Wiki-Aktualisierung gestartet.", run_id=run_id, reason=reason, version=runtime_version())
+        self._set_app_status(state="running", phase="backup_wait", run_id=run_id, message="Backup wird ausgewählt.", started_at=_now(), retry_at=None)
         backup_path = WORK / "selected.backup"
         previous = None
         try:
+            settings = load_settings()
+            self.operation_log.emit("phase", "Netzwerkspeicher und laufende Backups werden geprüft.", run_id=run_id, phase="backup_wait")
             ensure_share_mount(settings.export_path)
             wait_for_backup_jobs(settings.llm_timeout_minutes * 60)
-            local_backup = latest_automatic_backup_file()
+            local_backup = latest_automatic_backup_file(settings.export_path)
             if local_backup is not None:
                 backup = {"name": local_backup.name, "date": local_backup.name, "source": "network_share"}
                 self._set_app_status(state="running", message="Neuestes automatisches NAS-Vollbackup wird sicher eingelesen.", backup=backup["name"], backup_date=backup["date"])
@@ -199,6 +217,7 @@ class WikiEngine:
                 if not backup_id:
                     raise RuntimeError("Das ausgewählte Backup besitzt keine gültige Supervisor-ID.")
                 download_backup(str(backup_id), backup_path)
+            self.operation_log.emit("phase", "Backup ausgewählt; Wiki wird erzeugt und geprüft.", run_id=run_id, phase="build", source=backup.get("source", "supervisor"))
             previous = self._backup_current()
             secret_file = WORK / ".backup-password"
             secret_file.write_text(settings.backup_password, encoding="utf-8")
@@ -228,22 +247,25 @@ class WikiEngine:
                     else True
                 ),
             )
-            self._set_app_status(state="running", message="Wiki wird erzeugt und validiert.")
+            self._set_app_status(state="running", phase="build", message="Wiki wird erzeugt und validiert.")
             code = weekly_update.run(args)
             result = _read_json(STATUS, {})
             outcome = result.get("outcome", "failed")
             if code != 0:
                 if result.get("reason_kind") == "quota_exhausted":
                     retry = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=settings.quota_retry_minutes)
-                    self._set_app_status(state="waiting_quota", message="Codex-Kontingent erschöpft; der Lauf wird automatisch fortgesetzt.", retry_at=retry.isoformat(timespec="seconds"))
+                    self._set_app_status(state="waiting_quota", phase="waiting_quota", message="Codex-Kontingent erschöpft; der Lauf wird automatisch fortgesetzt.", retry_at=retry.isoformat(timespec="seconds"))
                     notify("Haus-Wiki wartet", "Das Codex-Kontingent ist erschöpft. Die bestehende Wiki-Version bleibt aktiv; der Lauf wird automatisch wiederholt.")
                 else:
-                    self._set_app_status(state="failed", message=str(result.get("message") or "Aktualisierung fehlgeschlagen."))
-                    notify("Haus-Wiki: Fehler", str(result.get("message") or "Die Aktualisierung ist fehlgeschlagen."))
-                self._record({"reason": reason, "outcome": outcome, "message": result.get("message")})
+                    self._set_app_status(state="failed", phase="failed", message="Die Aktualisierung ist fehlgeschlagen. Bitte Backup, Verbindung und Anmeldung prüfen.")
+                    notify("Haus-Wiki: Fehler", "Die Aktualisierung ist fehlgeschlagen. Bitte Backup, Verbindung und Anmeldung prüfen.")
+                self._record({"reason": reason, "outcome": outcome, "message": "Aktualisierung konnte nicht abgeschlossen werden."})
+                self.operation_log.emit("run_blocked", "Aktualisierung konnte nicht abgeschlossen werden.", level="warning", run_id=run_id, outcome=outcome, duration_seconds=round(time.monotonic() - started, 2))
                 return
             if outcome != "ready_unchanged":
                 try:
+                    self.operation_log.emit("phase", "Geprüftes Wiki wird auf das NAS exportiert.", run_id=run_id, phase="export")
+                    self._set_app_status(phase="export", message="Das geprüfte Wiki wird auf das NAS exportiert.")
                     self._export(settings.export_path)
                 except Exception:
                     REBUILD_REQUIRED.touch()
@@ -252,20 +274,34 @@ class WikiEngine:
                     raise
                 self._retain_previous(previous, settings.release_retention)
                 message = "Das Wiki wurde erfolgreich aktualisiert und auf das NAS exportiert."
-                notify("Haus-Wiki aktualisiert", message)
+                notification_title = "Haus-Wiki aktualisiert"
             else:
                 message = "Das neueste Backup enthält keine wiki-relevanten Änderungen."
-                notify("Haus-Wiki unverändert", message)
+                notification_title = "Haus-Wiki unverändert"
+            prior = _read_json(APP_STATUS, {})
+            warning_kind = result.get("warning_kind")
+            warning_message = result.get("warning_message")
+            # A metadata-only rebuild cannot prove that missing LLM wording was
+            # recovered. Keep the visible warning until an actual LLM run succeeds.
+            if not warning_kind and not result.get("openai_called"):
+                warning_kind = prior.get("warning_kind")
+                warning_message = prior.get("warning_message")
+            if warning_kind:
+                warning_message = "Das Wiki ist verfügbar. LLM-Ergänzungen fehlen noch; Details stehen im Laufstatus."
+                message += " LLM-Ergänzungen sind noch nicht vollständig."
             if result.get("warning_kind"):
-                notify("Haus-Wiki: LLM-Hinweis", str(result.get("warning_message") or "Der deterministische Wiki-Stand wurde ohne LLM-Ergänzung veröffentlicht."), "haus_wiki_llm")
-            self._set_app_status(state="idle", message=message, completed_at=_now(), retry_at=None)
+                notify("Haus-Wiki: LLM-Hinweis", "Der automatisch erzeugte Wiki-Stand wurde ohne vollständige LLM-Ergänzung veröffentlicht. Bitte Anmeldung und Kontingent prüfen.", "haus_wiki_llm")
+            notify(notification_title, message)
+            self._set_app_status(state="idle", phase="complete", message=message, completed_at=_now(), retry_at=None, warning_kind=warning_kind, warning_message=warning_message, backup_date=result.get("backup_date") or backup.get("date"), duration_seconds=round(time.monotonic() - started, 2))
+            self.operation_log.emit("run_completed", "Wiki-Lauf abgeschlossen; LLM-Ergänzungen fehlen noch." if warning_kind else "Wiki-Lauf erfolgreich abgeschlossen.", level="warning" if warning_kind else "info", run_id=run_id, outcome=outcome, backup_date=result.get("backup_date"), duration_seconds=round(time.monotonic() - started, 2))
             BUILT_VERSION.write_text(runtime_version() + "\n", encoding="utf-8")
             MANUAL_DIRTY.unlink(missing_ok=True)
             REBUILD_REQUIRED.unlink(missing_ok=True)
             self._record({"reason": reason, "outcome": outcome, "backup": backup.get("name"), "warning": result.get("warning_kind")})
         except Exception as error:
-            message = str(error)[:1000]
-            self._set_app_status(state="failed", message=message)
+            self.operation_log.emit("run_failed", "Wiki-Aktualisierung fehlgeschlagen. Bestehenden Stand prüfen.", level="error", run_id=run_id, error_type=type(error).__name__, duration_seconds=round(time.monotonic() - started, 2))
+            message = "Die Aktualisierung ist fehlgeschlagen. Bitte Backup, NAS-Verbindung und Anmeldung prüfen."
+            self._set_app_status(state="failed", phase="failed", message=message)
             self._record({"reason": reason, "outcome": "failed", "message": message})
             notify("Haus-Wiki: Fehler", message)
         finally:
@@ -278,6 +314,12 @@ class WikiEngine:
         return sorted((path.name for path in RELEASES.iterdir() if path.is_dir()), reverse=True)
 
     def rollback(self, release: str) -> None:
+        with self.lock:
+            if self.thread and self.thread.is_alive():
+                raise ValueError("Während einer Aktualisierung ist keine Wiederherstellung möglich.")
+            self._rollback(release)
+
+    def _rollback(self, release: str) -> None:
         if release not in self.releases():
             raise ValueError("Unbekannter Versionsstand.")
         settings = load_settings()
@@ -288,56 +330,127 @@ class WikiEngine:
         self._export(settings.export_path)
         self._set_app_status(state="idle", message=f"Rollback auf {release} abgeschlossen.")
         self._record({"reason": "rollback", "outcome": "rolled_back", "release": release})
+        self.operation_log.emit("rollback_completed", "Gesicherter Wiki-Stand wiederhergestellt.", outcome="rolled_back")
         notify("Haus-Wiki zurückgesetzt", f"Der Versionsstand {release} ist wieder aktiv.")
 
     def auth_status(self) -> dict[str, Any]:
+        if time.monotonic() - self.auth_cache[0] < 15:
+            return dict(self.auth_cache[1])
         try:
-            result = __import__("subprocess").run(["codex", "login", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
-            return {"logged_in": result.returncode == 0, "message": (result.stdout or result.stderr).strip()[-300:]}
+            result = subprocess.run(["codex", "login", "status"], capture_output=True, text=True, timeout=15, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")})
+            status = {"logged_in": result.returncode == 0, "message": "Angemeldet" if result.returncode == 0 else "Nicht angemeldet"}
         except Exception:
-            return {"logged_in": False, "message": "Status nicht verfügbar"}
+            status = {"logged_in": False, "message": "Status nicht verfügbar"}
+        self.auth_cache = (time.monotonic(), status)
+        return dict(status)
 
     def start_device_login(self) -> bool:
-        import subprocess
         with self.login_lock:
-            if self.login_process and self.login_process.poll() is None:
+            if self.login_state["state"] in {"starting", "pending", "retrying"}:
                 return False
+            self.login_generation += 1
+            generation = self.login_generation
+            self.login_cancel = threading.Event()
             self.login_output = []
-            self.login_process = subprocess.Popen(
-                ["codex", "login", "--device-auth"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home")}, bufsize=1,
-            )
-            threading.Thread(target=self._collect_login, daemon=True).start()
-            threading.Thread(target=self._watch_login, daemon=True).start()
-            return True
+            self.login_state = {"state": "starting", "code": None, "url": None, "expires_at": None, "retry_at": None, "attempts": 0}
+            threading.Thread(target=self._login_flow, args=(generation, self.login_cancel), daemon=True).start()
+        self.operation_log.emit("login_started", "ChatGPT-Anmeldung gestartet.")
+        return True
 
-    def _collect_login(self) -> None:
-        process = self.login_process
-        if process and process.stdout:
+    def stop_device_login(self) -> None:
+        with self.login_lock:
+            self.login_generation += 1
+            self.login_cancel.set()
+            process = self.login_process
+            self.login_process = None
+            self.login_output = []
+            self.login_state.update(state="cancelled", code=None, url=None, expires_at=None, retry_at=None)
+            self.auth_cache = (0, {})
+        if process and process.poll() is None:
+            process.terminate()
+        self.operation_log.emit("login_cancelled", "ChatGPT-Anmeldung abgebrochen.")
+
+    def _collect_login(self, process, generation: int) -> None:
+        if process.stdout:
             for line in process.stdout:
                 with self.login_lock:
-                    # Codex uses terminal colour/control sequences. Strip
-                    # them before exposing the text in the web UI.
+                    if generation != self.login_generation or process is not self.login_process:
+                        return
                     clean = re.sub(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))", "", line).rstrip()
-                    self.login_output.append(clean)
+                    clean = "".join(character for character in clean if character >= " " or character == "\t")
+                    self.login_output = (self.login_output + [clean[:1000]])[-30:]
+                    code = re.search(r"\b[A-Z0-9]{4,5}-[A-Z0-9]{4,5}\b", clean)
+                    if "https://auth.openai.com/codex/device" in clean:
+                        self.login_state["url"] = "https://auth.openai.com/codex/device"
+                    if code and not self.login_state.get("code"):
+                        expires = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=15)
+                        self.login_state.update(state="pending", code=code.group(), url="https://auth.openai.com/codex/device", expires_at=expires.isoformat(timespec="seconds"))
 
-    def _watch_login(self) -> None:
-        process = self.login_process
-        if process is None:
-            return
-        process.wait()
-        if process.returncode == 0 or self.auth_status().get("logged_in"):
-            return
-        # Device codes expire after a short window. Start a fresh flow so the
-        # UI always presents a usable code without manual intervention.
-        time.sleep(1)
-        self.start_device_login()
+    def _login_flow(self, generation: int, cancel: threading.Event) -> None:
+        failures = 0
+        while not cancel.is_set():
+            with self.login_lock:
+                if generation != self.login_generation:
+                    return
+                self.login_state.update(state="starting", code=None, expires_at=None, retry_at=None, attempts=self.login_state["attempts"] + 1)
+                self.login_output = []
+                try:
+                    process = subprocess.Popen(["codex", "login", "--device-auth"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env={**os.environ, "CODEX_HOME": str(DATA / "codex-home"), "NO_COLOR": "1", "TERM": "dumb"}, bufsize=1)
+                    self.login_process = process
+                except OSError:
+                    self.login_state.update(state="failed")
+                    self.operation_log.emit("login_failed", "Anmeldeprozess konnte nicht gestartet werden.", level="error")
+                    return
+            collector = threading.Thread(target=self._collect_login, args=(process, generation), daemon=True)
+            collector.start()
+            started = time.monotonic()
+            expired = False
+            while process.poll() is None and not cancel.wait(0.5):
+                with self.login_lock:
+                    if generation != self.login_generation:
+                        return
+                    expiry = self.login_state.get("expires_at")
+                expired = bool(expiry and dt.datetime.fromisoformat(expiry) <= dt.datetime.now(dt.timezone.utc))
+                if expired or (not expiry and time.monotonic() - started > 90):
+                    process.terminate()
+                    break
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+            collector.join(timeout=2)
+            if cancel.is_set():
+                return
+            self.auth_cache = (0, {})
+            authenticated = self.auth_status().get("logged_in", False)
+            with self.login_lock:
+                if generation != self.login_generation:
+                    return
+                expiry = self.login_state.get("expires_at")
+                expired = expired or bool(expiry and dt.datetime.fromisoformat(expiry) <= dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=5))
+                self.login_state.update(code=None, expires_at=None)
+                self.login_output = []
+                if authenticated:
+                    self.login_state.update(state="authenticated", retry_at=None)
+                    self.operation_log.emit("login_completed", "ChatGPT-Anmeldung erfolgreich.")
+                    return
+                failures = 0 if expired else failures + 1
+                if failures >= 3:
+                    self.login_state.update(state="failed", retry_at=None)
+                    self.operation_log.emit("login_failed", "Anmeldung nach drei Fehlern gestoppt. Erneut starten.", level="error")
+                    return
+                delay = 1 if expired else min(30, 5 * 2 ** (failures - 1))
+                self.login_state.update(state="retrying", retry_at=(dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=delay)).isoformat(timespec="seconds"))
+            self.operation_log.emit("login_renewed" if expired else "login_retry", "Abgelaufener Anmeldecode wird erneuert." if expired else "Anmeldung wird nach einer kurzen Pause wiederholt.", level="info" if expired else "warning")
+            if cancel.wait(delay):
+                return
 
     def device_login_status(self) -> dict[str, Any]:
         with self.login_lock:
-            running = bool(self.login_process and self.login_process.poll() is None)
+            running = self.login_state["state"] in {"starting", "pending", "retrying"}
             code = None if running or not self.login_process else self.login_process.returncode
-            return {"running": running, "exit_code": code, "output": "\n".join(self.login_output[-30:])}
+            return {"running": running, "exit_code": code, "output": "\n".join(self.login_output[-30:]), **self.login_state}
 
 
 def scheduler(engine: WikiEngine) -> None:
