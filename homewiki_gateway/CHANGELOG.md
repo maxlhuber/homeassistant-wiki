@@ -1,3 +1,9 @@
+# 3.2.1
+
+- Kompakter Einstieg und mehr Platz zum Lesen; Überblick heißt jetzt Status.
+- Eigene Anleitungen, Protokolle und Wiederherstellung sind aufklappbar.
+- Vereinfachte Wiki-Startseite und passende Hinweise für API-Verbindungen.
+
 # 3.2.0
 
 - Provider-Auswahl verständlich benannt: OpenAI Abo, OpenAI API, Claude Abo,

@@ -235,13 +235,16 @@ def sentence_case(value: Any) -> str:
 def write_overview_pages(docs: Path, summary: dict[str, Any], automations: list[dict[str, Any]]) -> None:
     """Refresh reader entry points and admin facts with every backup build."""
     date = html.escape(str(summary["source_date"]))
-    landing = GENERATED_NOTICE + f'''# Dein Zuhause verstehen
+    landing = '''---
+hide:
+  - navigation
+  - toc
+---
+''' + GENERATED_NOTICE + f'''# Dein Zuhause verstehen
 
 <div class="wiki-hero" markdown>
 
-## Was macht das Haus eigentlich von selbst?
-
-Hier findest du Geräte, Räume und automatische Abläufe verständlich erklärt. Beginne beim Raum oder bei der Funktion, die dich interessiert.
+Wähle einen Bereich oder suche oben nach einem Raum, Gerät oder Ablauf.
 
 **Backup-Stand: {date}** · Diese Dokumentation zeigt gespeicherte Einstellungen, keine aktuellen Gerätewerte.
 

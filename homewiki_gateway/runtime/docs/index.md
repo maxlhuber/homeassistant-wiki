@@ -1,10 +1,13 @@
+---
+hide:
+  - navigation
+  - toc
+---
 # Dein Zuhause verstehen
 
 <div class="wiki-hero" markdown>
 
-## Dein Haus hat eine Anleitung
-
-Haus-Wiki erklärt Geräte, Räume und automatische Abläufe aus deinem Home-Assistant-Backup.
+Wähle einen Bereich oder suche oben nach einem Raum, Gerät oder Ablauf.
 
 **Noch kein Backup ausgewertet.** Diese Startseite wird nach dem ersten erfolgreichen Lauf durch deine Übersicht ersetzt.
 
