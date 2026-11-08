@@ -1,29 +1,34 @@
 site_name: Haus-Wiki
-site_description: Das Zuhause verstehen – Geräte, Räume und Abläufe verständlich erklärt
+site_description: Unser Zuhause verstehen – Räume, Geräte, Abläufe und was im Notfall zu tun ist
 theme:
   name: material
   language: de
   font: false
+  icon:
+    logo: material/home-outline
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: custom
-      accent: teal
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Dunkle Ansicht
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: custom
-      accent: teal
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Helle Ansicht
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.top
+    - navigation.tracking
     - search.suggest
     - search.highlight
-    - navigation.tracking
 plugins:
   - search:
       lang: de
@@ -36,16 +41,30 @@ markdown_extensions:
       permalink: true
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 extra_css:
   - stylesheets/extra.css
 nav:
   - Start: index.md
-  - Im Alltag:
-    - Einstieg: einstieg/index.md
+  - Notfall: notfall/index.md
+  - Zuhause:
     - Räume: raeume/index.md
     - Geräte: geraete/index.md
     - Automatische Abläufe: automationen/index.md
     - Dashboards: dashboards/automatisch.md
-  - Hilfe: hilfe/index.md
-  - Administration: admin/index.md
-  - Ergänzungen: manuell/index.md
+  - Haushalt & Energie: energie/index.md
+  - Wartung: wartung/index.md
+  - Hilfe:
+    - Einstieg: einstieg/index.md
+    - Hilfe bei Störungen: hilfe/index.md
+    - Eigene Ergänzungen: manuell/index.md
+  - Technik:
+    - technik/index.md
+    - Integrationen: technik/integrationen.md
+    - Apps: technik/apps.md
+    - Zigbee-Netz: technik/zigbee.md
+    - Netzwerk: technik/netzwerk.md
+    - Skripte & Helfer: technik/skripte-helfer.md
+    - Wiki & Datenqualität: admin/index.md

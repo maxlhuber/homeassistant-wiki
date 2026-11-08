@@ -33,6 +33,10 @@ MANUAL = DATA / "manual"
 RELEASES = DATA / "releases"
 WORK = DATA / "work"
 MANUAL_DIRTY = DATA / "manual-dirty"
+BATTERY_TYPES = DATA / "battery_types.json"
+# Battery types change the published wiki, but a rebuild per entry would be
+# wasteful.  The flag forces a rebuild on the next manual or scheduled run.
+BATTERY_DIRTY = DATA / "battery-types-dirty"
 BUILT_VERSION = DATA / "built-version"
 REBUILD_REQUIRED = DATA / "rebuild-required"
 VERSION_CONFIG = Path("/app/homewiki-config.yaml")
@@ -245,6 +249,8 @@ class WikiEngine:
             api_file.write_text(settings.openai_api_key, encoding="utf-8")
             os.chmod(api_file, 0o600)
             os.environ["WIKI_MANUAL_DOCS_DIR"] = str(MANUAL)
+            os.environ["WIKI_BATTERY_TYPES_FILE"] = str(BATTERY_TYPES)
+            battery_stamp = BATTERY_DIRTY.stat().st_mtime_ns if BATTERY_DIRTY.exists() else None
             no_ai = self._configure_llm(settings)
             args = SimpleNamespace(
                 repo=PROJECT,
@@ -260,6 +266,7 @@ class WikiEngine:
                 force_rebuild=(
                     reason == "manual_edit"
                     or MANUAL_DIRTY.exists()
+                    or BATTERY_DIRTY.exists()
                     or REBUILD_REQUIRED.exists()
                     or BUILT_VERSION.read_text(encoding="utf-8").strip() != runtime_version()
                     if BUILT_VERSION.exists()
@@ -316,6 +323,9 @@ class WikiEngine:
             self.operation_log.emit("run_completed", "Wiki-Lauf abgeschlossen; LLM-Ergänzungen fehlen noch." if warning_kind else "Wiki-Lauf erfolgreich abgeschlossen.", level="warning" if warning_kind else "info", run_id=run_id, outcome=outcome, backup_date=result.get("backup_date"), duration_seconds=round(time.monotonic() - started, 2))
             BUILT_VERSION.write_text(runtime_version() + "\n", encoding="utf-8")
             MANUAL_DIRTY.unlink(missing_ok=True)
+            # Keep the flag if a type was entered while this run was building.
+            if battery_stamp is not None and BATTERY_DIRTY.exists() and BATTERY_DIRTY.stat().st_mtime_ns == battery_stamp:
+                BATTERY_DIRTY.unlink(missing_ok=True)
             REBUILD_REQUIRED.unlink(missing_ok=True)
             self._record({"reason": reason, "outcome": outcome, "backup": backup.get("name"), "warning": result.get("warning_kind")})
         except Exception as error:

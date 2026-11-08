@@ -4,6 +4,8 @@ The source directory must contain the selected YAML files and registry files fro
 Home Assistant. Registries are read to resolve relationships, but identifiers,
 connections and unique IDs are never published. The script deliberately does not
 read config entries, secrets, credentials, history databases or cloud data.
+
+Battery types entered in the app are read from ``WIKI_BATTERY_TYPES_FILE``.
 """
 
 from __future__ import annotations
@@ -11,6 +13,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 import re
 import shutil
 import unicodedata
@@ -23,6 +26,8 @@ import yaml
 from wiki_dashboards import DashboardInventoryError, write_dashboard_inventory
 
 from wiki_snapshot import OPAQUE_VALUE, SECRET_VALUE_PATTERNS, SHORT_PRIVATE_NUMBER
+from wiki_batteries import load_overrides as load_battery_overrides
+from wiki_extras import ExtraContext, write_extra_pages
 
 
 GENERATED_NOTICE = (
@@ -235,70 +240,91 @@ def sentence_case(value: Any) -> str:
 def write_overview_pages(docs: Path, summary: dict[str, Any], automations: list[dict[str, Any]]) -> None:
     """Refresh reader entry points and admin facts with every backup build."""
     date = html.escape(str(summary["source_date"]))
-    landing = '''---
+    batteries = summary.get("battery_devices", 0)
+    landing = """---
 hide:
   - navigation
   - toc
 ---
-''' + GENERATED_NOTICE + f'''# Dein Zuhause verstehen
+""" + GENERATED_NOTICE + f"""# Wie funktioniert unser Zuhause?
 
-<div class="wiki-hero" markdown>
+<p class="home-lead">Was automatisch passiert, wo welches Gerät steckt und was zu tun ist, wenn etwas nicht klappt. Über die Suche oben findest du jeden Raum, jedes Gerät und jeden Ablauf.</p>
 
-Wähle einen Bereich oder suche oben nach einem Raum, Gerät oder Ablauf.
+[:material-alert-octagon: **Notfall & Ausfälle** <span>Strom, Internet oder Home Assistant weg? Die Tür geht nicht auf?</span>](notfall/index.md){{ .emergency-banner }}
 
-**Backup-Stand: {date}** · Diese Dokumentation zeigt gespeicherte Einstellungen, keine aktuellen Gerätewerte.
+## Im Alltag
 
-</div>
+<div class="grid cards home-cards" markdown>
 
-<div class="grid cards" markdown>
+-   :material-floor-plan:{{ .lg .sign-green }} **Räume**
 
--   **Einen Raum entdecken**
+    Welche Geräte sind wo, und was passiert dort automatisch?
 
-    Welche Geräte gehören hierhin, und was passiert automatisch?
+    [{summary['areas']} Räume ansehen](raeume/index.md)
 
-    [Zu den {summary['areas']} Räumen](raeume/index.md)
+-   :material-robot-happy-outline:{{ .lg .sign-blue }} **Was passiert automatisch?**
 
--   **Automatische Abläufe verstehen**
+    Licht, Benachrichtigungen, Haushalt: Auslöser und Ablauf in Alltagssprache.
 
-    Was löst eine Funktion aus, welche Voraussetzungen gelten und was passiert dann?
+    [{summary['automations']} Abläufe ansehen](automationen/index.md)
 
-    [Die {summary['automations']} Abläufe ansehen](automationen/index.md)
+-   :material-lightning-bolt-outline:{{ .lg .sign-yellow }} **Haushalt & Energie**
 
--   **Ein Gerät finden**
+    Strom, Auto, Waschmaschine, Garten und Bewässerung.
 
-    Geräte nach Standort und Aufgabe nachschlagen.
+    [Zum Überblick](energie/index.md)
 
-    [Zu den {summary['shown_devices']} Geräten der Alltagsansicht](geraete/index.md)
+-   :material-battery-charging-60:{{ .lg .sign-yellow }} **Wartung & Batterien**
 
--   **Etwas funktioniert nicht**
+    Welche Batterie gehört in welches Gerät, und was braucht Pflege?
 
-    Beobachtung einordnen und die passenden Informationen für die Administration sammeln.
+    [{batteries} Geräte mit Batterie](wartung/index.md)
+
+-   :material-magnify:{{ .lg .sign-green }} **Ein Gerät finden**
+
+    Alle Geräte nach Raum und Aufgabe.
+
+    [{summary['shown_devices']} Geräte nachschlagen](geraete/index.md)
+
+-   :material-lifebuoy:{{ .lg .sign-blue }} **Etwas funktioniert nicht**
+
+    Beobachtung einordnen und der Administration richtig weitergeben.
 
     [Hilfe bei Störungen](hilfe/index.md)
 
 </div>
 
-## Zum ersten Mal hier?
+## Gut zu wissen
 
-[Der kurze Einstieg](einstieg/index.md) erklärt die Begriffe und zeigt dir, wie du etwas findest. Die Suche oben funktioniert mit Raum-, Geräte- und Funktionsnamen.
+- **Das Wiki schaltet nichts.** Zum Bedienen Home Assistant oder die Schalter im Haus nutzen.
+- **Neu hier?** [Der kurze Einstieg](einstieg/index.md) erklärt Begriffe in zwei Minuten.
+- **Eigene Hinweise** der Familie stehen unter [Ergänzungen](manuell/index.md).
+- **Technik-Interessierte** finden Integrationen, Apps, Zigbee und Netzwerk unter [Technik](technik/index.md).
 
-Du möchtest etwas schalten? Öffne Home Assistant. Links in diesem Wiki öffnen Erklärungen; sie steuern keine Geräte.
-
-## Für die Administration
-
-[Inventar und Datenqualität](admin/index.md) zeigen technische Kennzahlen, Grenzen der Auswertung und Wartungshinweise. Eigene Anleitungen findest du unter [Ergänzungen](manuell/index.md).
-'''
+<p class="page-status">Stand des Backups: {date}. Das Wiki zeigt gespeicherte Einstellungen, keine Live-Werte.</p>
+"""
     (docs / "index.md").write_text(landing, encoding="utf-8")
-    admin = [GENERATED_NOTICE, "# Administration\n\n",
+    admin = [GENERATED_NOTICE, "# Wiki & Datenqualität\n\n",
              f"**Backup-Stand: {date}** · Die Werte stammen aus der Sicherung, nicht aus einer Live-Abfrage.\n\n",
-             "## Inventar und Datenqualität\n\n| Bereich | Einträge im Backup |\n|---|---:|\n"]
-    for label, key in (("Etagen", "floors"), ("Räume", "areas"), ("Geräteregister (einschließlich virtueller Geräte)", "registry_devices"), ("Alltagsansicht: Geräte mit Raum", "shown_devices"), ("Entitäten insgesamt", "registry_entities"), ("Alltagsrelevante Entitäten", "everyday_entities"), ("Automationsdefinitionen", "automations"), ("Dokumentierte Szenen", "scenes"), ("Dashboards", "dashboards")):
-        admin.append(f"| {label} | {summary[key]} |\n")
+             "## Inventar\n\n| Bereich | Einträge im Backup |\n|---|---:|\n"]
+    for label, key in (
+        ("Etagen", "floors"), ("Räume", "areas"),
+        ("Geräteregister (einschließlich virtueller Geräte)", "registry_devices"),
+        ("Alltagsansicht: Geräte mit Raum", "shown_devices"),
+        ("Entitäten insgesamt", "registry_entities"), ("Alltagsrelevante Entitäten", "everyday_entities"),
+        ("Automationsdefinitionen", "automations"), ("Dokumentierte Szenen", "scenes"),
+        ("Skripte", "scripts"), ("Helfer", "helpers"), ("Integrationen", "integrations"),
+        ("Apps", "apps"), ("Zigbee-Geräte", "zigbee_devices"), ("Geräte mit Batterie", "battery_devices"),
+        ("Dashboards", "dashboards"),
+    ):
+        if key in summary:
+            admin.append(f"| {label} | {summary[key]} |\n")
     admin.append("\nDie Alltagsansicht filtert technische Dienste und Diagnoseeinträge. Unterschiedliche Zählwerte sind deshalb erwartbar. Fehlende Raumzuordnungen stehen in der [Geräteübersicht](../geraete/index.md); sie beweisen keinen Geräteausfall.\n\n")
-    admin.append("## Automationen nachschlagen\n\nAlle Definitionen, einschließlich technischer oder als ausgeschaltet dokumentierter Abläufe. Die einzelnen Seiten enthalten eingeklappte technische Details. Der Einschaltzustand ist hier nicht live bekannt.\n\n")
+    admin.append("## Alle Automationen\n\nAlle Definitionen, einschließlich technischer oder als ausgeschaltet dokumentierter Abläufe. Der Einschaltzustand ist hier nicht live bekannt.\n\n")
+    admin.append("??? info \"Liste öffnen\"\n\n")
     for item in sorted(automations, key=lambda item: item["title"].casefold()):
-        admin.append(f"- [{item['title']}](../automationen/generated/{item['slug']}.md)\n")
-    admin.append("\n## Was die Auswertung aussagen kann\n\n- Automationen werden aus ihren gespeicherten Definitionen erklärt. Templates, Blueprint-Interna und komplexe Verzweigungen sind teilweise nur zusammengefasst.\n- Raumbezüge entstehen aus den in der Definition und im Register vorhandenen Zuordnungen. Ohne Bezug wird kein Standort angenommen.\n- Technische Details sind eine Lesehilfe; für Fehlersuche immer die tatsächliche Definition und Ausführungsspuren in Home Assistant prüfen.\n- Der Backup-Zeitpunkt ist kein Nachweis eines Funktionstests.\n\n## Wiki betreiben\n\nDie Steuerung, ChatGPT-Anmeldung und Laufmeldungen findest du in der Haus-Wiki-Oberfläche. Den Zeitplan, Backup-Zugang und Exportpfad verwaltest du in der Add-on-Konfiguration.\n\nBei einem fehlgeschlagenen Lauf zuerst Zeitpunkt und Fehlermeldung in der Oberfläche beziehungsweise den Add-on-Logs prüfen. Danach Backup-Zugriff, Entschlüsselung, Speicherplatz und LLM-Anmeldung kontrollieren. Geheimnisse oder komplette Backup-Inhalte nicht in Supportmeldungen kopieren.\n\n## Eigene Hinweise pflegen\n\nPersönliche Bedienhinweise gehören in [Ergänzungen](../manuell/index.md). Automatisch erzeugte Seiten werden bei der nächsten Aktualisierung ersetzt. Änderungen an Geräten und Abläufen zuerst in Home Assistant durchführen; das nächste ausgewertete Backup liefert den neuen Dokumentationsstand.\n")
+        admin.append(f"    - [{item['title']}](../automationen/generated/{item['slug']}.md)\n")
+    admin.append("\n## Was die Auswertung aussagen kann\n\n- Automationen werden aus ihren gespeicherten Definitionen erklärt. Templates, Blueprint-Interna und komplexe Verzweigungen sind teilweise nur zusammengefasst.\n- Raumbezüge entstehen aus den in der Definition und im Register vorhandenen Zuordnungen. Ohne Bezug wird kein Standort angenommen.\n- Integrationen werden aus Geräte- und Entitätsregister abgeleitet; Zugangsdaten und Konfigurationseinträge liest das Wiki nicht.\n- Batterietypen stammen aus einer eingebauten Modellliste oder aus deinen Einträgen in der App. Typische Angaben sind als solche gekennzeichnet.\n- Der Backup-Zeitpunkt ist kein Nachweis eines Funktionstests.\n\n## Wiki betreiben\n\nAktualisierung, KI-Anmeldung, Batterietypen und Laufmeldungen findest du in der Haus-Wiki-App. Zeitplan, Backup-Zugang und Exportpfad stehen in der App-Konfiguration von Home Assistant.\n\nBei einem fehlgeschlagenen Lauf zuerst Zeitpunkt und Fehlermeldung in der App beziehungsweise den App-Logs prüfen. Danach Backup-Zugriff, Entschlüsselung, Speicherplatz und KI-Anmeldung kontrollieren. Geheimnisse oder komplette Backup-Inhalte nicht in Supportmeldungen kopieren.\n\n## Eigene Hinweise pflegen\n\nPersönliche Bedienhinweise gehören in [Ergänzungen](../manuell/index.md). Eine Seite mit dem Namen `notfall` erscheint zusätzlich oben auf der [Notfallseite](../notfall/index.md). Automatisch erzeugte Seiten werden bei der nächsten Aktualisierung ersetzt.\n")
     (docs / "admin").mkdir(exist_ok=True)
     (docs / "admin" / "index.md").write_text("".join(admin), encoding="utf-8")
 
@@ -529,6 +555,10 @@ def main() -> None:
         ).casefold()
         rules = [
             ("Bedien-Tablet", ("dashboard-tablet", "dashboard tablet")),
+            ("Router", ("speedport", "fritz!box")),
+            ("Bridge / Gateway", ("hardware bridge",)),
+            ("Türschloss / Türöffner", ("nuki", "smart lock", "türschloss", "türöffner", "opener")),
+            ("IR-Fernbedienung", ("ir blaster", "ir remote")),
             ("Klimaanlagen-Schalter", ("klimaanlage schalter",)),
             ("Heizgerät", ("heizstrahler",)),
             ("Kaffeemaschine", ("kaffeemaschine",)),
@@ -543,7 +573,7 @@ def main() -> None:
             ("Wasserventil", ("wasserventil", "water valve")),
             ("Wallbox", ("wallbox", "go-echarger")),
             ("Mähroboter", ("mähroboter", "mower")),
-            ("Saug-/Wischgerät", ("sauron", "vacuum", "dyad", "roborock")),
+            ("Saug-/Wischgerät", ("sauron", "vacuum", "dyad", "roborock", "narwal", "saugroboter", "dreame")),
             ("Fernseher / Mediaplayer", ("fernseher", "television", "apple tv", "fire tv", "65oled")),
             ("Licht", ("licht", "lichstäbchen", "light", "hue", "filament", "lampe", "laterne", "panel", "spot", "decke", "wled")),
             ("Lautsprecher / Sprachassistent", ("echo", "dot", "sonos", "alexa")),
@@ -922,7 +952,7 @@ def main() -> None:
             )
             page.append(f"    | Blueprint | {esc(blueprint_path)} |\n")
         page.append("\n</div>\n\n")
-        page.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
+        page.append(f"<p class=\"page-status\">Backup-Stand: {source_note}. Keine Live-Anzeige.</p>\n")
         (auto_dir / f"{slug}.md").write_text("".join(page), encoding="utf-8")
         auto_meta.append({
             "alias": alias,
@@ -985,7 +1015,7 @@ def main() -> None:
             description = scene_overrides.get("descriptions", {}).get(name, f"Verändert {count} gespeicherte Zustände.")
             auto_index.append(f"- **{shown_name}:** {description}\n")
         auto_index.append("\n")
-    auto_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
+    auto_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note}. Keine Live-Anzeige.</p>\n")
     (docs / "automationen" / "index.md").write_text("".join(auto_index), encoding="utf-8")
 
     daily_automation_device_ids = {
@@ -1057,7 +1087,7 @@ def main() -> None:
         if "Smarte Steckdose" in kinds:
             page.append("- Smarte Steckdosen nicht auf Werkseinstellungen zurücksetzen. Bei Haushaltsgeräten das Programm direkt am Gerät prüfen.\n")
         page.append("- Wenn etwas unerwartet reagiert: Gerät nicht löschen oder zurücksetzen, Beobachtung notieren und die Administration informieren.\n")
-        page.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
+        page.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note}. Keine Live-Anzeige.</p>\n")
         (room_dir / f"{room_slug[area_id]}.md").write_text("".join(page), encoding="utf-8")
 
     floor_areas: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
@@ -1078,7 +1108,7 @@ def main() -> None:
         room_index.append("## Ohne zugeordnete Etage\n\n")
         for area in sorted((a for a in areas if a.get("floor_id") not in floor_by_id), key=lambda a: a["name"].casefold()):
             room_index.append(f"- [{safe_source_text(area['name'], 'Raumname')}](generated/{room_slug[area['id']]}.md)\n")
-    room_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
+    room_index.append(f"<p class=\"page-status\">Backup-Stand: {source_note}. Keine Live-Anzeige.</p>\n")
     (docs / "raeume" / "index.md").write_text("".join(room_index), encoding="utf-8")
 
     device_index = [GENERATED_NOTICE, "# Geräte und ihre Standorte\n\n"]
@@ -1122,7 +1152,7 @@ def main() -> None:
                 f"    | {esc(shown_device_name(device))} | {device_kind(device)} | noch offen |\n"
             )
 
-    device_index.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note} · Keine Live-Anzeige</p>\n")
+    device_index.append(f"\n<p class=\"page-status\">Backup-Stand: {source_note}. Keine Live-Anzeige.</p>\n")
     (docs / "geraete" / "index.md").write_text("".join(device_index), encoding="utf-8")
 
     try:
@@ -1131,6 +1161,32 @@ def main() -> None:
         )
     except DashboardInventoryError as error:
         raise RuntimeError(str(error)) from error
+
+    battery_file = os.environ.get("WIKI_BATTERY_TYPES_FILE")
+    extra_summary = write_extra_pages(ExtraContext(
+        docs=docs,
+        source=source,
+        source_note=source_note,
+        devices=devices,
+        entities=entities,
+        areas=areas,
+        area_by_id=area_by_id,
+        entity_by_id=entity_by_id,
+        device_entities=device_entities,
+        auto_meta=auto_meta,
+        room_slug=room_slug,
+        shown_device_name=shown_device_name,
+        device_kind=device_kind,
+        area_location=area_location,
+        area_id_for_device=area_id_for_device,
+        is_virtual_device=is_virtual_device,
+        is_mobile_device=is_mobile_device,
+        entity_label=entity_label,
+        safe_text=safe_source_text,
+        esc=esc,
+        hidden_devices=hidden_devices,
+        battery_overrides=load_battery_overrides(Path(battery_file)) if battery_file else {},
+    ))
 
     summary = {
         "floors": len(floors),
@@ -1145,6 +1201,7 @@ def main() -> None:
         "dashboards": dashboard_count,
         "source_date": source_date,
         "checked_on": checked_on,
+        **extra_summary,
     }
     write_overview_pages(docs, summary, auto_meta)
     print(json.dumps(summary, ensure_ascii=False))

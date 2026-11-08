@@ -15,7 +15,10 @@ import yaml
 from wiki_dashboards import DashboardInventoryError, build_dashboard_snapshot
 
 
-SNAPSHOT_VERSION = 1
+SNAPSHOT_VERSION = 2
+# Older snapshots are still readable as "no comparison base": the next run
+# rebuilds everything instead of failing on a format upgrade.
+REBUILDABLE_SNAPSHOT_VERSIONS = {1}
 SENSITIVE_KEY = re.compile(
     r"(?:password|passwd|secret|token|api[_-]?key|access[_-]?key|private[_-]?key|"
     r"authorization|credential|webhook[_-]?id|encryption[_-]?key|pin|passcode|"
@@ -45,6 +48,8 @@ REGISTRY_FIELDS = {
         "disabled_by",
         "entry_type",
         "via_device_id",
+        "sw_version",
+        "hw_version",
     ),
     "entities": (
         "id",
@@ -56,6 +61,8 @@ REGISTRY_FIELDS = {
         "platform",
         "disabled_by",
         "entity_category",
+        "device_class",
+        "original_device_class",
     ),
     "labels": ("label_id", "name"),
 }
@@ -260,6 +267,41 @@ def _read_yaml_list(path: Path) -> list[dict[str, Any]]:
     return document
 
 
+def _read_yaml_mapping(path: Path) -> dict[str, Any]:
+    if not path.exists() or path.stat().st_size == 0:
+        return {}
+    try:
+        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError) as error:
+        raise SnapshotError(f"{path.name} konnte nicht gelesen werden.") from error
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise SnapshotError(f"{path.name} besitzt nicht das erwartete Format.")
+    return value
+
+
+def _read_storage_document(path: Path) -> Any:
+    if not path.exists() or path.stat().st_size == 0:
+        return {}
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise SnapshotError(f"{path.name} konnte nicht gelesen werden.") from error
+    return document.get("data", {}) if isinstance(document, dict) else {}
+
+
+def _read_inventory(source: Path) -> dict[str, Any]:
+    path = source / ".wiki_backup_metadata.json"
+    if not path.exists():
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def _selected_record(item: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
     return canonical({field: item.get(field) for field in fields if item.get(field) is not None})
 
@@ -384,6 +426,28 @@ def build_snapshot(source: Path) -> dict[str, Any]:
             "source_hash": semantic_hash(scene),
         }
 
+    scripts: dict[str, dict[str, Any]] = {}
+    for key, script in sorted(_read_yaml_mapping(source / "scripts.yaml").items(), key=lambda item: str(item[0])):
+        if not isinstance(script, dict):
+            continue
+        scripts[str(key)] = {
+            "alias": str(script.get("alias") or key),
+            "source_hash": semantic_hash(script),
+        }
+
+    energy_document = _read_storage_document(source / ".storage/energy")
+    energy = {"config": {"source_hash": semantic_hash(energy_document)}} if energy_document else {}
+
+    inventory = _read_inventory(source)
+    apps: dict[str, dict[str, Any]] = {}
+    for index, app in enumerate(inventory.get("apps") or []):
+        if isinstance(app, dict):
+            key = str(app.get("slug") or app.get("name") or f"app:{index}")
+            apps[key] = {"name": app.get("name"), "version": app.get("version")}
+    system = {}
+    if inventory.get("homeassistant_version"):
+        system["homeassistant"] = {"version": inventory.get("homeassistant_version")}
+
     return {
         "snapshot_version": SNAPSHOT_VERSION,
         "floors": floors,
@@ -394,11 +458,15 @@ def build_snapshot(source: Path) -> dict[str, Any]:
         "automations": {key: automations[key] for key in sorted(automations)},
         "scenes": {key: scenes[key] for key in sorted(scenes)},
         "dashboards": dashboards,
+        "scripts": scripts,
+        "energy": energy,
+        "apps": {key: apps[key] for key in sorted(apps)},
+        "system": system,
     }
 
 
 def _record_changed(section: str, old: dict[str, Any], new: dict[str, Any]) -> bool:
-    if section in {"automations", "scenes"}:
+    if section in {"automations", "scenes", "scripts"}:
         return old.get("source_hash") != new.get("source_hash")
     return canonical(old) != canonical(new)
 
@@ -415,6 +483,10 @@ def calculate_delta(old: dict[str, Any] | None, new: dict[str, Any]) -> Snapshot
         "automations",
         "scenes",
         "dashboards",
+        "scripts",
+        "energy",
+        "apps",
+        "system",
     ):
         old_items = (old or {}).get(section, {})
         new_items = new.get(section, {})
@@ -450,6 +522,8 @@ def load_snapshot(path: Path) -> dict[str, Any] | None:
         document = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise SnapshotError("Der vorherige Wiki-Snapshot ist beschädigt.") from error
+    if isinstance(document, dict) and document.get("snapshot_version") in REBUILDABLE_SNAPSHOT_VERSIONS:
+        return None
     if not isinstance(document, dict) or document.get("snapshot_version") != SNAPSHOT_VERSION:
         raise SnapshotError("Der vorherige Wiki-Snapshot hat eine unbekannte Version.")
     return document

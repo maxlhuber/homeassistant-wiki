@@ -33,6 +33,8 @@ OPTIONAL_MEMBER_NAMES = (
     ".storage/lovelace.familien_karte",
     ".storage/lovelace.system_status",
     "dashboards/cupra_laden.yaml",
+    "scripts.yaml",
+    ".storage/energy",
 )
 OPTIONAL_EMPTY_REGISTRIES = {
     ".storage/core.floor_registry": "floors",
@@ -48,6 +50,52 @@ MAX_METADATA_BYTES = 2 * 1024 * 1024
 MAX_OUTER_MEMBERS = 4096
 DRAIN_CHUNK_BYTES = 4 * 1024 * 1024
 CORE_ARCHIVE_NAMES = frozenset({"homeassistant.tar", "homeassistant.tar.gz"})
+
+
+MAX_INVENTORY_APPS = 200
+MAX_INVENTORY_TEXT = 120
+
+
+def _inventory_text(value: Any) -> str | None:
+    """Return a short single-line display value from backup metadata."""
+    if not isinstance(value, str):
+        return None
+    text = " ".join(value.split())[:MAX_INVENTORY_TEXT]
+    return text or None
+
+
+def backup_inventory(raw: dict[str, Any] | None) -> dict[str, Any]:
+    """Select the harmless inventory fields of an official backup.json.
+
+    Only the Home Assistant version and the name/slug/version of each included
+    app are kept.  Sizes, folders, repositories, extra data and anything else
+    in the metadata are ignored.
+    """
+    result: dict[str, Any] = {"homeassistant_version": None, "apps": []}
+    if not isinstance(raw, dict):
+        return result
+    core = raw.get("homeassistant")
+    if isinstance(core, dict):
+        result["homeassistant_version"] = _inventory_text(core.get("version"))
+    apps = raw.get("addons")
+    if isinstance(apps, list):
+        selected = []
+        for item in apps[:MAX_INVENTORY_APPS]:
+            if not isinstance(item, dict):
+                continue
+            name = _inventory_text(item.get("name"))
+            slug = _inventory_text(item.get("slug"))
+            if not name and not slug:
+                continue
+            selected.append({
+                "name": name or slug,
+                "slug": slug,
+                "version": _inventory_text(item.get("version")),
+            })
+        result["apps"] = sorted(
+            selected, key=lambda app: (str(app["name"]).casefold(), str(app["slug"] or ""))
+        )
+    return result
 
 
 class BackupExtractionError(RuntimeError):
@@ -538,14 +586,14 @@ def _extract_inner_path(
 
 def _extract_outer(
     outer_path: Path, destination: Path, password: str | None
-) -> tuple[set[str], str | None, str | None]:
+) -> tuple[set[str], str | None, str | None, dict[str, Any] | None]:
     """Stream a strict official outer backup or accept an isolated core archive."""
     before = _stamp(outer_path)
     try:
         outer = tarfile.open(outer_path, mode="r:")
     except (tarfile.ReadError, EOFError):
         written = _extract_inner_path(outer_path, destination, password)
-        return written, None, None
+        return written, None, None, None
 
     with outer:
         try:
@@ -579,10 +627,10 @@ def _extract_outer(
                         compressed=layout.metadata.compressed,
                     )
             _ensure_unchanged(outer_path, before)
-            return written, layout.metadata.date, layout.metadata.name
+            return written, layout.metadata.date, layout.metadata.name, layout.metadata.raw
 
     written = _extract_inner_path(outer_path, destination, password)
-    return written, None, None
+    return written, None, None, None
 
 
 def _directory_layout(path: Path) -> tuple[_BackupMetadata, Path, _FileStamp, _FileStamp]:
@@ -639,6 +687,7 @@ def extract_home_assistant_backup(
     )
     metadata_date: str | None = None
     metadata_name: str | None = None
+    metadata_raw: dict[str, Any] | None = None
     try:
         if backup.is_dir():
             metadata, inner, metadata_stamp, inner_stamp = _directory_layout(backup)
@@ -653,8 +702,9 @@ def extract_home_assistant_backup(
             _ensure_unchanged(inner, inner_stamp)
             metadata_date = metadata.date
             metadata_name = metadata.name
+            metadata_raw = metadata.raw
         elif backup.is_file():
-            written, metadata_date, metadata_name = _extract_outer(
+            written, metadata_date, metadata_name, metadata_raw = _extract_outer(
                 backup, staging, password
             )
         else:
@@ -680,6 +730,7 @@ def extract_home_assistant_backup(
             "backup_name": metadata_name,
             "backup_date": metadata_date,
             "whitelist": list(ALLOWED_MEMBERS),
+            **backup_inventory(metadata_raw),
         }
         (staging / ".wiki_backup_metadata.json").write_text(
             json.dumps(metadata_document, ensure_ascii=False, indent=2) + "\n",

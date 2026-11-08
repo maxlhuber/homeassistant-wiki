@@ -2,10 +2,13 @@
 
 Das Wiki hilft beim Einordnen. Den aktuellen Gerätezustand und die Bedienung findest du in Home Assistant oder direkt am Gerät.
 
+!!! danger "Strom, Internet oder Home Assistant komplett weg?"
+    Dann direkt zur Seite [Notfall & Ausfälle](../notfall/index.md).
+
 ## Ein Gerät reagiert nicht
 
 1. Prüfe vor Ort, welches Gerät betroffen ist und ob es Strom hat. Beachte die Bedienungsanleitung des Geräts.
-2. Prüfe in Home Assistant, ob das Gerät als nicht verfügbar angezeigt wird.
+2. Prüfe in der Haus-Wiki-App unter **Live**, ob das Gerät als „antwortet nicht“ oder mit schwacher Batterie aufgeführt ist.
 3. Öffne die passende [Raumseite](../raeume/index.md) oder suche den Gerätenamen.
 4. Notiere die Beobachtung und informiere die Administration. Lösche das Gerät nicht und führe keinen Werksreset durch.
 
@@ -17,7 +20,7 @@ Das Wiki hilft beim Einordnen. Den aktuellen Gerätezustand und die Bedienung fi
 
 ## Home Assistant ist nicht erreichbar
 
-Prüfe, ob dein Handy oder Computer mit dem richtigen Netzwerk verbunden ist. Nutze bei Bedarf die reguläre Bedienung direkt am Gerät, soweit sie dafür vorgesehen ist. Welche Funktionen ohne Home Assistant weiterlaufen, hängt vom jeweiligen Gerät ab; dieses Wiki kann das nicht live feststellen.
+Prüfe, ob dein Handy oder Computer mit dem richtigen Netzwerk verbunden ist. Was ohne Home Assistant weiterläuft und was du tun kannst, steht unter [Notfall & Ausfälle](../notfall/index.md).
 
 ## Die Anleitung passt nicht zum Haus
 

@@ -31,6 +31,7 @@ COPY scripts/*.py /app/
 # module beside the app as a packaging-safe fallback in case the Supervisor
 # runtime does not preserve PYTHONPATH for the service process.
 COPY scripts/wiki_snapshot.py /app/homewiki/wiki_snapshot.py
+COPY scripts/wiki_batteries.py /app/homewiki/wiki_batteries.py
 COPY homewiki_gateway/runtime/wiki_overrides.yaml /app/project/scripts/wiki_overrides.yaml
 COPY homewiki_gateway/runtime/mkdocs.yml /app/project/mkdocs.yml
 COPY homewiki_gateway/runtime/docs /app/project/docs

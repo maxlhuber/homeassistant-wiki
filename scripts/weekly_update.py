@@ -301,7 +301,13 @@ def _strict_build(repo: Path, project: Path) -> None:
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2000:]
         raise RuntimeError(f"Der strenge Wiki-Build ist fehlgeschlagen: {detail}")
-    required_pages = (site / "index.html", site / "automationen" / "index.html", site / "geraete" / "index.html")
+    required_pages = (
+        site / "index.html",
+        site / "automationen" / "index.html",
+        site / "geraete" / "index.html",
+        site / "notfall" / "index.html",
+        site / "wartung" / "index.html",
+    )
     if not all(path.is_file() and path.stat().st_size > 200 for path in required_pages):
         raise RuntimeError("Der Wiki-Build enthält nicht alle erforderlichen Startseiten.")
 

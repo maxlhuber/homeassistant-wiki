@@ -1,6 +1,13 @@
-# Haus-Wiki 3.0
+# Haus-Wiki 4.0
 
-Das Wiki erklärt das Zuhause aus dem zuletzt verarbeiteten Home-Assistant-Backup. Es zeigt keine Live-Zustände und schaltet keine Geräte. Bewohner finden Räume, Geräte, Abläufe und Hilfe; die Verwaltung enthält Aktualisierung, Anmeldung, Verlauf, Betriebsprotokoll und eigene Seiten.
+Das Wiki erklärt das Zuhause aus dem zuletzt verarbeiteten Home-Assistant-Backup und schaltet keine Geräte. Die App hat vier Bereiche:
+
+- **Wiki**: das Haus-Handbuch für die Familie mit Notfall & Ausfällen, Räumen, Geräten, automatischen Abläufen, Haushalt & Energie, Wartung (inklusive Batterietypen), Hilfe und einem Technik-Bereich (Integrationen, Apps, Zigbee-Netz, Netzwerk, Skripte & Helfer, Datenqualität).
+- **Live**: aktuelle Werte direkt aus Home Assistant – Batteriestände, Geräte, die nicht antworten, verfügbare Updates und das Alter des letzten Backups.
+- **Aktualisierung**: Status, Grundlage und Verlauf der Wiki-Läufe.
+- **Verwalten**: KI-Anmeldung, eigene Anleitungen, Betriebsprotokoll und Wiederherstellung.
+
+Mit `#live` am Ende der App-Adresse öffnet sich direkt der Bereich Live, etwa auf einem Wand-Tablet.
 
 ## Einrichtung und Zugriff
 
@@ -30,9 +37,21 @@ Ein fertig erzeugtes Wiki bedeutet nicht automatisch einen erfolgreichen LLM-Auf
 
 Codex-Zugangsdaten liegen unter `/data/codex-home`, Claude-Zugangsdaten unter `/data/claude-home`; beide Verzeichnisse sind von HA-App-Backups ausgeschlossen. Nach Wiederherstellung kann eine erneute Anmeldung nötig sein.
 
+## Live-Werte
+
+Der Bereich Live fragt Home Assistant höchstens einmal pro Minute über eine einzige Vorlagenabfrage ab. Handys, Uhren und Notebooks werden bei Batterien und nicht antwortenden Geräten ausgeblendet. Schwach heißt höchstens 20 %, „bald leer“ höchstens 35 %. Ein Backup älter als zwei Tage wird gelb, älter als acht Tage rot markiert. Lesen dürfen alle Home-Assistant-Benutzer, die die App öffnen können.
+
+## Batterietypen
+
+Für verbreitete Modelle (zum Beispiel Hue-Wandschaltermodule, IKEA-Taster, SONOFF-Wasserventil, Nuki) kennt die App den Batterietyp. Angaben sind als **Herstellerangabe** oder **typisch – bitte prüfen** gekennzeichnet. Fehlende oder abweichende Typen tragen Verwaltende im Bereich Live direkt am Gerät ein. Die Einträge liegen unter `/data/battery_types.json`, haben Vorrang vor der eingebauten Liste und erscheinen nach der nächsten Wiki-Aktualisierung auch auf der Wartungsseite samt Batterievorrat.
+
+## Was das Wiki aus dem Backup liest
+
+Aus dem Kernarchiv werden nur Raum-, Etagen-, Label-, Geräte- und Entitätsregister, Automationen, Szenen, Skripte, Dashboards und die Energie-Konfiguration entpackt. Aus `backup.json` werden ausschließlich die Home-Assistant-Version sowie Name, Kennung und Version jeder enthaltenen App übernommen. Integrationen werden aus den Registern abgeleitet; `core.config_entries`, `secrets.yaml`, Zugangsdaten und Verlaufsdatenbanken werden nicht gelesen. IP-Adressen, WLAN-Namen und Gerätekennungen erscheinen nicht im Wiki.
+
 ## Eigene Seiten
 
-Eigene Anleitungen liegen getrennt unter /data/manual und werden weder vom Generator noch vom LLM überschrieben. Der Editor speichert Markdown; die Veröffentlichung erfolgt mit einem erfolgreichen Backup-basierten Lauf. Keine Passwörter oder Zugangscodes in Wiki-Seiten eintragen.
+Eigene Anleitungen liegen getrennt unter /data/manual und werden weder vom Generator noch vom LLM überschrieben. Eine Seite mit dem Namen `notfall` wird oben auf der Notfallseite verlinkt; die Vorlage dafür enthält Felder für Kontakte, Hauptsicherung und Haupthahn. Der Editor speichert Markdown; die Veröffentlichung erfolgt mit einem erfolgreichen Backup-basierten Lauf. Keine Passwörter oder Zugangscodes in Wiki-Seiten eintragen.
 
 ## Betriebsprotokoll
 
@@ -42,4 +61,4 @@ Die Verwaltung zeigt Ereignisse mit Zeitpunkt, Schweregrad, Laufbezug und Verarb
 
 Updates werden über das öffentliche GitHub-Repository und GHCR angeboten. Private Wiki-Inhalte werden nicht nach GitHub übertragen. Bestehende Optionen, eigene Seiten, Zugangsdaten und Wiki-Stände bleiben unter /data erhalten.
 
-Die interne Oberfläche verwendet api/status, api/history, api/logs, api/manual, api/auth/device/status. Schreibzugriffe benötigen Ingress, Verwaltungsrechte und den Header `X-Haus-Wiki: 1`. Dies ist keine öffentlich freizugebende API.
+Die interne Oberfläche verwendet api/status, api/live, api/history, api/logs, api/manual, api/battery-types und api/auth/device/status. Schreibzugriffe benötigen Ingress, Verwaltungsrechte und den Header `X-Haus-Wiki: 1`. Dies ist keine öffentlich freizugebende API.

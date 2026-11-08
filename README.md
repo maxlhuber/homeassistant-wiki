@@ -19,6 +19,8 @@ liegt im App-Datenspeicher und wird zusätzlich nach `/share/HausWiki` exportier
 - Bereinigte, auf geänderte Automationen begrenzte LLM-Eingaben
 - Home-Assistant-Benachrichtigungen, Versionsaufbewahrung und Rollback
 - Geschützte manuelle Seiten, die Generator und LLM nicht verändern
+- Familienorientiertes Handbuch mit Notfallseite, Wartung samt Batterietypen, Haushalt & Energie und Technik-Bereich
+- Live-Bereich in der App: Batteriestände, nicht antwortende Geräte, Updates und Backup-Alter
 - Multi-Architektur-Image für `amd64` und `aarch64`
 
 ## Installation
@@ -48,8 +50,9 @@ ist zugleich der Image-Tag, den Home Assistant als App-Update erkennt.
 
 ## Datenschutz und Sicherheit
 
-Aus Backups werden ausschließlich die für Inventar, Automationen, Szenen und
-Dashboards benötigten Dateien in einem temporären Arbeitsbereich gelesen.
+Aus Backups werden ausschließlich die für Inventar, Automationen, Szenen,
+Skripte, Dashboards und Energie benötigten Dateien in einem temporären
+Arbeitsbereich gelesen; aus den Backup-Metadaten nur HA-Version und App-Liste.
 Geheimnisähnliche Inhalte blockieren die Veröffentlichung. Das LLM erhält weder
 Backup-Dateien noch echte Automationsnamen, Zugangsdaten oder personenbezogene
 Freitexte. Die aktive Wiki-Version wird erst nach reproduzierbarer Generierung und

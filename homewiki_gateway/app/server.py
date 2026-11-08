@@ -21,7 +21,8 @@ try:
     from .wiki_snapshot import SECRET_VALUE_PATTERNS
 except ImportError:
     from wiki_snapshot import SECRET_VALUE_PATTERNS
-from .engine import BUILT_VERSION, DATA, MANUAL, MANUAL_DIRTY, WikiEngine, runtime_version, scheduler
+from .engine import BATTERY_DIRTY, BUILT_VERSION, DATA, MANUAL, MANUAL_DIRTY, WikiEngine, runtime_version, scheduler
+from .live import LiveStatus
 from .settings import load_settings
 
 UI_FILE = Path(__file__).with_name("ui.html")
@@ -33,7 +34,8 @@ LOGIN_ATTEMPTS: dict[str, list[float]] = {}
 
 class Handler(BaseHTTPRequestHandler):
     engine: WikiEngine
-    server_version = "HausWiki/3"
+    live: LiveStatus
+    server_version = "HausWiki/4"
 
     def log_message(self, fmt, *args):
         # URLs can contain session IDs or authentication material. Operational
@@ -134,6 +136,11 @@ class Handler(BaseHTTPRequestHandler):
             value.update(admin=self._admin(), password_required=bool(settings.admin_password), version=runtime_version(),
                          schedule={"days": settings.schedule_days, "time": settings.schedule_time, "catch_up": settings.catch_up},
                          llm_provider=settings.llm_provider)
+            return self._json(value)
+        if path == "api/live":
+            value = dict(self.live.get())
+            value["admin"] = self._admin()
+            value["battery_types_pending"] = BATTERY_DIRTY.exists()
             return self._json(value)
         if path == "wiki" or path.startswith("wiki/"):
             return self._file(DATA / "publish-site", path.removeprefix("wiki").lstrip("/"))
@@ -243,6 +250,16 @@ class Handler(BaseHTTPRequestHandler):
             return
         if not self._admin():
             return self._error("Bitte zuerst die Verwaltung freischalten.", 403)
+        if self.path_only.startswith("api/battery-types/"):
+            device_id = self.path_only.removeprefix("api/battery-types/")
+            try:
+                saved = self.live.set_battery_type(device_id, self._body().get("type"))
+            except ValueError as error:
+                return self._error(str(error))
+            except Exception:
+                return self._error("Der Batterietyp konnte nicht gespeichert werden.", 500)
+            BATTERY_DIRTY.touch()
+            return self._json({"saved": True, "type": saved})
         if not self.path_only.startswith("api/manual/"):
             return self._error("Nicht gefunden.", 404)
         name = self.path_only.removeprefix("api/manual/")
@@ -269,6 +286,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     engine = WikiEngine()
     Handler.engine = engine
+    Handler.live = LiveStatus()
     if not (DATA / "publish-site").is_dir():
         bootstrap = Path("/app/bootstrap-site")
         if bootstrap.is_dir():
