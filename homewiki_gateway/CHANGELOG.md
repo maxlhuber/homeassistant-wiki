@@ -1,3 +1,9 @@
+# 4.0.1
+
+- Behoben: Ein geplanter Lauf konnte sich den ganzen Tag alle paar Minuten wiederholen, weil der Lauf die Tagesmarkierung des Zeitplans überschrieb. Der Tag wird jetzt vor dem Start markiert.
+- Behoben: Gleichzeitige Statusänderungen konnten mit „No such file or directory: app_status.json.new“ abbrechen. Status und Verlauf werden jetzt gesperrt und mit eindeutigen Zwischendateien geschrieben.
+- Nach einem fehlgeschlagenen Lauf wird eine geänderte eigene Anleitung nicht mehr alle 30 Sekunden erneut versucht, sondern mit dem nächsten manuellen oder geplanten Lauf veröffentlicht.
+
 # 4.0.0
 
 - Neu gestaltet: Haus-Handbuch für die Familie im Stil von Hausbeschilderung; Farben mit fester Bedeutung (Rot Notfall, Gelb Wartung, Blau Anleitung, Grün Orientierung), DIN-Überschriften, helles und dunkles Design.

@@ -1,5 +1,5 @@
 name: "Haus-Wiki"
-version: "4.0.0"
+version: "4.0.1"
 slug: "homewiki_gateway"
 description: "Vollautomatisches, backupbasiertes Home-Assistant-Wiki mit OpenAI- oder Claude-Unterstützung"
 url: "https://github.com/maxlhuber/homeassistant-wiki"

@@ -285,5 +285,34 @@ class BatteryEndpointTests(unittest.TestCase):
             self.assertEqual(handler.sent[0][0], 403)
 
 
+class StatusWriteTests(unittest.TestCase):
+    def test_concurrent_status_updates_neither_collide_nor_drop_fields(self):
+        import threading
+        from app import engine as engine_module
+
+        with tempfile.TemporaryDirectory() as temporary:
+            status = Path(temporary) / "app_status.json"
+            wiki = object.__new__(engine_module.WikiEngine)
+            errors: list[BaseException] = []
+
+            def writer(index: int) -> None:
+                try:
+                    for _ in range(25):
+                        wiki._set_app_status(**{f"key{index}": index})
+                except BaseException as error:  # noqa: BLE001 - collected for the assertion
+                    errors.append(error)
+
+            with patch.object(engine_module, "APP_STATUS", status):
+                threads = [threading.Thread(target=writer, args=(i,)) for i in range(8)]
+                for thread in threads:
+                    thread.start()
+                for thread in threads:
+                    thread.join()
+                result = json.loads(status.read_text(encoding="utf-8"))
+            self.assertEqual(errors, [])
+            self.assertTrue(all(result[f"key{i}"] == i for i in range(8)))
+            self.assertEqual(sorted(p.name for p in Path(temporary).iterdir()), ["app_status.json"])
+
+
 if __name__ == "__main__":
     unittest.main()

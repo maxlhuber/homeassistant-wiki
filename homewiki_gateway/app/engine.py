@@ -66,11 +66,20 @@ def _read_json(path: Path, default: Any) -> Any:
         return default
 
 
+# Status and history are written from the HTTP, scheduler and run threads.
+# Every read-modify-write happens under this lock, and each write uses its own
+# temporary file, so concurrent updates can neither collide nor drop fields.
+STATE_LOCK = threading.RLock()
+
+
 def _write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".new")
-    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
+    temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.new")
+    try:
+        temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _safe_error_detail(error: Exception) -> str:
@@ -119,9 +128,10 @@ class WikiEngine:
         return self.operation_log.read(limit)
 
     def _set_app_status(self, **values: Any) -> None:
-        current = _read_json(APP_STATUS, {})
-        current.update({"updated_at": _now(), **values})
-        _write_json(APP_STATUS, current)
+        with STATE_LOCK:
+            current = _read_json(APP_STATUS, {})
+            current.update({"updated_at": _now(), **values})
+            _write_json(APP_STATUS, current)
 
     def status(self) -> dict[str, Any]:
         app = _read_json(APP_STATUS, {})
@@ -154,9 +164,10 @@ class WikiEngine:
         return value[-100:] if isinstance(value, list) else []
 
     def _record(self, entry: dict[str, Any]) -> None:
-        history = self.history()
-        history.append({"at": _now(), **entry})
-        _write_json(HISTORY, history[-100:])
+        with STATE_LOCK:
+            history = self.history()
+            history.append({"at": _now(), **entry})
+            _write_json(HISTORY, history[-100:])
 
     def trigger(self, reason: str = "manual") -> bool:
         with self.lock:
@@ -540,12 +551,16 @@ def scheduler(engine: WikiEngine) -> None:
             last = _read_json(APP_STATUS, {}).get("last_schedule_date")
             inside_window = (now.hour, now.minute) >= (hour, minute) if settings.catch_up else (now.hour, now.minute) == (hour, minute)
             if scheduled_today and inside_window and last != now.date().isoformat():
-                if engine.trigger("schedule"):
-                    engine._set_app_status(last_schedule_date=now.date().isoformat())
+                # Mark the day before starting: the run thread writes the
+                # status file too, and a late marker caused repeated runs.
+                engine._set_app_status(last_schedule_date=now.date().isoformat())
+                engine.trigger("schedule")
             retry_at = _read_json(APP_STATUS, {}).get("retry_at")
             if retry_at and dt.datetime.fromisoformat(retry_at) <= dt.datetime.now(dt.timezone.utc):
                 engine.trigger("quota_retry")
-            if MANUAL_DIRTY.exists():
+            # A failed run keeps the flag; it is then published by the next
+            # manual or scheduled run instead of retrying every 30 seconds.
+            if MANUAL_DIRTY.exists() and _read_json(APP_STATUS, {}).get("state") != "failed":
                 engine.trigger("manual_edit")
         except Exception:
             pass
